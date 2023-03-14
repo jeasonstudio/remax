@@ -102,3 +102,19 @@ dist
 
 # TernJS port file
 .tern-port
+
+# misc
+.idea/
+.happypack
+.DS_Store
+.ice
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.vscode/*
+
+dist/
+
+package-lock.json
+.vscode-test-web
