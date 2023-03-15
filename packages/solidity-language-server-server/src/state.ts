@@ -2,8 +2,7 @@
 import { Connection, Position, TextDocuments, URI, WorkspaceFolder } from 'vscode-languageserver/browser';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import type * as parser from '@solidity-parser/parser';
-import { IState, ISolidityDocument, Node, ASTNode, Token } from './types';
-import { astVisitPosition } from './utils/astVisitPosition';
+import { IState, Node, ASTNode, Token } from './types';
 import { enterVisitors } from './utils/visitors';
 
 export class State implements IState {
@@ -13,10 +12,9 @@ export class State implements IState {
    * solidity parser
    */
   public parser!: typeof parser;
-  /**
-   * mapping(URI, SolidityDocument)
-   */
-  public uriSolidityDocumentMap: Map<string, ISolidityDocument> = new Map();
+
+  public ast: Map<string, ASTNode> = new Map();
+  public tokens: Map<string, Token[]> = new Map();
 
   public constructor(readonly connection: Connection, readonly documents: TextDocuments<TextDocument>) {
     this.env = 'production';
@@ -38,85 +36,18 @@ export class State implements IState {
   // Update solidity document
   public updateSolidityDocument(document: TextDocument): void {
     const uri = document.uri;
-    const prevDocument = this.uriSolidityDocumentMap.get(uri);
-    const content = document.getText();
-    if (!prevDocument?.getText || prevDocument?.getText() !== content) {
-      const solidityDocument: ISolidityDocument = {
-        ast: null,
-        errors: [],
-        tokens: [],
-        ...prevDocument,
-        ...document,
-      };
-
-      try {
-        const parseResult = this.parser.parse(content, { range: true, tolerant: true, tokens: true, loc: true });
-        solidityDocument.ast = parseResult;
-        solidityDocument.errors = parseResult.errors || [];
-        solidityDocument.tokens = parseResult.tokens || [];
-      } catch (error) {
-        this.traceError(error);
-      }
-
-      // set new document
-      this.uriSolidityDocumentMap.set(uri, solidityDocument);
-      console.log('update document:', uri);
-      console.log('update document:', solidityDocument);
-      this.connection.console.info('Update document debounced: ' + uri);
-    } else {
-      this.connection.console.info('Document not changed debounced: ' + uri);
+    try {
+      const content = document.getText();
+      const ast = this.parser.parse(content, { range: true, tolerant: true, tokens: false, loc: true });
+      this.ast.set(uri, ast);
+      console.log('update ast:', ast);
+      const tokens: Token[] = this.parser.tokenize(content, { range: true, loc: true }) || [];
+      this.tokens.set(uri, tokens);
+      console.log('update tokens:', tokens);
+    } catch (error) {
+      this.traceError(error);
     }
-  }
-
-  public getPositionNodes(uri: URI, position: Position) {
-    const document = this.uriSolidityDocumentMap.get(uri);
-    if (!document || !document.ast) {
-      return [];
-    }
-    const p = {
-      // This comment copy from `hardhat-vscode` extension:
-      // TODO: Remove +1 when "@solidity-parser" fix line counting.
-      // Why +1? Because "vs-code" line counting from 0, and "@solidity-parser" from 1.
-      line: position.line + 1,
-      column: position.character,
-    };
-
-    let targetNodes: ASTNode[] = [];
-
-    const visitDefinition = (n: ASTNode) => {
-      if (
-        n.loc!.start.line === p.line &&
-        n.loc!.end.line === p.line
-        // n.loc!.start.column >= p.column &&
-        // n.loc!.end.column <= p.column
-      ) {
-        targetNodes.push(n);
-      }
-    };
-
-    const visitor = Object.fromEntries(enterVisitors.map((v) => [v, visitDefinition]));
-    this.parser.visit(document.ast, visitor);
-    return targetNodes;
-  }
-
-  public getOffsetNodes(uri: URI, offset: number) {
-    const document = this.uriSolidityDocumentMap.get(uri);
-    if (!document || !document.ast) {
-      return [];
-    }
-
-    let targetNodes: ASTNode[] = [];
-
-    const visitDefinition = (n: ASTNode) => {
-      const [start, end] = n.range ?? [0, 0];
-      if (offset >= start && offset <= end) {
-        targetNodes.push(n);
-      }
-    };
-
-    const visitor = Object.fromEntries(enterVisitors.map((v) => [v, visitDefinition]));
-    this.parser.visit(document.ast, visitor);
-    return targetNodes;
+    this.connection.console.info('update document debounced: ' + uri);
   }
 
   public getOffsetToken(textDocument: TextDocument, offset: number): Token | null {

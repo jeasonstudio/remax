@@ -30,7 +30,22 @@ export const completions: Record<string, CompletionItem> = {
   ...variablesCompletions,
 };
 
-export const globalVariables: string[] = ['abi', 'bytes', 'block', 'msg', 'tx'];
+export const globalVariables: string[] = [
+  'abi',
+  'bytes',
+  'block',
+  'msg',
+  'tx',
+  'gasleft',
+  'blockhash',
+  'keccak256',
+  'sha256',
+  'ripemd160',
+  'ecrecover',
+  'addmod',
+  'mulmod',
+  'selfdestruct',
+];
 
 export const getGlobalCompletionsByKeyword = (keyword?: string) => {
   if (keyword === undefined) {

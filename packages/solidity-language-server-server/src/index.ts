@@ -9,6 +9,8 @@ import { onCompletion } from './completion';
 import { onExit, onInitialize, onInitialized } from './initialize';
 import { onDidChangeContent, onDidChangeWatchedFiles } from './change';
 import { State } from './state';
+import { onSignatureHelp } from './signature';
+import { onDefinition, onHover } from './definition';
 
 const messageReader = new BrowserMessageReader(self);
 const messageWriter = new BrowserMessageWriter(self);
@@ -23,15 +25,15 @@ connection.onInitialized(onInitialized(state));
 connection.onExit(onExit(state));
 
 // Command hooks
-// connection.onSignatureHelp();
 connection.onCompletion(onCompletion(state));
-// connection.onDefinition(onDefinition(serverState));
+connection.onSignatureHelp(onSignatureHelp(state));
+connection.onDefinition(onDefinition(state));
 // connection.onTypeDefinition(onTypeDefinition(serverState));
 // connection.onReferences(onReferences(serverState));
 // connection.onImplementation(onImplementation(serverState));
 // connection.onRenameRequest(onRename(serverState));
 // connection.onCodeAction(onCodeAction(serverState));
-// connection.onHover(onHover(serverState));
+connection.onHover(onHover(state));
 
 // changes
 documents.onDidChangeContent(onDidChangeContent(state));

@@ -1,4 +1,4 @@
-import { FOnDidChangeContent, ISolidityDocument } from '../types';
+import { FOnDidChangeContent } from '../types';
 import { debounce } from '../utils';
 
 export const onDidChangeContent: FOnDidChangeContent = (_state) => (change) => {

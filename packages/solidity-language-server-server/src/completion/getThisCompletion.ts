@@ -8,8 +8,8 @@ import { nodeToString } from '../utils';
  * @returns completion list
  */
 export function getThisCompletions(_state: IState, uri: URI, keyworkOffset: number): CompletionItem[] {
-  const document = _state.uriSolidityDocumentMap.get(uri);
-  if (!document || !document.ast) {
+  const ast = _state.ast.get(uri);
+  if (!ast) {
     return [];
   }
 
@@ -17,7 +17,7 @@ export function getThisCompletions(_state: IState, uri: URI, keyworkOffset: numb
 
   let contractName = '';
   const contractRange = [0, 0];
-  _state.parser.visit(document.ast, {
+  _state.parser.visit(ast, {
     ContractDefinition: (node) => {
       const [start, end] = node.range || [0, 0];
       if (start <= keyworkOffset && end >= keyworkOffset) {
@@ -28,7 +28,7 @@ export function getThisCompletions(_state: IState, uri: URI, keyworkOffset: numb
     },
   });
 
-  _state.parser.visit(document.ast, {
+  _state.parser.visit(ast, {
     FunctionDefinition: (node) => {
       const [start, end] = node.range || [0, 0];
       if (start >= contractRange[0] && end <= contractRange[1] && node.name) {

@@ -15,16 +15,16 @@ export const onInitialize: FOnInitialize = (_state) => async (params) => {
         // resolveProvider: true,
         triggerCharacters: ['.', '/', '"', `'`, '*'],
       },
-      // signatureHelpProvider: {
-      //   triggerCharacters: ['(', ','],
-      // },
-      // definitionProvider: false,
+      signatureHelpProvider: {
+        triggerCharacters: ['(', ','],
+      },
+      definitionProvider: true,
       // typeDefinitionProvider: false,
       // referencesProvider: false,
       // implementationProvider: false,
       // renameProvider: false,
       // codeActionProvider: false,
-      // hoverProvider: true,
+      hoverProvider: true,
 
       // workspace capabilities
       workspace: {
@@ -38,5 +38,6 @@ export const onInitialize: FOnInitialize = (_state) => async (params) => {
 
   _state.indexedWorkspaceFolders = params.workspaceFolders || [];
   self.workspaceFolders = _state.indexedWorkspaceFolders;
+
   return result;
 };

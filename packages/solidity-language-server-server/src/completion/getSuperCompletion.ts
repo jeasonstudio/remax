@@ -9,8 +9,8 @@ import { getThisCompletions } from './getThisCompletion';
  * @returns completion list
  */
 export function getSuperCompletions(_state: IState, uri: URI, keyworkOffset: number): CompletionItem[] {
-  const document = _state.uriSolidityDocumentMap.get(uri);
-  if (!document || !document.ast) {
+  const ast = _state.ast.get(uri);
+  if (!ast) {
     return [];
   }
 

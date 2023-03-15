@@ -1,4 +1,4 @@
-import { CompletionItemKind, CompletionList } from 'vscode-languageserver/browser';
+import { CompletionList } from 'vscode-languageserver/browser';
 import { FOnCompletion } from '../types';
 // import { defaultCompletion, globalVariables } from './defaults';
 import { getSuperCompletions } from './getSuperCompletion';
