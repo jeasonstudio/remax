@@ -1,4 +1,4 @@
-import { InitializeResult, TextDocumentSyncKind } from 'vscode-languageserver/browser';
+import { InitializeResult, TextDocumentSyncKind, DiagnosticSeverity } from 'vscode-languageserver/browser';
 import { FOnInitialize } from '../types';
 
 export const onInitialize: FOnInitialize = (_state) => async (params) => {

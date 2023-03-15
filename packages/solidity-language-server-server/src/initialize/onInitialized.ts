@@ -1,6 +1,6 @@
 import { FOnInitialized } from '../types';
 
-export const onInitialized: FOnInitialized = (_state) => () => {
+export const onInitialized: FOnInitialized = (_state) => async () => {
   console.log('Solidity Language Server initialized.');
-  console.log(_state.connection);
+  // _state.connection.workspace
 };

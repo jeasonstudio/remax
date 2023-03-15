@@ -1,25 +1,18 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Connection, Position, TextDocuments, URI, WorkspaceFolder } from 'vscode-languageserver/browser';
 import { TextDocument } from 'vscode-languageserver-textdocument';
-import type * as parser from '@solidity-parser/parser';
 import { IState, Node, ASTNode, Token } from './types';
-import { enterVisitors } from './utils/visitors';
+import { parser } from './utils';
 
 export class State implements IState {
   public env!: 'production' | 'development';
   public indexedWorkspaceFolders: WorkspaceFolder[] = [];
-  /**
-   * solidity parser
-   */
-  public parser!: typeof parser;
 
   public ast: Map<string, ASTNode> = new Map();
   public tokens: Map<string, Token[]> = new Map();
 
   public constructor(readonly connection: Connection, readonly documents: TextDocuments<TextDocument>) {
     this.env = 'production';
-    self.importScripts('https://unpkg.com/@solidity-parser/parser@0.16.0/dist/index.iife.js');
-    this.parser = self.SolidityParser;
   }
 
   // Trace error
@@ -38,12 +31,12 @@ export class State implements IState {
     const uri = document.uri;
     try {
       const content = document.getText();
-      const ast = this.parser.parse(content, { range: true, tolerant: true, tokens: false, loc: true });
+      const ast = parser.parse(content, { range: true, tolerant: true, tokens: false, loc: true });
       this.ast.set(uri, ast);
       console.log('update ast:', ast);
-      const tokens: Token[] = this.parser.tokenize(content, { range: true, loc: true }) || [];
+      const tokens: Token[] = parser.tokenize(content, { range: true, loc: true }) || [];
       this.tokens.set(uri, tokens);
-      console.log('update tokens:', tokens);
+      console.log('update tokens count:', tokens.length);
     } catch (error) {
       this.traceError(error);
     }
@@ -52,7 +45,7 @@ export class State implements IState {
 
   public getOffsetToken(textDocument: TextDocument, offset: number): Token | null {
     const content = textDocument.getText();
-    const tokens: Token[] = this.parser.tokenize(content, { range: true });
+    const tokens: Token[] = parser.tokenize(content, { range: true });
 
     const token = tokens.find((t) => {
       const [start, end] = t.range ?? [0, 0];

@@ -36,9 +36,9 @@ connection.onDefinition(onDefinition(state));
 connection.onHover(onHover(state));
 
 // changes
-documents.onDidChangeContent(onDidChangeContent(state));
 connection.onDidChangeWatchedFiles(onDidChangeWatchedFiles(state));
 documents.listen(connection);
+documents.onDidChangeContent(onDidChangeContent(state));
 
 // Listen on the connection
 connection.listen();

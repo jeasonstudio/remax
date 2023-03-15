@@ -14,7 +14,6 @@ export interface IState {
   env: 'production' | 'development';
   connection: Connection;
   documents: Documents;
-  parser: SolidityParser;
   indexedWorkspaceFolders: WorkspaceFolder[];
   ast: Map<URI, ASTNode>;
   tokens: Map<URI, Token[]>;

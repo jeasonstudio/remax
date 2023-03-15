@@ -1,3 +1,4 @@
+import { DiagnosticSeverity } from 'vscode-languageserver/browser';
 import { FOnDidChangeContent } from '../types';
 import { debounce } from '../utils';
 
@@ -18,4 +19,18 @@ export const onDidChangeContent: FOnDidChangeContent = (_state) => (change) => {
   } catch (error) {
     _state.traceError(error);
   }
+
+  _state.documents.keys().forEach((uri) => {
+    console.log('send', uri);
+    _state.connection.sendDiagnostics({
+      uri,
+      diagnostics: [
+        {
+          message: 'test',
+          severity: DiagnosticSeverity.Error,
+          range: { start: { line: 0, character: 0 }, end: { line: 0, character: 5 } },
+        },
+      ],
+    });
+  });
 };

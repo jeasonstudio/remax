@@ -1,6 +1,6 @@
 import { CompletionItem, CompletionItemKind, URI } from 'vscode-languageserver/browser';
 import { ASTNode, IState } from '../types';
-import { nodeToString } from '../utils';
+import { nodeToString, parser } from '../utils';
 
 /**
  * Completion for `this` keyword
@@ -17,7 +17,7 @@ export function getThisCompletions(_state: IState, uri: URI, keyworkOffset: numb
 
   let contractName = '';
   const contractRange = [0, 0];
-  _state.parser.visit(ast, {
+  parser.visit(ast, {
     ContractDefinition: (node) => {
       const [start, end] = node.range || [0, 0];
       if (start <= keyworkOffset && end >= keyworkOffset) {
@@ -28,7 +28,7 @@ export function getThisCompletions(_state: IState, uri: URI, keyworkOffset: numb
     },
   });
 
-  _state.parser.visit(ast, {
+  parser.visit(ast, {
     FunctionDefinition: (node) => {
       const [start, end] = node.range || [0, 0];
       if (start >= contractRange[0] && end <= contractRange[1] && node.name) {
