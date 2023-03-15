@@ -1,0 +1,46 @@
+import { CompletionItem, CompletionItemKind, URI } from 'vscode-languageserver/browser';
+import { ASTNode, IState } from '../types';
+import { nodeToString } from '../utils';
+
+/**
+ * Completion for `this` keyword
+ * @param keyworkOffset this keyword offset in document
+ * @returns completion list
+ */
+export function getThisCompletions(_state: IState, uri: URI, keyworkOffset: number): CompletionItem[] {
+  const document = _state.uriSolidityDocumentMap.get(uri);
+  if (!document || !document.ast) {
+    return [];
+  }
+
+  const completions: CompletionItem[] = [];
+
+  let contractName = '';
+  const contractRange = [0, 0];
+  _state.parser.visit(document.ast, {
+    ContractDefinition: (node) => {
+      const [start, end] = node.range || [0, 0];
+      if (start <= keyworkOffset && end >= keyworkOffset) {
+        contractRange[0] = start;
+        contractRange[1] = end;
+        contractName = node.name;
+      }
+    },
+  });
+
+  _state.parser.visit(document.ast, {
+    FunctionDefinition: (node) => {
+      const [start, end] = node.range || [0, 0];
+      if (start >= contractRange[0] && end <= contractRange[1] && node.name) {
+        const detail = nodeToString(node);
+        completions.push({
+          label: node.name,
+          kind: CompletionItemKind.Function,
+          detail: detail,
+          // documentation: detail,
+        });
+      }
+    },
+  });
+  return completions;
+}

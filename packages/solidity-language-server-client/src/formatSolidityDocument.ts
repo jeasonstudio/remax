@@ -2,8 +2,11 @@ import * as vscode from 'vscode';
 import type { Options } from 'prettier';
 import * as prettier from 'prettier/standalone';
 
-// Format Document
-export function formatDocument(document: vscode.TextDocument, context: vscode.ExtensionContext): vscode.TextEdit[] {
+// Format Solidity Document
+export function formatSolidityDocument(
+  document: vscode.TextDocument,
+  context: vscode.ExtensionContext,
+): vscode.TextEdit[] {
   // TODO: Support ignore files
 
   const source = document.getText();

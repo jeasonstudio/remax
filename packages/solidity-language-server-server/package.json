@@ -1,17 +1,17 @@
 {
-  "name": "solidity-language-server-webworker",
-  "version": "1.0.0",
-  "description": "Solidity language server support for webworker(VSCode Web).",
-  "main": "dist/server.js",
-  "browser": "dist/server.js",
+  "name": "@remax-ide/solidity-language-server-server",
+  "version": "0.0.1",
+  "description": "Solidity language server support for webworker.",
+  "main": "./dist/server.js",
+  "browser": "./dist/server.js",
   "scripts": {
-    "dev": "webpack serve --config webpack.config.js --progress --port 9091",
-    "watch": "webpack --config webpack.config.js --progress --watch",
+    "dev": "webpack --config webpack.config.js --progress --watch",
+    "serve": "webpack serve --config webpack.config.js --progress --port 9091",
     "build": "webpack --config webpack.config.js --progress"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jeasonstudio/solidity-language-server-webworker.git"
+    "url": "git+https://github.com/jeasonstudio/remax.git"
   },
   "keywords": [
     "vscode",
@@ -23,10 +23,6 @@
   ],
   "author": "Jeason",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/jeasonstudio/solidity-language-server-webworker/issues"
-  },
-  "homepage": "https://github.com/jeasonstudio/solidity-language-server-webworker#readme",
   "devDependencies": {
     "@types/vscode": "^1.76.0",
     "@types/webpack-env": "^1.18.0",
@@ -43,12 +39,15 @@
   },
   "dependencies": {
     "@ignored/solidity-language-server": "^0.6.12",
+    "@solidity-parser/parser": "^0.16.0",
+    "@vscode-logging/logger": "^1.2.3",
     "buffer": "^6.0.3",
     "solc": "^0.8.19",
     "stream-browserify": "^3.0.0",
     "url": "^0.11.0",
     "vscode-languageclient": "^8.1.0",
     "vscode-languageserver": "^8.1.0",
+    "vscode-languageserver-protocol": "^3.17.3",
     "vscode-languageserver-textdocument": "^1.0.8",
     "vscode-uri": "^3.0.7"
   }
