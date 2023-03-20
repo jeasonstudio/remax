@@ -1,5 +1,11 @@
 import * as vscode from 'vscode';
+import { PLAYGROUND_NAME } from './constants';
 import { RemaxFileSystemProvider } from './provider';
+
+const readme = `# Welcome to Remax IDE Playground
+
+Enjoy your coding with Remax IDE!
+`;
 
 const erc20 = `// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
@@ -78,15 +84,21 @@ export async function activate(context: vscode.ExtensionContext) {
     }),
   );
 
-  // await idbFS.createDirectory(vscode.Uri.parse('remaxfs:/test'));
-  // await idbFS.writeFile(vscode.Uri.parse('remaxfs:/test/contract.sol'), encoder.encode(erc20), {
-  //   create: true,
-  //   overwrite: true,
-  // });
-  // await idbFS.writeFile(vscode.Uri.parse('remaxfs:/test/contract.md'), encoder.encode('hhh'), {
-  //   create: true,
-  //   overwrite: true,
-  // });
+  const playgroundUri = vscode.Uri.from({ scheme: RemaxFileSystemProvider.scheme, path: '/' + PLAYGROUND_NAME });
+  try {
+    await remaxFileSystemProvider.stat(playgroundUri);
+  } catch (error) {
+    // Means the playground directory is not exist
+    await remaxFileSystemProvider.createDirectory(playgroundUri);
+    await remaxFileSystemProvider.writeFile(vscode.Uri.joinPath(playgroundUri, 'erc20.sol'), encoder.encode(erc20), {
+      create: true,
+      overwrite: true,
+    });
+    await remaxFileSystemProvider.writeFile(vscode.Uri.joinPath(playgroundUri, 'README.md'), encoder.encode(readme), {
+      create: true,
+      overwrite: true,
+    });
+  }
 }
 
 export async function deactivate() {}

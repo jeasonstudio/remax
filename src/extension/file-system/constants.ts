@@ -2,3 +2,5 @@
 export const FILE_SYSTEM_SCHEME = 'remaxfs';
 // root table name in indexeddb
 export const FILE_SYSTEM_STORE_NAME = 'root';
+// playground project name
+export const PLAYGROUND_NAME = 'playground';

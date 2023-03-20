@@ -71,7 +71,7 @@ export class RemaxWorkspaceProvider implements IWorkspaceProvider {
     return true;
   }
   public static create(workbench: any, params?: IWorkspaceProviderParams): RemaxWorkspaceProvider {
-    const folderUri = workbench.URI.parse('remaxfs:/');
+    const folderUri = workbench.URI.parse('remaxfs:/playground');
     return new RemaxWorkspaceProvider({ folderUri });
   }
 }
