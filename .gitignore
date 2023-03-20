@@ -118,3 +118,8 @@ dist/
 
 package-lock.json
 .vscode-test-web
+.vscode-web
+.vscodeweb
+*.tar.gz
+
+/vscode/*

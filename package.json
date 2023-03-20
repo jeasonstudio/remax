@@ -1,21 +1,66 @@
 {
   "name": "remax",
   "private": true,
-  "version": "0.0.0",
-  "main": "index.js",
+  "version": "1.0.0",
   "author": "jeason.eth",
   "license": "MIT",
   "scripts": {
-    "dev": "pnpm --stream -r dev",
-    "start": "pnpm --stream -r start",
-    "start:dev": "pnpm --parallel --stream -r run start:dev",
-    "build": "pnpm --stream -r run build",
-    "clean": "rm -rf .parcel-cache && pnpm -r run clean"
+    "dev:serve": "serve --listen 3001 --cors --no-port-switching --no-request-logging dist",
+    "dev:workbench": "webpack --config ./scripts/workbench.webpack.config.js --watch",
+    "dev:extension": "webpack --config ./scripts/extension.webpack.config.js --watch",
+    "dev:language-server": "webpack --config ./scripts/extension-language-server.webpack.config.js --watch",
+    "build:workbench": "webpack build --config ./scripts/workbench.webpack.config.js",
+    "build:extension": "webpack build --config ./scripts/extension.webpack.config.js",
+    "build:language-server": "webpack build --config ./scripts/extension-language-server.webpack.config.js",
+    "postinstall": "npm run vscodeweb",
+    "vscodeweb": "zx ./scripts/vscodeweb.mjs"
   },
+  "vscodeweb": {
+    "version": "1.76.2",
+    "commit": "ee2b180d582a7f601fa6ecfdad8d9fd269ab1884"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeasonstudio/remax.git"
+  },
+  "keywords": [
+    "vscode",
+    "webide",
+    "webworker",
+    "solidity",
+    "language server",
+    "ethereum"
+  ],
   "devDependencies": {
+    "@types/path-browserify": "^1.0.0",
+    "@types/requirejs": "^2.1.34",
+    "@types/vscode": "^1.76.0",
+    "@types/webpack-env": "^1.18.0",
     "@typescript-eslint/eslint-plugin": "^5.53.0",
     "@typescript-eslint/parser": "^5.53.0",
+    "copy-webpack-plugin": "^11.0.0",
+    "decompress": "^4.2.1",
+    "decompress-targz": "^4.1.1",
     "eslint": "^8.34.0",
-    "typescript": "^4.9.5"
+    "html-webpack-plugin": "^5.5.0",
+    "http-server": "^14.1.1",
+    "nodejs-file-downloader": "^4.10.6",
+    "serve": "^14.2.0",
+    "ts-loader": "^9.4.2",
+    "typescript": "^4.9.5",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1",
+    "webpack-dev-server": "^4.12.0",
+    "zx": "^7.2.0"
+  },
+  "dependencies": {
+    "@octokit/core": "^4.2.0",
+    "@solidity-parser/parser": "^0.16.0",
+    "@vscode/webview-ui-toolkit": "^1.2.2",
+    "path-browserify": "^1.0.1",
+    "vscode-languageclient": "^8.1.0",
+    "vscode-languageserver": "^8.1.0",
+    "vscode-languageserver-textdocument": "^1.0.8",
+    "vscode-uri": "^3.0.7"
   }
 }

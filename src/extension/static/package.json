@@ -1,0 +1,66 @@
+{
+  "name": "remax-extension",
+  "publisher": "jeason",
+  "version": "1.0.0",
+  "private": true,
+  "displayName": "%displayName%",
+  "description": "%description%",
+  "browser": "./extension.js",
+  "main": "./extension.js",
+  "categories": [
+    "Other"
+  ],
+  "engines": {
+    "vscode": "^1.76.1"
+  },
+  "activationEvents": [
+    "onLanguage:solidity",
+    "onFileSystem:memfs",
+    "onFileSystem:gist",
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "remax.hello-world",
+        "title": "hhh"
+      }
+    ],
+    "resourceLabelFormatters": [
+      {
+        "scheme": "memfs",
+        "formatting": {
+          "label": "${path}",
+          "workspaceSuffix": "MEMORY"
+        }
+      },
+      {
+        "scheme": "gist",
+        "formatting": {
+          "label": "${path}",
+          "workspaceSuffix": "GIST_FILE"
+        }
+      }
+    ],
+    "languages": [
+      {
+        "id": "solidity",
+        "aliases": [
+          "Solidity",
+          "solidity"
+        ],
+        "extensions": [
+          ".sol"
+        ],
+        "configuration": "./solidity.configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "solidity",
+        "scopeName": "source.solidity",
+        "path": "./solidity.syntaxes.json"
+      }
+    ]
+  }
+}
