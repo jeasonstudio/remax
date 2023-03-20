@@ -3,14 +3,17 @@ import * as client from './client';
 import * as formatter from './formatter';
 import * as fileSystem from './file-system';
 
-export function activate(context: vscode.ExtensionContext) {
-  // Active language server client
-  client.activate(context);
-  // Active solidity formatter
-  formatter.activate(context);
-  // Active file-system provider
-  fileSystem.activate(context);
-
+export async function activate(context: vscode.ExtensionContext) {
+  try {
+    // Active language server client
+    await client.activate(context);
+    // Active solidity formatter
+    await formatter.activate(context);
+    // Active file-system provider
+    await fileSystem.activate(context);
+  } catch (error) {
+    console.error(error);
+  }
   context.subscriptions.push(
     vscode.commands.registerCommand('remax.hello-world', () => {
       vscode.window.showInformationMessage('Hello World web extension host!');
@@ -19,8 +22,8 @@ export function activate(context: vscode.ExtensionContext) {
   );
 }
 
-export function deactivate() {
-  client.deactivate();
-  formatter.deactivate();
-  fileSystem.deactivate();
+export async function deactivate() {
+  await client.deactivate();
+  await formatter.deactivate();
+  await fileSystem.deactivate();
 }

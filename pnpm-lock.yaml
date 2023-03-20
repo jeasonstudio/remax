@@ -16,6 +16,7 @@ importers:
       copy-webpack-plugin: ^11.0.0
       decompress: ^4.2.1
       decompress-targz: ^4.1.1
+      dexie: ^3.2.3
       eslint: ^8.34.0
       html-webpack-plugin: ^5.5.0
       http-server: ^14.1.1
@@ -36,6 +37,7 @@ importers:
       '@octokit/core': 4.2.0
       '@solidity-parser/parser': 0.16.0
       '@vscode/webview-ui-toolkit': 1.2.2
+      dexie: 3.2.3
       path-browserify: 1.0.1
       vscode-languageclient: 8.1.0
       vscode-languageserver: 8.1.0
@@ -1892,6 +1894,11 @@ packages:
   /detect-node/2.1.0:
     resolution: {integrity: sha512-T0NIuQpnTvFDATNuHN5roPwSBG83rFsuO+MXXH9/3N1eFbn4wcPjttvjMLEPWJ0RGUYgQE7cGgS3tNxbqCGM7g==}
     dev: true
+
+  /dexie/3.2.3:
+    resolution: {integrity: sha512-iHayBd4UYryDCVUNa3PMsJMEnd8yjyh5p7a+RFeC8i8n476BC9wMhVvqiImq5zJZJf5Tuer+s4SSj+AA3x+ZbQ==}
+    engines: {node: '>=6.0'}
+    dev: false
 
   /diff/3.5.0:
     resolution: {integrity: sha512-A46qtFgd+g7pDZinpnwiRJtxbC1hpgf0uzP3iG89scHk0AUC7A1TGxf5OiiOUv/JMZR8GOt8hL900hV0bOy5xA==}

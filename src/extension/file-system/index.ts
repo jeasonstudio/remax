@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
-import { GistFileSystemProvider } from './provider-gist';
-import { MemoryFileSystemProvider } from './provider-memory';
+import { RemaxFileSystemProvider } from './provider';
 
 const erc20 = `// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
@@ -68,39 +67,26 @@ contract ERC20 is IERC20 {
 
 const encoder = new TextEncoder();
 
-export function activate(context: vscode.ExtensionContext) {
-  const memoryFS = new MemoryFileSystemProvider();
-  const gistFS = new GistFileSystemProvider();
+export async function activate(context: vscode.ExtensionContext) {
+  const remaxFileSystemProvider = await RemaxFileSystemProvider.create();
+
+  // Register remax file system provider
   context.subscriptions.push(
-    vscode.workspace.registerFileSystemProvider('memfs', memoryFS, {
-      isCaseSensitive: true,
-      isReadonly: false,
-    }),
-  );
-  context.subscriptions.push(
-    vscode.workspace.registerFileSystemProvider('gist', gistFS, {
+    vscode.workspace.registerFileSystemProvider(RemaxFileSystemProvider.scheme, remaxFileSystemProvider, {
       isCaseSensitive: true,
       isReadonly: false,
     }),
   );
 
-  memoryFS.createDirectory(vscode.Uri.parse('memfs:/test/'));
-  memoryFS.writeFile(vscode.Uri.parse('memfs:/test/contract.sol'), encoder.encode(erc20), {
-    create: true,
-    overwrite: true,
-  });
-  memoryFS.writeFile(vscode.Uri.parse('memfs:/test/contract.md'), encoder.encode('hhh'), {
-    create: true,
-    overwrite: true,
-  });
-  memoryFS.writeFile(
-    vscode.Uri.parse('memfs:/test.code-workspace'),
-    encoder.encode(`{"folders":${JSON.stringify([vscode.Uri.parse('memfs:/test/')])}}`),
-    {
-      create: true,
-      overwrite: true,
-    },
-  );
+  // await idbFS.createDirectory(vscode.Uri.parse('remaxfs:/test'));
+  // await idbFS.writeFile(vscode.Uri.parse('remaxfs:/test/contract.sol'), encoder.encode(erc20), {
+  //   create: true,
+  //   overwrite: true,
+  // });
+  // await idbFS.writeFile(vscode.Uri.parse('remaxfs:/test/contract.md'), encoder.encode('hhh'), {
+  //   create: true,
+  //   overwrite: true,
+  // });
 }
 
-export function deactivate() {}
+export async function deactivate() {}

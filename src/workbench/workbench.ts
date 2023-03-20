@@ -119,7 +119,7 @@ window.require(['vs/workbench/workbench.web.main'], (workbench: any) => {
       // webviewContentExternalBaseUrlTemplate:
       //   'https://{{uuid}}.vscode-cdn.net/insider/ef65ac1ba57f57f2a3961bfe94aa20481caca4c6/out/vs/workbench/contrib/webview/browser/pre/',
       builtInExtensions: [],
-      // webEndpointUrlTemplate: 'https://myextensionhostworker.com', // TODO: how to use my own host?
+      webEndpointUrlTemplate: `${window.location.origin}/${process.env.VSCODE_WEB_COMMIT}`, // TODO: how to use my own host?
       // Set commit to falsy means environment is development
       // src/vs/workbench/services/environment/browser/environmentService.ts#45
       // commit: null,

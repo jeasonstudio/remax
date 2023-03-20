@@ -4,14 +4,14 @@ import { createClient } from './createClient';
 
 let client: LanguageClient | null = null;
 
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
   if (!client) {
     client = createClient(context);
   }
   client.start();
 }
 
-export function deactivate() {
+export async function deactivate() {
   if (client) {
     client.stop();
   }

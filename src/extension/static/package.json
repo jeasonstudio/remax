@@ -17,6 +17,7 @@
     "onLanguage:solidity",
     "onFileSystem:memfs",
     "onFileSystem:gist",
+    "onFileSystem:remaxfs",
     "onStartupFinished"
   ],
   "contributes": {
@@ -39,6 +40,13 @@
         "formatting": {
           "label": "${path}",
           "workspaceSuffix": "GIST_FILE"
+        }
+      },
+      {
+        "scheme": "remaxfs",
+        "formatting": {
+          "label": "${path}",
+          "workspaceSuffix": "REMAXFS"
         }
       }
     ],

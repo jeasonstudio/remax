@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 
-export class File implements vscode.FileStat {
-  public readonly type = vscode.FileType.File;
-  public readonly ctime = Date.now();
+export class FileEntry implements vscode.FileStat {
+  public type = vscode.FileType.File;
+  public ctime = Date.now();
   public mtime = Date.now();
   public size: number = 0;
 
@@ -18,16 +18,19 @@ export class File implements vscode.FileStat {
   }
 }
 
-export class Directory implements vscode.FileStat {
-  public readonly type = vscode.FileType.Directory;
-  public readonly ctime = Date.now();
+export class DirectoryEntry implements vscode.FileStat {
+  public type = vscode.FileType.Directory;
+  public ctime = Date.now();
   public mtime = Date.now();
   public size: number = 0;
 
   public name: string;
-  public entries: Map<string, File | Directory> = new Map();
+  // mappings from entry name to entry path
+  public entries: Map<string, string> = new Map();
 
   public constructor(name: string) {
     this.name = name;
   }
 }
+
+export type Entry = FileEntry | DirectoryEntry;

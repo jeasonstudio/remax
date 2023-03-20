@@ -5,7 +5,8 @@
   "author": "jeason.eth",
   "license": "MIT",
   "scripts": {
-    "dev:serve": "serve --listen 3001 --cors --no-port-switching --no-request-logging dist",
+    "debug:serve": "serve --listen 3001 --cors --no-port-switching --no-request-logging dist",
+    "dev:serve": "http-server --silent --cors -p 3002 dist",
     "dev:workbench": "webpack --config ./scripts/workbench.webpack.config.js --watch",
     "dev:extension": "webpack --config ./scripts/extension.webpack.config.js --watch",
     "dev:language-server": "webpack --config ./scripts/extension-language-server.webpack.config.js --watch",
@@ -57,6 +58,7 @@
     "@octokit/core": "^4.2.0",
     "@solidity-parser/parser": "^0.16.0",
     "@vscode/webview-ui-toolkit": "^1.2.2",
+    "dexie": "^3.2.3",
     "path-browserify": "^1.0.1",
     "vscode-languageclient": "^8.1.0",
     "vscode-languageserver": "^8.1.0",
