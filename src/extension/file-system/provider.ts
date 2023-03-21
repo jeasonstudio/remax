@@ -11,19 +11,32 @@ export class RemaxFileSystemProvider implements vscode.FileSystemProvider {
   // FileSystem Scheme
   public static scheme = FILE_SYSTEM_SCHEME;
 
-  public static async create() {
+  // public static async create() {
+  //   const rootUri = vscode.Uri.from({ scheme: RemaxFileSystemProvider.scheme, path: '/' });
+  //   const widb = new WrapperedIndexedDB();
+
+  //   const tx = await widb.transaction('readwrite');
+  //   const rootEntry = await tx.get(rootUri, true);
+  //   if (!rootEntry) {
+  //     const rootDirectory = new DirectoryEntry('<root>');
+  //     await tx.put(rootUri, rootDirectory);
+  //   }
+  //   tx.commit();
+  //   return new RemaxFileSystemProvider(widb);
+  // }
+
+  public constructor(private readonly widb: WrapperedIndexedDB) {}
+
+  public async prepare() {
     const rootUri = vscode.Uri.from({ scheme: RemaxFileSystemProvider.scheme, path: '/' });
-    const widb = new WrapperedIndexedDB();
-    const tx = await widb.transaction('readwrite');
+    const tx = await this.widb.transaction('readwrite');
     const rootEntry = await tx.get(rootUri, true);
     if (!rootEntry) {
       const rootDirectory = new DirectoryEntry('<root>');
       await tx.put(rootUri, rootDirectory);
     }
-    return new RemaxFileSystemProvider(widb);
+    tx.commit();
   }
-
-  protected constructor(private readonly widb: WrapperedIndexedDB) {}
 
   /**
    * Get parent directory uri
@@ -41,7 +54,9 @@ export class RemaxFileSystemProvider implements vscode.FileSystemProvider {
    */
   public async stat(uri: vscode.Uri): Promise<vscode.FileStat> {
     const tx = await this.widb.transaction('readonly');
-    return tx.get(uri, false);
+    const stat = await tx.get(uri, false);
+    tx.commit();
+    return stat;
   }
 
   /**
@@ -57,6 +72,7 @@ export class RemaxFileSystemProvider implements vscode.FileSystemProvider {
       const childEntry = await tx.get(uri.with({ path: child }), false);
       result.push([name, childEntry.type]);
     }
+    tx.commit();
     return result;
   }
 
@@ -75,6 +91,7 @@ export class RemaxFileSystemProvider implements vscode.FileSystemProvider {
     parent.size += 1;
     await tx.put(parentDirname, parent);
     await tx.put(uri, entry);
+    tx.commit();
     this._emitter.fire([
       { type: vscode.FileChangeType.Changed, uri: parentDirname },
       { type: vscode.FileChangeType.Created, uri },
@@ -89,6 +106,7 @@ export class RemaxFileSystemProvider implements vscode.FileSystemProvider {
   public async readFile(uri: vscode.Uri): Promise<Uint8Array> {
     const tx = await this.widb.transaction('readonly');
     const file = await tx.get<FileEntry>(uri, false);
+    tx.commit();
     if (!file.data) {
       throw vscode.FileSystemError.FileNotFound(uri);
     }
@@ -127,6 +145,7 @@ export class RemaxFileSystemProvider implements vscode.FileSystemProvider {
     entry.data = content;
 
     await tx.put(uri, entry);
+    tx.commit();
     this._emitter.fire([{ type: vscode.FileChangeType.Changed, uri }]);
   }
 
@@ -151,6 +170,7 @@ export class RemaxFileSystemProvider implements vscode.FileSystemProvider {
     // TODO: what if recursive=true?
     await tx.delete(uri);
     await tx.put(dirname, parent);
+    tx.commit();
 
     this._emitter.fire([
       { type: vscode.FileChangeType.Changed, uri: dirname },
@@ -190,6 +210,7 @@ export class RemaxFileSystemProvider implements vscode.FileSystemProvider {
     newParent.entries.set(newName, newUri.path);
     await tx.put(newParentDirname, newParent);
 
+    tx.commit();
     this._emitter.fire([
       { type: vscode.FileChangeType.Deleted, uri: oldUri },
       { type: vscode.FileChangeType.Created, uri: newUri },

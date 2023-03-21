@@ -66,10 +66,14 @@ export class Transaction {
       request.onerror = () => reject(vscode.FileSystemError.NoPermissions(uri));
     });
   }
+
+  public commit() {
+    this.transaction.commit();
+  }
 }
 
 export class WrapperedIndexedDB {
-  private promise!: Promise<void>;
+  public promise!: Promise<void>;
   public indexeddb!: IDBDatabase;
   public name!: string;
   public objectName!: string;
@@ -93,8 +97,14 @@ export class WrapperedIndexedDB {
   public constructor(dbName?: string, objectStoreName?: string) {
     this.name = dbName || FILE_SYSTEM_DB_NAME;
     this.objectName = objectStoreName || FILE_SYSTEM_OBJECTSTORE_NAME;
-    this.promise = new Promise<void>((resolve, reject) => {
-      const request = self.indexedDB.open(this.name, 1);
+  }
+
+  public async prepare() {
+    // const hasCreated = !!(await self.indexedDB.databases()).find(
+    //   (item) => item.name === this.name && item.version === 1,
+    // );
+    const request = self.indexedDB.open(this.name, 1);
+    return new Promise<void>((resolve, reject) => {
       request.onerror = () => {
         reject(vscode.FileSystemError.Unavailable('IndexedDB is not available'));
       };
@@ -112,14 +122,13 @@ export class WrapperedIndexedDB {
           db.deleteObjectStore(this.objectName);
         }
         db.createObjectStore(this.objectName);
-        resolve();
+        (<any>event.target).transaction.commit();
       };
     });
   }
 
   // create a transaction
   public async transaction(mode?: IDBTransactionMode) {
-    await this.promise;
     return new Transaction(this, mode);
   }
 }

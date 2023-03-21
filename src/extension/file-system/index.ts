@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
-import { WORKBENCH_DEFAULT_PLAYGROUND_NAME } from '../../constants';
+import { FILE_SYSTEM_DB_NAME, WORKBENCH_DEFAULT_PLAYGROUND_NAME } from '../../constants';
+import { WrapperedIndexedDB } from './indexed-db';
 import { RemaxFileSystemProvider } from './provider';
 
 const readme = `# Welcome to Remax IDE Playground
@@ -74,7 +75,16 @@ contract ERC20 is IERC20 {
 const encoder = new TextEncoder();
 
 export async function activate(context: vscode.ExtensionContext) {
-  const remaxFileSystemProvider = await RemaxFileSystemProvider.create();
+  if (!WrapperedIndexedDB.isAvailable()) {
+    // TODO: some toasts
+  }
+  const widb = new WrapperedIndexedDB();
+  await widb.prepare();
+
+  const remaxFileSystemProvider = new RemaxFileSystemProvider(widb);
+  await remaxFileSystemProvider.prepare();
+
+  console.log('Remax file system provider is ready.');
 
   // Register remax file system provider
   context.subscriptions.push(
@@ -94,7 +104,7 @@ export async function activate(context: vscode.ExtensionContext) {
       try {
         await remaxFileSystemProvider.delete(playgroundUri, { recursive: true });
       } catch (error) {
-        console.error(error);
+        console.warn(error);
       }
       await remaxFileSystemProvider.createDirectory(playgroundUri);
       await remaxFileSystemProvider.writeFile(vscode.Uri.joinPath(playgroundUri, 'erc20.sol'), encoder.encode(erc20), {
