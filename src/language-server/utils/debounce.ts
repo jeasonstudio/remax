@@ -9,7 +9,7 @@ interface DebouncedFunction {
 // leading edge, instead of the trailing.
 // The first argument of the function will be used to run before clearTimeout the close function if it exists
 export const debounce = <F extends (...args: any[]) => ReturnType<F>>(func: F, wait: number, immediate?: boolean) => {
-  let timeout: number | null = null;
+  let timeout: any = null;
   let previousArgs: IArguments | null = null;
 
   const debounced: DebouncedFunction = function (this: void) {
