@@ -64,6 +64,7 @@ module.exports = {
       ],
     }),
     new HtmlWebpackPlugin({
+      minify: false,
       filename: 'index.html',
       template: 'src/workbench/workbench.html',
       // envs: package json info
@@ -85,4 +86,7 @@ module.exports = {
     level: 'info', // enables logging required for problem matchers
   },
   stats: 'minimal',
+  optimization: {
+    minimize: false,
+  },
 };
