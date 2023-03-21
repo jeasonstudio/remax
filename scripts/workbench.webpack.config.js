@@ -62,9 +62,8 @@ module.exports = {
           force: true,
         },
         {
-          from: path.join(projectRoot, 'scripts/_redirect.txt'),
-          to: path.join(projectRoot, 'dist/_redirect'),
-          toType: 'file',
+          from: path.join(projectRoot, 'scripts/404.html'),
+          to: path.join(projectRoot, 'dist/404.html'),
         },
       ],
     }),
