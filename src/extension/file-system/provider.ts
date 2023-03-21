@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import path from 'path-browserify';
-import { Entry, FileEntry, DirectoryEntry } from './entry';
-import { FILE_SYSTEM_SCHEME, FILE_SYSTEM_STORE_NAME } from './constants';
+import { FileEntry, DirectoryEntry } from './entry';
+import { FILE_SYSTEM_SCHEME } from '../../constants';
 import { WrapperedIndexedDB } from './indexed-db';
 
 // A good sample of indexeddb-fs

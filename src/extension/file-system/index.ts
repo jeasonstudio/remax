@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { PLAYGROUND_NAME } from './constants';
+import { WORKBENCH_DEFAULT_PLAYGROUND_NAME } from '../../constants';
 import { RemaxFileSystemProvider } from './provider';
 
 const readme = `# Welcome to Remax IDE Playground
@@ -84,21 +84,35 @@ export async function activate(context: vscode.ExtensionContext) {
     }),
   );
 
-  const playgroundUri = vscode.Uri.from({ scheme: RemaxFileSystemProvider.scheme, path: '/' + PLAYGROUND_NAME });
-  try {
-    await remaxFileSystemProvider.stat(playgroundUri);
-  } catch (error) {
-    // Means the playground directory is not exist
-    await remaxFileSystemProvider.createDirectory(playgroundUri);
-    await remaxFileSystemProvider.writeFile(vscode.Uri.joinPath(playgroundUri, 'erc20.sol'), encoder.encode(erc20), {
-      create: true,
-      overwrite: true,
-    });
-    await remaxFileSystemProvider.writeFile(vscode.Uri.joinPath(playgroundUri, 'README.md'), encoder.encode(readme), {
-      create: true,
-      overwrite: true,
-    });
-  }
+  const playgroundUri = vscode.Uri.from({
+    scheme: RemaxFileSystemProvider.scheme,
+    path: '/' + WORKBENCH_DEFAULT_PLAYGROUND_NAME,
+  });
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand('remax.reset-playground', async () => {
+      try {
+        await remaxFileSystemProvider.delete(playgroundUri, { recursive: true });
+      } catch (error) {
+        console.error(error);
+      }
+      await remaxFileSystemProvider.createDirectory(playgroundUri);
+      await remaxFileSystemProvider.writeFile(vscode.Uri.joinPath(playgroundUri, 'erc20.sol'), encoder.encode(erc20), {
+        create: true,
+        overwrite: true,
+      });
+      await remaxFileSystemProvider.writeFile(vscode.Uri.joinPath(playgroundUri, 'README.md'), encoder.encode(readme), {
+        create: true,
+        overwrite: true,
+      });
+    }),
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand('remax.open-playground', () =>
+      vscode.commands.executeCommand('vscode.openFolder', playgroundUri),
+    ),
+  );
 }
 
 export async function deactivate() {}

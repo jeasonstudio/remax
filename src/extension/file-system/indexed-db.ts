@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { FILE_SYSTEM_SCHEME, FILE_SYSTEM_STORE_NAME } from './constants';
+import { FILE_SYSTEM_DB_NAME, FILE_SYSTEM_OBJECTSTORE_NAME } from '../../constants';
 import { Entry } from './entry';
 
 export class Transaction {
@@ -7,8 +7,8 @@ export class Transaction {
   public objectStore!: IDBObjectStore;
 
   public constructor(public readonly db: WrapperedIndexedDB, mode?: IDBTransactionMode) {
-    this.transaction = db.indexeddb.transaction([FILE_SYSTEM_STORE_NAME], mode ?? 'readwrite');
-    this.objectStore = this.transaction.objectStore(FILE_SYSTEM_STORE_NAME);
+    this.transaction = db.indexeddb.transaction([FILE_SYSTEM_OBJECTSTORE_NAME], mode ?? 'readwrite');
+    this.objectStore = this.transaction.objectStore(FILE_SYSTEM_OBJECTSTORE_NAME);
   }
 
   /**
@@ -91,8 +91,8 @@ export class WrapperedIndexedDB {
   }
 
   public constructor(dbName?: string, objectStoreName?: string) {
-    this.name = dbName || FILE_SYSTEM_SCHEME;
-    this.objectName = objectStoreName || FILE_SYSTEM_STORE_NAME;
+    this.name = dbName || FILE_SYSTEM_DB_NAME;
+    this.objectName = objectStoreName || FILE_SYSTEM_OBJECTSTORE_NAME;
     this.promise = new Promise<void>((resolve, reject) => {
       const request = self.indexedDB.open(this.name, 1);
       request.onerror = () => {

@@ -15,8 +15,6 @@
   },
   "activationEvents": [
     "onLanguage:solidity",
-    "onFileSystem:memfs",
-    "onFileSystem:gist",
     "onFileSystem:remaxfs",
     "onStartupFinished"
   ],
@@ -25,6 +23,14 @@
       {
         "command": "remax.hello-world",
         "title": "hhh"
+      },
+      {
+        "command": "remax.reset-playground",
+        "title": "RemaxIDE: Reset playground"
+      },
+      {
+        "command": "remax.open-playground",
+        "title": "RemaxIDE: Open playground"
       }
     ],
     "resourceLabelFormatters": [

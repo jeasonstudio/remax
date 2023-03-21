@@ -1,0 +1,10 @@
+{
+  "installCommand": "pnpm install",
+  "devCommand": "pnpm run ./^dev:.*/",
+  "buildCommand": "pnpm run ./^build:.*/",
+  "framework": null,
+  "outputDirectory": "dist",
+  "rewrites": [{ "source": "/p/**", "destination": "/index.html" }],
+  "cleanUrls": ["!**/extensions/**/*", "!**/out/**/*"],
+  "etag": true
+}

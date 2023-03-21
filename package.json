@@ -5,8 +5,7 @@
   "author": "jeason.eth",
   "license": "MIT",
   "scripts": {
-    "debug:serve": "serve --listen 3001 --cors --no-port-switching --no-request-logging dist",
-    "dev:serve": "http-server --silent --cors -p 3002 dist",
+    "dev:serve": "zx ./scripts/serve.mjs",
     "dev:workbench": "webpack --config ./scripts/workbench.webpack.config.js --watch",
     "dev:extension": "webpack --config ./scripts/extension.webpack.config.js --watch",
     "dev:language-server": "webpack --config ./scripts/extension-language-server.webpack.config.js --watch",
@@ -49,6 +48,7 @@
     "http-server": "^14.1.1",
     "nodejs-file-downloader": "^4.10.6",
     "serve": "^14.2.0",
+    "serve-handler": "^6.1.5",
     "ts-loader": "^9.4.2",
     "typescript": "^4.9.5",
     "webpack": "^5.75.0",

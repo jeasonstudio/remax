@@ -61,14 +61,11 @@ module.exports = {
           to: path.join(projectRoot, 'dist', pkg.vscodeweb.commit),
           force: true,
         },
-        {
-          from: path.join(projectRoot, 'scripts/404.html'),
-          to: path.join(projectRoot, 'dist/404.html'),
-        },
       ],
     }),
     new HtmlWebpackPlugin({
       minify: false,
+      publicPath: '/',
       filename: 'index.html',
       template: 'src/workbench/workbench.html',
       // envs: package json info
