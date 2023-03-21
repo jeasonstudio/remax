@@ -61,6 +61,11 @@ module.exports = {
           to: path.join(projectRoot, 'dist', pkg.vscodeweb.commit),
           force: true,
         },
+        {
+          from: path.join(projectRoot, 'scripts/_redirect.txt'),
+          to: path.join(projectRoot, 'dist/_redirect'),
+          toType: 'file',
+        },
       ],
     }),
     new HtmlWebpackPlugin({
