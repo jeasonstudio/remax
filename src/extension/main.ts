@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as client from './client';
 import * as formatter from './formatter';
 import * as fileSystem from './file-system';
+import * as authentication from './authentication';
 
 export async function activate(context: vscode.ExtensionContext) {
   try {
@@ -11,6 +12,8 @@ export async function activate(context: vscode.ExtensionContext) {
     await formatter.activate(context);
     // Active file-system provider
     await fileSystem.activate(context);
+    // Active authentication provider
+    await authentication.activate(context);
   } catch (error) {
     console.error(error);
   }
@@ -26,4 +29,5 @@ export async function deactivate() {
   await client.deactivate();
   await formatter.deactivate();
   await fileSystem.deactivate();
+  await authentication.deactivate();
 }

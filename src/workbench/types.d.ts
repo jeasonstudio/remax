@@ -1,1 +1,0 @@
-declare var BUILTIN_EXTENSIONS_METADATA: string;

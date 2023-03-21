@@ -78,7 +78,6 @@
     if (window.trustedTypes) {
       trustedTypesPolicy = window.trustedTypes.createPolicy('amdLoader', {
         createScriptURL(scriptUrl) {
-          // console.log('createScriptURL', scriptUrl);
           return scriptUrl;
         },
       });
@@ -92,7 +91,7 @@
       //   availableLanguages: {
       //     '*': 'zh-cn',
       //   },
-      //   translationServiceUrl: 'https://example.com',
+      //   translationServiceUrl: window.location.origin,
       // },
     });
     performance.mark('code/willLoadWorkbenchMain');
