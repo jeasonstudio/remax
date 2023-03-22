@@ -91,7 +91,6 @@ window.require(['vs/workbench/workbench.web.main'], async (workbench: any) => {
   });
   const remaxExtensions: URI[] = [URI.parse(`${window.location.origin}/extensions/remax`)];
   const additionalBuiltinExtensions: URI[] = [/*...vscodewebBuiltinExtensions,*/ ...remaxExtensions];
-  
 
   // see: src/vs/workbench/browser/web.main.ts
   workbench.create(document.getElementById('workbench'), {
@@ -100,9 +99,9 @@ window.require(['vs/workbench/workbench.web.main'], async (workbench: any) => {
     },
     workspaceProvider,
     additionalBuiltinExtensions,
-    // welcomeBanner: {
-    //   message: 'hello w222',
-    // },
+    welcomeBanner: {
+      message: 'Welcome to Remax IDE!',
+    },
     productConfiguration: {
       nameShort: 'Remax IDE',
       nameLong: 'Remax IDE',
