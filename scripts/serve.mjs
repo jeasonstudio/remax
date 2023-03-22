@@ -13,6 +13,9 @@ const server = http.createServer((request, response) => {
   return handler(request, response, {
     ...config,
     public: outputDirectory,
+    // `cleanUrls` is false when production,
+    // here we override it to make serve support historyApiFallback
+    cleanUrls: ['!**/extensions/**/*', '!**/out/**/*'],
   });
 });
 
