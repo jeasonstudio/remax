@@ -3,5 +3,6 @@
   "devCommand": "pnpm run /^dev:.*/",
   "buildCommand": "pnpm run /^build:.*/",
   "framework": null,
-  "outputDirectory": "dist"
+  "outputDirectory": "dist",
+  "rewrites": [{ "source": "/p/*", "destination": "/index.html" }]
 }
