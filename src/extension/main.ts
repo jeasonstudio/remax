@@ -3,17 +3,17 @@ import * as client from './client';
 import * as formatter from './formatter';
 import * as fileSystem from './file-system';
 import * as authentication from './authentication';
+import * as terminal from './terminal';
+import * as welcome from './welcome';
 
 export async function activate(context: vscode.ExtensionContext) {
   try {
-    // Active language server client
     await client.activate(context);
-    // Active solidity formatter
     await formatter.activate(context);
-    // Active file-system provider
     await fileSystem.activate(context);
-    // Active authentication provider
     await authentication.activate(context);
+    await terminal.activate(context);
+    await welcome.activate(context);
   } catch (error) {
     console.error(error);
   }
@@ -30,4 +30,6 @@ export async function deactivate() {
   await formatter.deactivate();
   await fileSystem.deactivate();
   await authentication.deactivate();
+  await terminal.deactivate();
+  await welcome.deactivate();
 }

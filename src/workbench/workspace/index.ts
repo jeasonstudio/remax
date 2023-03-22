@@ -20,10 +20,7 @@ export class RemaxWorkspaceProvider {
     options?: { reuse?: boolean | undefined; payload?: object | undefined } | undefined,
   ): boolean {
     console.log('trigger open', workspace, options);
-    if (workspace?.workspaceUri) {
-      // TODO: notice not support workspace
-      return false;
-    } else if (workspace?.folderUri) {
+    if (workspace?.folderUri) {
       const { path, fragment, query } = workspace.folderUri;
       const targetHref = `${window.location.origin}/p${path}?${query}#${fragment}`;
       if (options?.reuse) {
@@ -44,8 +41,6 @@ export class RemaxWorkspaceProvider {
       window.location.href = `${window.location.origin}/p/${WORKBENCH_DEFAULT_PLAYGROUND_NAME}`;
     }
 
-    // await workbench.commands.executeCommand('remax.reset-playground');
-
     const folderUri = workbench.URI.from({
       scheme: FILE_SYSTEM_SCHEME,
       path: `/${project}`,
@@ -53,7 +48,6 @@ export class RemaxWorkspaceProvider {
       fragment: window.location.hash,
     });
 
-    console.log('folderUri', folderUri);
     return new RemaxWorkspaceProvider({ folderUri });
   }
 }

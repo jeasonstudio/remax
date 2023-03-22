@@ -92,6 +92,12 @@ window.require(['vs/workbench/workbench.web.main'], async (workbench: any) => {
   const remaxExtensions: URI[] = [URI.parse(`${window.location.origin}/extensions/remax`)];
   const additionalBuiltinExtensions: URI[] = [/*...vscodewebBuiltinExtensions,*/ ...remaxExtensions];
 
+  if (!window.localStorage.getItem('monaco-parts-splash')) {
+    setTimeout(() => {
+      workbench.commands.executeCommand('remax.reset-playground');
+    }, 3e3);
+  }
+
   // see: src/vs/workbench/browser/web.main.ts
   workbench.create(document.getElementById('workbench'), {
     settingsSyncOptions: {
@@ -122,6 +128,9 @@ window.require(['vs/workbench/workbench.web.main'], async (workbench: any) => {
       // Set commit to falsy means environment is development
       // src/vs/workbench/services/environment/browser/environmentService.ts#45
       // commit: null,
+    },
+    configurationDefaults: {
+      'workbench.colorTheme': 'Default Dark+ Experimental',
     },
   });
 });
