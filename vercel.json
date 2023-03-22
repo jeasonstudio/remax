@@ -5,6 +5,5 @@
   "framework": null,
   "outputDirectory": "dist",
   "rewrites": [{ "source": "/p/**", "destination": "/index.html" }],
-  "cleanUrls": ["!**/extensions/**/*", "!**/out/**/*"],
-  "etag": true
+  "cleanUrls": ["!**/extensions/**/*", "!**/out/**/*"]
 }
