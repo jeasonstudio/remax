@@ -1,7 +1,7 @@
 {
   "installCommand": "pnpm install",
-  "devCommand": "pnpm run ./^dev:.*/",
-  "buildCommand": "pnpm run ./^build:.*/",
+  "devCommand": "pnpm run /^dev:.*/",
+  "buildCommand": "pnpm run /^build:.*/",
   "framework": null,
   "outputDirectory": "dist"
 }
