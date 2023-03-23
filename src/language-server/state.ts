@@ -3,10 +3,12 @@ import { Connection, Position, TextDocuments, URI, WorkspaceFolder } from 'vscod
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { IState, Node, ASTNode, Token } from './types';
 import { parser } from './utils';
+import { RemaxFileSystem } from '../file-system';
 
 export class State implements IState {
   public env!: 'production' | 'development';
   public indexedWorkspaceFolders: WorkspaceFolder[] = [];
+  public remaxfs!: RemaxFileSystem;
 
   public ast: Map<string, ASTNode> = new Map();
   public tokens: Map<string, Token[]> = new Map();

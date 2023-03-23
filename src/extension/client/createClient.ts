@@ -4,12 +4,14 @@ import { LanguageClient } from 'vscode-languageclient/browser';
 
 // This method is called when your extension is activated
 export function createClient(context: vscode.ExtensionContext) {
+  const fileEvent = vscode.workspace.createFileSystemWatcher('**/*.sol');
+
   // Options to control the language client.
   const clientOptions: LanguageClientOptions = {
     // Register the server for solidity text documents.
     documentSelector: [{ /*scheme: 'file',*/ language: 'solidity', pattern: `**/*.sol` }],
     synchronize: {
-      fileEvents: [vscode.workspace.createFileSystemWatcher('**/*.sol')],
+      fileEvents: [fileEvent],
     },
     diagnosticCollectionName: 'solidity',
     initializationOptions: {
@@ -22,6 +24,8 @@ export function createClient(context: vscode.ExtensionContext) {
   const serverMain = vscode.Uri.joinPath(context.extensionUri, 'language-server.js');
   const worker = new Worker(serverMain.toString(true));
   const client = new LanguageClient('solidity', 'Solidity Language Server', clientOptions, worker);
+
+  // client.onNotification('remax/resolve-file', () => {});
 
   return client;
 }

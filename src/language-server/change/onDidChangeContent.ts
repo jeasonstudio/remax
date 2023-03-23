@@ -20,17 +20,17 @@ export const onDidChangeContent: FOnDidChangeContent = (_state) => (change) => {
     _state.traceError(error);
   }
 
-  _state.documents.keys().forEach((uri) => {
-    console.log('send', uri);
-    _state.connection.sendDiagnostics({
-      uri,
-      diagnostics: [
-        {
-          message: 'test',
-          severity: DiagnosticSeverity.Error,
-          range: { start: { line: 0, character: 0 }, end: { line: 0, character: 5 } },
-        },
-      ],
-    });
-  });
+  // _state.documents.keys().forEach((uri) => {
+  //   console.log('send', uri);
+  //   _state.connection.sendDiagnostics({
+  //     uri,
+  //     diagnostics: [
+  //       {
+  //         message: 'test',
+  //         severity: DiagnosticSeverity.Error,
+  //         range: { start: { line: 0, character: 0 }, end: { line: 0, character: 5 } },
+  //       },
+  //     ],
+  //   });
+  // });
 };

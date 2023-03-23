@@ -1,5 +1,8 @@
 import { URI } from 'vscode-uri';
+import path from 'path-browserify';
 import { RemaxWorkspaceProvider } from './workspace';
+import { RemaxFileSystem } from '../file-system';
+import { WORKBENCH_DEFAULT_PLAYGROUND_NAME } from '../constants';
 
 const builtinExtensions = [
   // 'bat',
@@ -92,11 +95,15 @@ window.require(['vs/workbench/workbench.web.main'], async (workbench: any) => {
   const remaxExtensions: URI[] = [URI.parse(`${window.location.origin}/extensions/remax`)];
   const additionalBuiltinExtensions: URI[] = [/*...vscodewebBuiltinExtensions,*/ ...remaxExtensions];
 
-  if (!window.localStorage.getItem('monaco-parts-splash')) {
-    setTimeout(() => {
-      workbench.commands.executeCommand('remax.reset-playground');
-    }, 3e3);
-  }
+  const remaxfs = await RemaxFileSystem.init();
+  (window as any).remaxfs = remaxfs;
+
+  // const playgroundPath = path.join('/', WORKBENCH_DEFAULT_PLAYGROUND_NAME);
+  // const isPlaygroundExists = await remaxfs.exists(playgroundPath);
+  // if (!isPlaygroundExists) {
+  //   await remaxfs.mkdir(playgroundPath);
+  //   // await remaxfs.writeFile(path.join(playgroundPath, 'README.md'), Buffer.from('# Welcome to RemaxIDE!!'));
+  // }
 
   // see: src/vs/workbench/browser/web.main.ts
   workbench.create(document.getElementById('workbench'), {

@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
-import { FILE_SYSTEM_DB_NAME, WORKBENCH_DEFAULT_PLAYGROUND_NAME } from '../../constants';
-import { WrapperedIndexedDB } from './indexed-db';
+import { WORKBENCH_DEFAULT_PLAYGROUND_NAME } from '../../constants';
 import { RemaxFileSystemProvider } from './provider';
 
 const readme = `# Welcome to Remax IDE Playground
@@ -75,16 +74,7 @@ contract ERC20 is IERC20 {
 const encoder = new TextEncoder();
 
 export async function activate(context: vscode.ExtensionContext) {
-  if (!WrapperedIndexedDB.isAvailable()) {
-    // TODO: some toasts
-  }
-  const widb = new WrapperedIndexedDB();
-  await widb.prepare();
-
-  const remaxFileSystemProvider = new RemaxFileSystemProvider(widb);
-  await remaxFileSystemProvider.prepare();
-
-  console.log('Remax file system provider is ready.');
+  const remaxFileSystemProvider = await RemaxFileSystemProvider.create();
 
   // Register remax file system provider
   context.subscriptions.push(

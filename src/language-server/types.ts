@@ -1,5 +1,6 @@
 import { Connection, Position, TextDocuments, URI, WorkspaceFolder } from 'vscode-languageserver/browser';
 import { TextDocument } from 'vscode-languageserver-textdocument';
+import { RemaxFileSystem } from '../file-system';
 import type * as parser from '@solidity-parser/parser';
 import type { ASTNode } from '@solidity-parser/parser/dist/src/ast-types';
 import type { Node, Token } from '@solidity-parser/parser/dist/src/types';
@@ -14,6 +15,7 @@ export interface IState {
   env: 'production' | 'development';
   connection: Connection;
   documents: Documents;
+  remaxfs: RemaxFileSystem;
   indexedWorkspaceFolders: WorkspaceFolder[];
   ast: Map<URI, ASTNode>;
   tokens: Map<URI, Token[]>;

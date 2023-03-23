@@ -4,6 +4,7 @@ import 'zx/globals';
 
 import handler from 'serve-handler';
 import http from 'http';
+import open from 'open';
 
 const config = require('../vercel.json');
 
@@ -25,4 +26,7 @@ const port = process.env.PORT || 3001;
 
 server.listen(port, () => {
   console.log(`running at http://127.0.0.1:${port}`);
+  setTimeout(() => {
+    open(`http://127.0.0.1:${port}`, { app: { name: 'google chrome', arguments: ['--auto-open-devtools-for-tabs'] } });
+  }, 5000);
 });
