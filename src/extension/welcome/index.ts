@@ -5,32 +5,40 @@ export async function activate(context: vscode.ExtensionContext) {
   // const serializer = new RemaxWelcomeWebviewPanelSerializer();
   // context.subscriptions.push(vscode.window.registerWebviewPanelSerializer('remax.webview-welcome', serializer));
 
-  const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
+  let welcomePanel: vscode.WebviewPanel | undefined = undefined;
 
   context.subscriptions.push(
     vscode.commands.registerCommand('remax.show-welcome', () => {
-      const panel = vscode.window.createWebviewPanel(
-        'remax.webview-welcome',
-        'Welcome',
-        column || vscode.ViewColumn.One,
-        {
+      if (welcomePanel) {
+        // If we already have a panel, show it in the target column
+        welcomePanel.reveal(vscode.ViewColumn.One);
+      } else {
+        // Otherwise, create a new panel
+        welcomePanel = vscode.window.createWebviewPanel('remax.webview-welcome', 'Welcome', vscode.ViewColumn.One, {
           retainContextWhenHidden: true,
           enableScripts: true,
-        },
-      );
-      panel.title = 'Welcome';
-      panel.webview.html = `
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-  
-      </head>
-      <body>
-        <h1>Remax</h1>
-      </body>
-      </html>
-    `;
-      panel.reveal();
+        });
+        welcomePanel.webview.html = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+    
+        </head>
+        <body>
+          <h1>Remax</h1>
+        </body>
+        </html>
+      `;
+
+        // Reset when the current panel is closed
+        welcomePanel.onDidDispose(
+          () => {
+            welcomePanel = undefined;
+          },
+          null,
+          context.subscriptions,
+        );
+      }
     }),
   );
 }

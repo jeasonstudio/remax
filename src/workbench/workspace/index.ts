@@ -1,6 +1,6 @@
 /* eslint-disable curly */
 import { URI } from 'vscode-uri';
-import { FILE_SYSTEM_SCHEME, WORKBENCH_DEFAULT_PLAYGROUND_NAME } from '../../constants';
+import { FILE_SYSTEM_SCHEME } from '../../constants';
 
 export type UriComponents = typeof URI;
 
@@ -21,7 +21,8 @@ export class RemaxWorkspaceProvider {
   ): boolean {
     if (workspace?.folderUri) {
       const { path, fragment, query } = workspace.folderUri;
-      const targetHref = `${window.location.origin}/p${path}${query ? `?${query}` : ''}${
+      const [_, project] = path.split('/');
+      const targetHref = `${window.location.origin}/p/${project}${query ? `?${query}` : ''}${
         fragment ? `#${fragment}` : ''
       }`;
       if (options?.reuse) {
@@ -51,6 +52,10 @@ export class RemaxWorkspaceProvider {
         query: window.location.search,
         fragment: window.location.hash,
       });
+    }
+
+    if (!folderUri) {
+      workbench.commands.executeCommand('remax.show-welcome');
     }
 
     return new RemaxWorkspaceProvider({ folderUri });

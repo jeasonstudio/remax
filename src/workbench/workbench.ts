@@ -137,6 +137,9 @@ window.require(['vs/workbench/workbench.web.main'], async (workbench: any) => {
       // commit: null,
     },
     configurationDefaults: {
+      'window.menuBarVisibility': 'classic',
+      'workbench.startupEditor': false,
+      'workbench.welcomePage.walkthroughs.openOnInstall': false,
       'workbench.colorTheme': 'Default Dark+ Experimental',
       'files.autoSave': 'off',
     },

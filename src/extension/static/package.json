@@ -63,12 +63,13 @@
         "category": "RemaxIDE Workspaces"
       },
       {
-        "command": "remax.hello-world",
-        "title": "hhh"
+        "command": "remax.show-welcome",
+        "title": "Show Welcome Page",
+        "category": "RemaxIDE Welcome"
       },
       {
-        "command": "remax.show-welcome",
-        "title": "RemaxIDE: Show welcome page"
+        "command": "remax.hello-world",
+        "title": "hhh"
       },
       {
         "command": "remax.reset-playground",
