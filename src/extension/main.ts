@@ -5,6 +5,7 @@ import * as fileSystem from './file-system';
 import * as authentication from './authentication';
 import * as terminal from './terminal';
 import * as welcome from './welcome';
+import * as commands from './commands';
 
 export async function activate(context: vscode.ExtensionContext) {
   try {
@@ -14,6 +15,7 @@ export async function activate(context: vscode.ExtensionContext) {
     await authentication.activate(context);
     await terminal.activate(context);
     await welcome.activate(context);
+    await commands.activate(context);
   } catch (error) {
     console.error(error);
   }
@@ -32,4 +34,5 @@ export async function deactivate() {
   await authentication.deactivate();
   await terminal.deactivate();
   await welcome.deactivate();
+  await commands.deactivate();
 }

@@ -1,0 +1,36 @@
+{
+  "name": ".",
+  "path": ".",
+  "entries": [
+    {
+      "name": "README.md",
+      "path": "./README.md"
+    },
+    {
+      "name": "contracts",
+      "path": "./contracts",
+      "entries": [
+        {
+          "name": "ERC20.sol",
+          "path": "./contracts/ERC20.sol"
+        },
+        {
+          "name": "HelloWorld.sol",
+          "path": "./contracts/HelloWorld.sol"
+        },
+        {
+          "name": "IERC20.sol",
+          "path": "./contracts/IERC20.sol"
+        },
+        {
+          "name": "Library.sol",
+          "path": "./contracts/Library.sol"
+        },
+        {
+          "name": "Primitives.sol",
+          "path": "./contracts/Primitives.sol"
+        }
+      ]
+    }
+  ]
+}

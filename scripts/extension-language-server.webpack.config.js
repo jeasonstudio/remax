@@ -54,6 +54,15 @@ module.exports = {
     new webpack.ProvidePlugin({
       process: 'process/browser', // provide a shim for the global `process` variable
     }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: require.resolve('@solidity-parser/parser/dist/index.iife.js'),
+          to: path.join(projectRoot, 'dist/extensions/remax', 'solidity-parser.js'),
+          force: true,
+        },
+      ],
+    }),
   ],
   externals: {
     vscode: 'commonjs vscode', // ignored because it doesn't exist

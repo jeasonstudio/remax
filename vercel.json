@@ -4,5 +4,8 @@
   "buildCommand": "pnpm run /^build:.*/",
   "framework": null,
   "outputDirectory": "dist",
-  "rewrites": [{ "source": "/p/(.*)", "destination": "/index.html" }]
+  "rewrites": [
+    { "source": "/p", "destination": "/index.html" },
+    { "source": "/p/(.*)", "destination": "/index.html" }
+  ]
 }

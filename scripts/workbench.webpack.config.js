@@ -63,6 +63,11 @@ module.exports = {
           to: path.join(projectRoot, 'dist', pkg.vscodeweb.commit),
           force: true,
         },
+        {
+          from: path.join(projectRoot, 'playground'),
+          to: path.join(projectRoot, 'dist/playground'),
+          force: true,
+        },
       ],
     }),
     new HtmlWebpackPlugin({

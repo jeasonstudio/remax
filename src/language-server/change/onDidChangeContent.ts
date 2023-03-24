@@ -1,6 +1,7 @@
 import { DiagnosticSeverity } from 'vscode-languageserver/browser';
 import { FOnDidChangeContent } from '../types';
 import { debounce } from '../utils';
+import { Analyzer } from '../analyzer';
 
 export const onDidChangeContent: FOnDidChangeContent = (_state) => (change) => {
   const uri = change.document.uri;
@@ -11,6 +12,7 @@ export const onDidChangeContent: FOnDidChangeContent = (_state) => (change) => {
 
   const updateSolidityDocument = debounce(() => {
     _state.updateSolidityDocument(change.document);
+    new Analyzer(change.document);
   }, 500);
 
   try {

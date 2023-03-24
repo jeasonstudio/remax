@@ -38,6 +38,31 @@
     ],
     "commands": [
       {
+        "command": "remax.workspace-create",
+        "title": "Create Workspace",
+        "category": "RemaxIDE Workspaces"
+      },
+      {
+        "command": "remax.workspace-open",
+        "title": "Open Workspace",
+        "category": "RemaxIDE Workspaces"
+      },
+      {
+        "command": "remax.workspace-delete",
+        "title": "Delete Workspace",
+        "category": "RemaxIDE Workspaces"
+      },
+      {
+        "command": "remax.playground-open",
+        "title": "Open Playground",
+        "category": "RemaxIDE Workspaces"
+      },
+      {
+        "command": "remax.playground-reset",
+        "title": "Reset Playground",
+        "category": "RemaxIDE Workspaces"
+      },
+      {
         "command": "remax.hello-world",
         "title": "hhh"
       },
@@ -55,20 +80,6 @@
       }
     ],
     "resourceLabelFormatters": [
-      {
-        "scheme": "memfs",
-        "formatting": {
-          "label": "${path}",
-          "workspaceSuffix": "MEMORY"
-        }
-      },
-      {
-        "scheme": "gist",
-        "formatting": {
-          "label": "${path}",
-          "workspaceSuffix": "GIST_FILE"
-        }
-      },
       {
         "scheme": "remaxfs",
         "formatting": {

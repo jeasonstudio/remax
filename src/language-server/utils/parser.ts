@@ -1,3 +1,3 @@
-self.importScripts('https://unpkg.com/@solidity-parser/parser@0.16.0/dist/index.iife.js');
+self.importScripts(self.location.origin + '/extensions/remax/solidity-parser.js');
 
-export const parser = self.SolidityParser;
+export const parser: typeof import('@solidity-parser/parser') = self.SolidityParser;

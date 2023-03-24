@@ -138,6 +138,7 @@ window.require(['vs/workbench/workbench.web.main'], async (workbench: any) => {
     },
     configurationDefaults: {
       'workbench.colorTheme': 'Default Dark+ Experimental',
+      'files.autoSave': 'off',
     },
   });
 });
