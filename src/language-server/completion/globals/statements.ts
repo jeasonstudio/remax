@@ -5,6 +5,7 @@ export const keywords: Record<string, string[]> = {
   assert: [],
   require: [],
   revert: [],
+  selfdestruct: [],
 };
 // mapping(keyword => completion)
 export const completions: Record<string, CompletionItem> = {
@@ -22,5 +23,10 @@ export const completions: Record<string, CompletionItem> = {
     label: 'revert',
     kind: CompletionItemKind.Function,
     detail: 'revert(string memory reason)',
+  },
+  selfdestruct: {
+    label: 'selfdestruct',
+    kind: CompletionItemKind.Function,
+    detail: 'selfdestruct(address payable recipient)',
   },
 };

@@ -38,7 +38,7 @@ export class State implements IState {
       console.log('update ast:', ast);
       const tokens: Token[] = parser.tokenize(content, { range: true, loc: true }) || [];
       this.tokens.set(uri, tokens);
-      console.log('update tokens count:', tokens.length);
+      console.log('update tokens count:', tokens?.length);
     } catch (error) {
       this.traceError(error);
     }

@@ -1,15 +1,15 @@
 import { Connection, Position, TextDocuments, URI, WorkspaceFolder } from 'vscode-languageserver/browser';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { RemaxFileSystem } from '../file-system';
-import type * as parser from '@solidity-parser/parser';
-import type { ASTNode } from '@solidity-parser/parser/dist/src/ast-types';
-import type { Node, Token } from '@solidity-parser/parser/dist/src/types';
+import type * as parser from '@remax-ide/solidity-parser';
+import type { ASTNode } from '@remax-ide/solidity-parser/dist/src/ast-types';
+import type { Node, Token } from '@remax-ide/solidity-parser/dist/src/types';
 
 export type Documents = TextDocuments<TextDocument>;
 
 export type SolidityParser = typeof parser;
-export * from '@solidity-parser/parser/dist/src/ast-types';
-export * from '@solidity-parser/parser/dist/src/types';
+export * from '@remax-ide/solidity-parser/dist/src/ast-types';
+export * from '@remax-ide/solidity-parser/dist/src/types';
 
 export interface IState {
   env: 'production' | 'development';

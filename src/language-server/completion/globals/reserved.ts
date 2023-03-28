@@ -45,7 +45,7 @@ export const completions: Record<string, CompletionItem> = Object.fromEntries(
       label: t,
       kind: CompletionItemKind.Keyword,
       detail: t,
-      tags: [1], // not use
+      // tags: [1], // not use
     },
   ]),
 );

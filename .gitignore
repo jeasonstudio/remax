@@ -120,6 +120,7 @@ package-lock.json
 .vscode-test-web
 .vscode-web
 .vscodeweb
+.vscodesource
 *.tar.gz
 
 /vscode/*

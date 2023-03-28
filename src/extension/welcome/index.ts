@@ -39,6 +39,7 @@ export async function activate(context: vscode.ExtensionContext) {
           context.subscriptions,
         );
       }
+      // vscode.commands.executeCommand('workbench.action.pinEditor', welcomePanel);
     }),
   );
 }

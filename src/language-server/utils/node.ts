@@ -12,7 +12,7 @@ export const nodeToString = (node: ASTNode | null): string => {
   switch (node.type) {
     case 'VariableDeclaration':
       const typeName = nodeToString(node.typeName);
-      return typeName ? `${typeName} ${node.name}` : node.name!;
+      return `${typeName}${node?.name ? ` ${node.name}` : ''}`;
     case 'FunctionDefinition':
       const paramsString = node.parameters.map(nodeToString).join(', ');
       const returnString = node.returnParameters?.length ? node.returnParameters.map(nodeToString).join(', ') : 'void';

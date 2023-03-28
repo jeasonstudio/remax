@@ -1,38 +1,42 @@
-import { DiagnosticSeverity } from 'vscode-languageserver/browser';
-import { FOnDidChangeContent } from '../types';
+import { TextDocument } from 'vscode-languageserver-textdocument';
+import { TextDocuments } from 'vscode-languageserver/browser';
+import { Context } from '../context';
 import { debounce } from '../utils';
-import { Analyzer } from '../analyzer';
 
-export const onDidChangeContent: FOnDidChangeContent = (_state) => (change) => {
-  const uri = change.document.uri;
+type OnDidChangeContent = Parameters<TextDocuments<TextDocument>['onDidChangeContent']>[0];
 
-  if (change.document.languageId !== 'solidity' || !uri) {
-    return;
-  }
+export const onDidChangeContent =
+  (ctx: Context): OnDidChangeContent =>
+  ({ document }) => {
+    const uri = document.uri;
+    if (document.languageId !== 'solidity' || !uri) {
+      return;
+    }
 
-  const updateSolidityDocument = debounce(() => {
-    _state.updateSolidityDocument(change.document);
-    new Analyzer(change.document);
-  }, 500);
+    const content = document.getText();
 
-  try {
-    updateSolidityDocument();
-    // TODO: validate solidity document via solc-js
-  } catch (error) {
-    _state.traceError(error);
-  }
+    const updateSolidityDocument = debounce(() => {
+      ctx.updateDocument(uri, content);
+    }, 500);
 
-  // _state.documents.keys().forEach((uri) => {
-  //   console.log('send', uri);
-  //   _state.connection.sendDiagnostics({
-  //     uri,
-  //     diagnostics: [
-  //       {
-  //         message: 'test',
-  //         severity: DiagnosticSeverity.Error,
-  //         range: { start: { line: 0, character: 0 }, end: { line: 0, character: 5 } },
-  //       },
-  //     ],
-  //   });
-  // });
-};
+    try {
+      updateSolidityDocument();
+      // TODO: validate solidity document via solc-js
+    } catch (error) {
+      ctx.console.error(error);
+    }
+
+    // _state.documents.keys().forEach((uri) => {
+    //   console.log('send', uri);
+    //   _state.connection.sendDiagnostics({
+    //     uri,
+    //     diagnostics: [
+    //       {
+    //         message: 'test',
+    //         severity: DiagnosticSeverity.Error,
+    //         range: { start: { line: 0, character: 0 }, end: { line: 0, character: 5 } },
+    //       },
+    //     ],
+    //   });
+    // });
+  };

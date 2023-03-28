@@ -54,9 +54,7 @@ export class RemaxWorkspaceProvider {
       });
     }
 
-    if (!folderUri) {
-      workbench.commands.executeCommand('remax.show-welcome');
-    }
+    // workbench.commands.executeCommand('remax.show-welcome');
 
     return new RemaxWorkspaceProvider({ folderUri });
   }

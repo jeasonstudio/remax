@@ -47,6 +47,8 @@ export const globalVariables: string[] = [
   'selfdestruct',
 ];
 
+export const globalCompletions = globalVariables.map((globalVariable) => completions[globalVariable]);
+
 export const getGlobalCompletionsByKeyword = (keyword?: string) => {
   if (keyword === undefined) {
     const globalCompletions = globalVariables.map((globalVariable) => completions[globalVariable]);

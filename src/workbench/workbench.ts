@@ -1,8 +1,6 @@
 import { URI } from 'vscode-uri';
-import path from 'path-browserify';
 import { RemaxWorkspaceProvider } from './workspace';
 import { RemaxFileSystem } from '../file-system';
-import { WORKBENCH_DEFAULT_PLAYGROUND_NAME } from '../constants';
 
 const builtinExtensions = [
   // 'bat',
@@ -98,23 +96,15 @@ window.require(['vs/workbench/workbench.web.main'], async (workbench: any) => {
   const remaxfs = await RemaxFileSystem.init();
   (window as any).remaxfs = remaxfs;
 
-  // const playgroundPath = path.join('/', WORKBENCH_DEFAULT_PLAYGROUND_NAME);
-  // const isPlaygroundExists = await remaxfs.exists(playgroundPath);
-  // if (!isPlaygroundExists) {
-  //   await remaxfs.mkdir(playgroundPath);
-  //   // await remaxfs.writeFile(path.join(playgroundPath, 'README.md'), Buffer.from('# Welcome to RemaxIDE!!'));
-  // }
-
-  // see: src/vs/workbench/browser/web.main.ts
-  workbench.create(document.getElementById('workbench'), {
+  const options = {
     settingsSyncOptions: {
       enabled: false, // TODO: disable settings sync for now
     },
     workspaceProvider,
     additionalBuiltinExtensions,
-    welcomeBanner: {
-      message: 'Welcome to Remax IDE!',
-    },
+    // welcomeBanner: {
+    //   message: 'Welcome to Remax IDE!',
+    // },
     productConfiguration: {
       nameShort: 'Remax IDE',
       nameLong: 'Remax IDE',
@@ -138,10 +128,13 @@ window.require(['vs/workbench/workbench.web.main'], async (workbench: any) => {
     },
     configurationDefaults: {
       'window.menuBarVisibility': 'classic',
-      'workbench.startupEditor': false,
+      'workbench.startupEditor': 'welcomePageInEmptyWorkbench',
       'workbench.welcomePage.walkthroughs.openOnInstall': false,
       'workbench.colorTheme': 'Default Dark+ Experimental',
       'files.autoSave': 'off',
     },
-  });
+  };
+
+  // see: src/vs/workbench/browser/web.main.ts
+  workbench.create(document.getElementById('workbench')!, options);
 });

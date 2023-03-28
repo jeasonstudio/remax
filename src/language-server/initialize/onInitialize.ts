@@ -1,43 +1,50 @@
-import { InitializeResult, TextDocumentSyncKind, DiagnosticSeverity } from 'vscode-languageserver/browser';
-import { FOnInitialize } from '../types';
+import { TextDocumentSyncKind, Connection } from 'vscode-languageserver/browser';
+import { Context } from '../context';
 
-export const onInitialize: FOnInitialize = (_state) => async (params) => {
-  console.log('initialize:', params);
-  const result: InitializeResult = {
-    serverInfo: {
-      name: 'Solidity Language Server',
-      version: '0.0.0',
-    },
-    capabilities: {
-      textDocumentSync: TextDocumentSyncKind.Incremental,
-      // Tell the client that this server supports code completion.
-      completionProvider: {
-        // resolveProvider: true,
-        triggerCharacters: ['.', '/', '"', `'`, '*'],
-      },
-      signatureHelpProvider: {
-        triggerCharacters: ['(', ','],
-      },
-      definitionProvider: true,
-      // typeDefinitionProvider: false,
-      // referencesProvider: false,
-      // implementationProvider: false,
-      // renameProvider: false,
-      // codeActionProvider: false,
-      hoverProvider: true,
+type OnInitialize = Parameters<Connection['onInitialize']>[0];
 
-      // workspace capabilities
-      workspace: {
-        workspaceFolders: {
-          supported: true,
-          changeNotifications: true,
+export const onInitialize =
+  (ctx: Context): OnInitialize =>
+  async (params) => {
+    console.log('initialize:', params);
+    const result: ReturnType<OnInitialize> = {
+      serverInfo: {
+        name: 'Solidity Language Server',
+        version: '0.0.0',
+      },
+      capabilities: {
+        textDocumentSync: TextDocumentSyncKind.Incremental,
+        // Tell the client that this server supports code completion.
+        completionProvider: {
+          // resolveProvider: true,
+          triggerCharacters: ['.', '/', '"', `'`, '*', ' '],
+        },
+        signatureHelpProvider: {
+          triggerCharacters: ['('],
+        },
+        // definitionProvider: true,
+        // typeDefinitionProvider: true,
+        // referencesProvider: true,
+        // implementationProvider: true,
+        // renameProvider: true,
+        // codeActionProvider: true,
+        // hoverProvider: true,
+
+        // workspace capabilities
+        workspace: {
+          workspaceFolders: {
+            supported: true,
+            changeNotifications: true,
+          },
         },
       },
-    },
+    };
+
+    if ((params.workspaceFolders?.length ?? 0) >= 1) {
+      ctx.workspace = params.workspaceFolders![0].name;
+      ctx.workspaceUri = params.workspaceFolders![0].uri;
+      await ctx.syncDocuments();
+    }
+
+    return result;
   };
-
-  _state.indexedWorkspaceFolders = params.workspaceFolders || [];
-  self.workspaceFolders = _state.indexedWorkspaceFolders;
-
-  return result;
-};
