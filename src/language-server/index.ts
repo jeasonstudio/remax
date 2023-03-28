@@ -36,7 +36,7 @@ connection.onSignatureHelp(onSignatureHelp(context));
 // connection.onImplementation(onImplementation(serverState));
 // connection.onRenameRequest(onRename(serverState));
 // connection.onCodeAction(onCodeAction(serverState));
-// connection.onHover(onHover(state));
+connection.onHover(onHover(context));
 
 // changes
 connection.onDidChangeWatchedFiles(onDidChangeWatchedFiles(context));

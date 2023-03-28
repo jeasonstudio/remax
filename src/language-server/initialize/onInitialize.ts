@@ -28,7 +28,7 @@ export const onInitialize =
         // implementationProvider: true,
         // renameProvider: true,
         // codeActionProvider: true,
-        // hoverProvider: true,
+        hoverProvider: true,
 
         // workspace capabilities
         workspace: {
