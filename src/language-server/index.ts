@@ -30,7 +30,7 @@ connection.onExit(onExit(context));
 // Command hooks
 connection.onCompletion(onCompletion(context));
 connection.onSignatureHelp(onSignatureHelp(context));
-// connection.onDefinition(onDefinition(state));
+connection.onDefinition(onDefinition(context));
 // connection.onTypeDefinition(onTypeDefinition(serverState));
 // connection.onReferences(onReferences(serverState));
 // connection.onImplementation(onImplementation(serverState));

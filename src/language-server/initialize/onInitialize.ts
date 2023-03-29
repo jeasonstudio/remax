@@ -22,7 +22,7 @@ export const onInitialize =
         signatureHelpProvider: {
           triggerCharacters: ['('],
         },
-        // definitionProvider: true,
+        definitionProvider: true,
         // typeDefinitionProvider: true,
         // referencesProvider: true,
         // implementationProvider: true,
