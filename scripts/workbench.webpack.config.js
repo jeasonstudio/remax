@@ -64,7 +64,7 @@ module.exports = {
           force: true,
         },
         {
-          from: path.join(projectRoot, 'playground'),
+          from: path.join(projectRoot, 'fixtures'),
           to: path.join(projectRoot, 'dist/playground'),
           force: true,
         },

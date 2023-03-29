@@ -52,6 +52,7 @@ const preparePlayground = async (force?: boolean) => {
     }
   } catch (err) {
     const error = err as unknown as Error;
+    console.error(error);
     vscode.window.showErrorMessage(error.message || 'Failed to prepare playground');
   }
 };

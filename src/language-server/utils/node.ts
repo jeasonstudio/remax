@@ -1,11 +1,11 @@
-import { ASTNode } from '../types';
+import { astTypes } from './parser';
 
 /**
  * AST Node to Signature String
  * @param node ast node
  * @returns string
  */
-export const nodeToString = (node: ASTNode | null): string => {
+export const nodeToString = (node: astTypes.ASTNode | null): string => {
   if (!node) {
     return '';
   }
@@ -14,7 +14,7 @@ export const nodeToString = (node: ASTNode | null): string => {
       return `pragma ${node.name} ${node.value}`;
     case 'VariableDeclaration':
       const typeName = nodeToString(node.typeName);
-      return `${typeName}${node?.name ? ` ${node.name}` : ''}`;
+      return `${typeName}${node.visibility ? ` ${node.visibility}` : ''}${node?.name ? ` ${node.name}` : ''}`;
     case 'FunctionDefinition':
       const paramsString = node.parameters.map(nodeToString).join(', ');
       const returnString = node.returnParameters?.length ? node.returnParameters.map(nodeToString).join(', ') : 'void';
@@ -23,7 +23,13 @@ export const nodeToString = (node: ASTNode | null): string => {
       return `import '${node.path}'`;
     case 'ContractDefinition':
       return `${node.kind} ${node.name} {...}`;
+    case 'Mapping':
+      return `mapping(${nodeToString(node.keyType)} => ${nodeToString(node.valueType)})`;
     default:
-      return (node as any)?.name || `not_implemented(${node.type})`;
+      const name = (node as any)?.name;
+      if (!name) {
+        console.log('not_implemented', node);
+      }
+      return name || `not_implemented(${node.type})`;
   }
 };
