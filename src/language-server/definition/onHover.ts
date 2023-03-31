@@ -1,6 +1,6 @@
 import { Connection, Hover, MarkupContent, MarkupKind, Range } from 'vscode-languageserver/browser';
 import { Context } from '../context';
-import { astTypes, nodeToString, visit, visitEnter } from '../utils';
+import { astTypes, nodeToString, parserTypes, tokenize, visit, visitEnter } from '../utils';
 
 type OnHover = Parameters<Connection['onHover']>[0];
 
@@ -9,13 +9,38 @@ export const onHover =
   async ({ textDocument, position }) => {
     const uri = textDocument.uri;
     const document = ctx.documents.get(uri);
-    const solidity = ctx.documentMap.get(uri);
 
-    if (!uri || !document || !document.offsetAt || !solidity) {
-      return null;
-    }
+    if (!document) return null;
 
     const offset = document.offsetAt(position) ?? 0;
+
+    const textBeforeCurrentLine = document.getText({
+      start: { line: 0, character: 0 },
+      end: { line: position.line - 1, character: Number.MAX_SAFE_INTEGER },
+    });
+
+    // // Line text tokens
+    const tokens = tokenize(textBeforeCurrentLine);
+    const comments: string[] = [];
+    for (let index = tokens.length - 1; index > 0; index -= 1) {
+      const token = tokens[index];
+      if (token.type === 'Keyword' && token.value?.startsWith('//')) {
+        const value = token.value.replace(/^\/\/\s*/, '');
+        comments.unshift(value);
+      } else if (token.type === 'Keyword' && token.value?.startsWith('/*')) {
+        const multipeValues = token.value.split('\n').map((line) => {
+          const value = line
+            .trim()
+            .replace(/^\/\*\s*/, '')
+            .replace(/\s*\*\/$/, '')
+            .replace(/^\*\s*/, '');
+          return value;
+        });
+        comments.unshift(...multipeValues);
+      } else {
+        break;
+      }
+    }
 
     const targetHovers: Hover[] = [];
     const getRange = (n: astTypes.ASTNode): Range | undefined => {
@@ -29,10 +54,12 @@ export const onHover =
       return undefined;
     };
     const getCommonContent = (n: astTypes.ASTNode): MarkupContent => {
-      const comment = n.type.replace(/([A-Z])/g, ' $1').trim();
+      // const comment = n.type.replace(/([A-Z])/g, ' $1').trim();
+      const comment = comments.join('  \n');
+      const nodeString = ['```solidity', nodeToString(n), '```'].join('\n');
       return {
         kind: MarkupKind.Markdown,
-        value: [comment, '```solidity', nodeToString(n), '```'].join('\n'),
+        value: [comment, nodeString].join('  \n'),
       };
     };
     const commonVisitor = (n: astTypes.ASTNode) => {
@@ -43,7 +70,7 @@ export const onHover =
       }
     };
 
-    visit(solidity.ast, {
+    document.visit({
       // directive
       PragmaDirective: commonVisitor,
       ImportDirective: commonVisitor,

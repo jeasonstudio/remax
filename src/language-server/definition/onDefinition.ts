@@ -2,7 +2,7 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import { CompletionItemKind, CompletionList, Connection, Location } from 'vscode-languageserver/browser';
 import { Context } from '../context';
 import { FOnDefinition } from '../types';
-import { astTypes, tokenize, visit } from '../utils';
+import { astTypes, tokenize, visit, definitionVisitors } from '../utils';
 
 type OnDefinition = Parameters<Connection['onDefinition']>[0];
 
@@ -11,13 +11,8 @@ export const onDefinition =
   async ({ textDocument, position }) => {
     const uri = textDocument.uri;
     const document = ctx.documents.get(uri);
-    const solidity = ctx.documentMap.get(uri);
 
-    if (!uri || !document || !document.offsetAt || !solidity) {
-      return null;
-    }
-
-    const offset = document.offsetAt(position) ?? 0;
+    if (!document) return null;
 
     // Line text before the trigger character(not including the trigger character)
     const lineText = document.getText({
@@ -32,60 +27,45 @@ export const onDefinition =
       return position.character >= start && position.character <= end;
     });
 
-    if (!token) {
-      return null;
-    }
+    if (!token) return null;
 
     const importList = ctx.getImportsList(uri);
     const soliditys = [uri, ...importList];
 
     const locations: Location[] = [];
 
-    for (let index = 0; index < soliditys.length; index++) {
+    for (let index = 0; index < soliditys.length; index += 1) {
       const solidityUri = soliditys[index];
-      const doc = ctx.documentMap.get(solidityUri);
-      if (!doc || !doc.ast) {
-        continue;
-      }
-      const textDocument = TextDocument.create(solidityUri, 'solidity', 1, doc.content);
+      const currentDocument = ctx.documents.get(solidityUri);
+
+      if (!currentDocument) continue;
+
       const node2Location = (n: astTypes.ASTNode) => {
         return Location.create(solidityUri, {
-          start: textDocument.positionAt(n.range![0]),
-          end: textDocument.positionAt(n.range![1] + 1), // TODO: donot know why should add 1
+          start: currentDocument.positionAt(n.range![0]),
+          end: currentDocument.positionAt(n.range![1] + 1), // TODO: donot know why should add 1
         });
       };
-      visit(doc.ast, {
-        ContractDefinition: (n) => {
-          n.name === token.value && locations.push(node2Location(n));
-        },
-        StructDefinition: (n) => {
-          n.name === token.value && locations.push(node2Location(n));
-        },
-        ModifierDefinition: (n) => {
-          n.name === token.value && locations.push(node2Location(n));
-        },
-        FunctionDefinition: (n) => {
-          n.name === token.value && locations.push(node2Location(n));
-        },
-        EventDefinition: (n) => {
-          n.name === token.value && locations.push(node2Location(n));
-        },
-        CustomErrorDefinition: (n) => {
-          n.name === token.value && locations.push(node2Location(n));
-        },
-        EnumDefinition: (n) => {
-          n.name === token.value && locations.push(node2Location(n));
-        },
-        VariableDeclaration: (n) => {
-          n.name === token.value && locations.push(node2Location(n));
-        },
-        UserDefinedTypeName: (n) => {
-          n.namePath === token.value && locations.push(node2Location(n));
-        },
-        LabelDefinition: (n) => {
-          n.name === token.value && locations.push(node2Location(n));
-        },
-      });
+      const isNotCurrent = (n: astTypes.ASTNode) => {
+        const [start, end] = token.range ?? [0, 0];
+        if (solidityUri !== uri) {
+          // Not same file means not same token
+          return true;
+        }
+        return (n.range![0] < start && n.range![1] <= start) || (n.range![0] >= end && n.range![1] >= end);
+      };
+
+      const visitors = Object.fromEntries(
+        definitionVisitors.map((v) => [
+          v,
+          (n: astTypes.ASTNode) => {
+            if ((n as any)?.name === token.value && isNotCurrent(n)) {
+              locations.push(node2Location(n));
+            }
+          },
+        ]),
+      );
+      currentDocument.visit(visitors);
     }
 
     return locations.length ? locations : null;

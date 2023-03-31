@@ -2,23 +2,22 @@ import {
   BrowserMessageReader,
   BrowserMessageWriter,
   createConnection,
+  ProgressType,
   TextDocuments,
 } from 'vscode-languageserver/browser';
-import { TextDocument } from 'vscode-languageserver-textdocument';
+import { SolidityTextDocument } from './text-document';
 import { onCompletion } from './completion';
 import { onExit, onInitialize, onInitialized } from './initialize';
 import { onDidChangeContent, onDidChangeWatchedFiles } from './change';
-import { State } from './state';
 import { onSignatureHelp } from './signature';
 import { onDefinition, onHover } from './definition';
-import { RemaxFileSystem } from '../file-system';
 import { Context } from './context';
 
 const messageReader = new BrowserMessageReader(self);
 const messageWriter = new BrowserMessageWriter(self);
 
 const connection = createConnection(messageReader, messageWriter);
-const documents = new TextDocuments(TextDocument);
+const documents = new TextDocuments(SolidityTextDocument);
 const context = new Context(connection, documents);
 (self as any).ctx = context;
 
@@ -40,8 +39,8 @@ connection.onHover(onHover(context));
 
 // changes
 connection.onDidChangeWatchedFiles(onDidChangeWatchedFiles(context));
-documents.listen(connection);
 documents.onDidChangeContent(onDidChangeContent(context));
+documents.listen(SolidityTextDocument.conn(connection));
 
 // Listen on the connection
 connection.listen();

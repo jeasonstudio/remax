@@ -14,9 +14,8 @@ export const onCompletion =
   async ({ textDocument, position, context }) => {
     const uri = textDocument.uri;
     const document = ctx.documents.get(uri);
-    const solidity = ctx.documentMap.get(uri);
 
-    if (!uri || !document || !document.getText || !solidity) {
+    if (!uri || !document) {
       return emptyCompletion;
     }
 
@@ -46,12 +45,12 @@ export const onCompletion =
         case '.':
           if (token.type === 'Identifier' && token.value === 'this') {
             // get this contract variables
-            const contract = solidity.getContractByOffset(offset);
+            const contract = document.getContractByOffset(offset);
             const completions = getContractCompletions([contract]);
             completion.items.push(...completions);
           } else if (token.type === 'Identifier' && token.value === 'super') {
             // get father contract variables
-            const contract = solidity.getContractByOffset(offset);
+            const contract = document.getContractByOffset(offset);
             const contracts = ctx.getAncestorsContracts(uri, contract!.name);
             const completions = getContractCompletions(contracts);
             completion.items.push(...completions);

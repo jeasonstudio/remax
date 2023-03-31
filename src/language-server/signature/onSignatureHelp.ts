@@ -15,9 +15,8 @@ export const onSignatureHelp =
 
     const uri = textDocument.uri;
     const document = ctx.documents.get(uri);
-    const solidity = ctx.documentMap.get(uri);
 
-    if (!uri || !document || !document.getText || !solidity) {
+    if (!uri || !document) {
       return null;
     }
 
@@ -50,8 +49,8 @@ export const onSignatureHelp =
       console.log('tokens:', tokens);
       const token = tokens[tokens.length - 1];
 
-      const contract = solidity.getContractByOffset(offset);
-      const ancestorContracts = ctx.getAncestorsContracts(uri, contract!.name);
+      const contract = document.getContractByOffset(offset);
+      const ancestorContracts = ctx.getAncestorsContracts(uri, contract?.name);
       const contracts = [contract, ...ancestorContracts];
 
       help.signatures = [...getGlobalSignatureHelp(token), ...getFuncSignatureHelp(token, contracts)];

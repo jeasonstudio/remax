@@ -1,0 +1,552 @@
+// import MemoryStream from 'memorystream';
+// import { https } from 'follow-redirects';
+
+import { formatFatalError } from 'solc/formatters';
+import { isNil } from 'solc/common/helpers';
+import setupBindings from 'solc/bindings';
+import translate from 'solc/translate';
+
+function wrapper(soljson: any) {
+  const { coreBindings, compileBindings, methodFlags } = setupBindings(soljson);
+
+  return {
+    version: coreBindings.version,
+    semver: coreBindings.versionToSemver,
+    license: coreBindings.license,
+    lowlevel: {
+      compileSingle: compileBindings.compileJson,
+      compileMulti: compileBindings.compileJsonMulti,
+      compileCallback: compileBindings.compileJsonCallback,
+      compileStandard: compileBindings.compileStandard,
+    },
+    features: {
+      legacySingleInput: methodFlags.compileJsonStandardSupported,
+      multipleInputs: methodFlags.compileJsonMultiSupported || methodFlags.compileJsonStandardSupported,
+      importCallback: methodFlags.compileJsonCallbackSuppported || methodFlags.compileJsonStandardSupported,
+      nativeStandardJSON: methodFlags.compileJsonStandardSupported,
+    },
+    // @ts-ignore
+    compile: compileStandardWrapper.bind(this, compileBindings),
+    // Loads the compiler of the given version from the github repository
+    // instead of from the local filesystem.
+    loadRemoteVersion,
+    // Use this if you want to add wrapper functions around the pure module.
+    setupMethods: wrapper,
+  };
+}
+
+// @ts-ignore
+function loadRemoteVersion(versionString, callback) {
+  throw new Error('Not implemented');
+}
+
+// Expects a Standard JSON I/O but supports old compilers
+// @ts-ignore
+function compileStandardWrapper(compile, inputRaw, readCallback) {
+  if (!isNil(compile.compileStandard)) {
+    return compile.compileStandard(inputRaw, readCallback);
+  }
+
+  let input: { language: string; sources: any[]; settings: any };
+
+  try {
+    input = JSON.parse(inputRaw);
+  } catch (e) {
+    // @ts-ignore
+    return formatFatalError(`Invalid JSON supplied: ${e.message}`);
+  }
+
+  if (input.language !== 'Solidity') {
+    return formatFatalError('Only "Solidity" is supported as a language.');
+  }
+
+  // NOTE: this is deliberately `== null`
+  if (isNil(input.sources) || input.sources.length === 0) {
+    return formatFatalError('No input sources specified.');
+  }
+
+  const sources = translateSources(input) as any;
+  const optimize = isOptimizerEnabled(input);
+  const libraries = librariesSupplied(input);
+
+  if (isNil(sources) || Object.keys(sources).length === 0) {
+    return formatFatalError('Failed to process sources.');
+  }
+
+  // Try to wrap around old versions
+  if (!isNil(compile.compileJsonCallback)) {
+    const inputJson = JSON.stringify({ sources: sources });
+    const output = compile.compileJsonCallback(inputJson, optimize, readCallback);
+    return translateOutput(output, libraries);
+  }
+
+  if (!isNil(compile.compileJsonMulti)) {
+    const output = compile.compileJsonMulti(JSON.stringify({ sources: sources }), optimize);
+    return translateOutput(output, libraries);
+  }
+
+  // Try our luck with an ancient compiler
+  if (!isNil(compile.compileJson)) {
+    if (Object.keys(sources).length > 1) {
+      return formatFatalError('Multiple sources provided, but compiler only supports single input.');
+    }
+
+    const input = sources[Object.keys(sources)[0]];
+    const output = compile.compileJson(input, optimize);
+    return translateOutput(output, libraries);
+  }
+
+  return formatFatalError('Compiler does not support any known interface.');
+}
+
+function isOptimizerEnabled(input: any) {
+  return input.settings && input.settings.optimizer && input.settings.optimizer.enabled;
+}
+
+function translateSources(input: any) {
+  const sources = {};
+
+  for (const source in input.sources) {
+    if (input.sources[source].content !== null) {
+      // @ts-ignore
+      sources[source] = input.sources[source].content;
+    } else {
+      // force failure
+      return null;
+    }
+  }
+
+  return sources;
+}
+
+// @ts-ignore
+function librariesSupplied(input) {
+  if (!isNil(input.settings)) return input.settings.libraries;
+}
+
+// @ts-ignore
+function translateOutput(outputRaw, libraries) {
+  let parsedOutput;
+
+  try {
+    parsedOutput = JSON.parse(outputRaw);
+  } catch (e) {
+    // @ts-ignore
+    return formatFatalError(`Compiler returned invalid JSON: ${e.message}`);
+  }
+
+  const output = translate.translateJsonCompilerOutput(parsedOutput, libraries);
+
+  if (isNil(output)) {
+    return formatFatalError('Failed to process output.');
+  }
+
+  return JSON.stringify(output);
+}
+
+// main
+import { DEFAULT_SOLJSON_VERSION } from '../../constants';
+
+const version = self.solcVersion || DEFAULT_SOLJSON_VERSION;
+const prefix = self.solcPrefix || 'https://binaries.soliditylang.org/bin/';
+self.importScripts(prefix + version);
+
+export const compiler = wrapper(self.Module);
+
+export const compile = (input: ICompileInput, options?: any): ICompileOutput => {
+  const output: string = compiler.compile(JSON.stringify(input), options);
+  return JSON.parse(output);
+};
+
+// See https://docs.soliditylang.org/en/v0.8.17/using-the-compiler.html#compiler-input-and-output-json-description
+
+interface ICompilerSourceUrls {
+  // Optional: keccak256 hash of the source file
+  // It is used to verify the retrieved content if imported via URLs.
+  keccak256?: string;
+  // Required (unless "content" is used, see below): URL(s) to the source file.
+  // URL(s) should be imported in this order and the result checked against the
+  // keccak256 hash (if available). If the hash doesn't match or none of the
+  // URL(s) result in success, an error should be raised.
+  // Using the commandline interface only filesystem paths are supported.
+  // With the JavaScript interface the URL will be passed to the user-supplied
+  // read callback, so any URL supported by the callback can be used.
+  urls: string[];
+}
+
+interface ICompilerSourceContent {
+  // Optional: keccak256 hash of the source file
+  keccak256?: string;
+  // Required (unless "urls" is used): literal contents of the source file
+  content: string;
+}
+
+export interface ICompileInput {
+  // Required: Source code language. Currently supported are "Solidity" and "Yul".
+  language: 'Solidity' | 'Yul';
+  sources: {
+    // The keys here are the "global" names of the source files,
+    // imports can use other files via remappings (see below).
+    [fileName: string]: ICompilerSourceUrls | ICompilerSourceContent;
+  };
+  settings?: {
+    // Optional: Stop compilation after the given stage. Currently only "parsing" is valid here
+    stopAfter?: 'parsing';
+    // Optional: Sorted list of remappings, such as ':g=/dir'
+    remappings?: string[];
+    // Optional: Optimizer settings
+    optimizer?: {
+      // Disabled by default.
+      // NOTE: enabled=false still leaves some optimizations on. See comments below.
+      // WARNING: Before version 0.8.6 omitting the 'enabled' key was not equivalent to setting
+      // it to false and would actually disable all the optimizations.
+      // default: true
+      enabled?: boolean;
+      // Optimize for how many times you intend to run the code.
+      // Lower values will optimize more for initial deployment cost, higher
+      // values will optimize more for high-frequency usage.
+      // default: 200
+      runs?: number;
+      // Switch optimizer components on or off in detail.
+      // The "enabled" switch above provides two defaults which can be
+      // tweaked here. If "details" is given, "enabled" can be omitted.
+      details?: {
+        // The peephole optimizer is always on if no details are given,
+        // use details to switch it off.
+        peephole?: boolean;
+        // The inliner is always on if no details are given,
+        // use details to switch it off.
+        inliner?: boolean;
+        // The unused jumpdest remover is always on if no details are given,
+        // use details to switch it off.
+        jumpdestRemover?: boolean;
+        // Sometimes re-orders literals in commutative operations.
+        orderLiterals?: boolean;
+        // Removes duplicate code blocks
+        deduplicate?: boolean;
+        // Common subexpression elimination, this is the most complicated step but
+        // can also provide the largest gain.
+        cse?: boolean;
+        // Optimize representation of literal numbers and strings in code.
+        constantOptimizer?: boolean;
+        // The new Yul optimizer. Mostly operates on the code of ABI coder v2
+        // and inline assembly.
+        // It is activated together with the global optimizer setting
+        // and can be deactivated here.
+        // Before Solidity 0.6.0 it had to be activated through this switch.
+        yul?: boolean;
+        // Tuning options for the Yul optimizer.
+        yulDetails?: {
+          // Improve allocation of stack slots for variables, can free up stack slots early.
+          // Activated by default if the Yul optimizer is activated.
+          stackAllocation?: boolean;
+          // Select optimization steps to be applied.
+          // Optional, the optimizer will use the default sequence if omitted.
+          optimizerSteps?: string;
+        };
+      };
+    };
+    // Version of the EVM to compile for.
+    // Affects type checking and code generation. Can be homestead,
+    // tangerineWhistle, spuriousDragon, byzantium, constantinople, petersburg, istanbul or berlin
+    evmVersion?:
+      | 'homestead'
+      | 'tangerineWhistle'
+      | 'spuriousDragon'
+      | 'byzantium'
+      | 'constantinople'
+      | 'petersburg'
+      | 'istanbul'
+      | 'berlin';
+    // Optional: Change compilation pipeline to go through the Yul intermediate representation.
+    // This is false by default.
+    viaIR?: boolean;
+    // Optional: Debugging settings
+    debug?: {
+      // How to treat revert (and require) reason strings. Settings are
+      // "default", "strip", "debug" and "verboseDebug".
+      // "default" does not inject compiler-generated revert strings and keeps user-supplied ones.
+      // "strip" removes all revert strings (if possible, i.e. if literals are used) keeping side-effects
+      // "debug" injects strings for compiler-generated internal reverts, implemented for ABI encoders V1 and V2 for now.
+      // "verboseDebug" even appends further information to user-supplied revert strings (not yet implemented)
+      revertStrings?: 'default' | 'strip' | 'debug' | 'verboseDebug';
+      // Optional: How much extra debug information to include in comments in the produced EVM
+      // assembly and Yul code. Available components are:
+      // - `location`: Annotations of the form `@src <index>:<start>:<end>` indicating the
+      //    location of the corresponding element in the original Solidity file, where:
+      //     - `<index>` is the file index matching the `@use-src` annotation,
+      //     - `<start>` is the index of the first byte at that location,
+      //     - `<end>` is the index of the first byte after that location.
+      // - `snippet`: A single-line code snippet from the location indicated by `@src`.
+      //     The snippet is quoted and follows the corresponding `@src` annotation.
+      // - `*`: Wildcard value that can be used to request everything.
+      debugInfo?: Array<'location' | 'snippet' | '*'>;
+    };
+    // Metadata settings (optional)
+    metadata?: {
+      // Use only literal content and not URLs (false by default)
+      useLiteralContent?: boolean;
+      // Use the given hash method for the metadata hash that is appended to the bytecode.
+      // The metadata hash can be removed from the bytecode via option "none".
+      // The other options are "ipfs" and "bzzr1".
+      // If the option is omitted, "ipfs" is used by default.
+      bytecodeHash?: 'none' | 'ipfs' | 'bzzr1';
+    };
+    // Addresses of the libraries. If not all libraries are given here,
+    // it can result in unlinked objects whose output data is different.
+    libraries?: {
+      // The top level key is the the name of the source file where the library is used.
+      // If remappings are used, this source file should match the global path
+      // after remappings were applied.
+      // If this key is an empty string, that refers to a global level.
+      [fileName: string]: {
+        [libName: string]: string;
+      };
+    };
+    // The following can be used to select desired outputs based
+    // on file and contract names.
+    // If this field is omitted, then the compiler loads and does type checking,
+    // but will not generate any outputs apart from errors.
+    // The first level key is the file name and the second level key is the contract name.
+    // An empty contract name is used for outputs that are not tied to a contract
+    // but to the whole source file like the AST.
+    // A star as contract name refers to all contracts in the file.
+    // Similarly, a star as a file name matches all files.
+    // To select all outputs the compiler can possibly generate, use
+    // "outputSelection: { "*": { "*": [ "*" ], "": [ "*" ] } }"
+    // but note that this might slow down the compilation process needlessly.
+    //
+    // The available output types are as follows:
+    //
+    // File level (needs empty string as contract name):
+    //   ast - AST of all source files
+    //
+    // Contract level (needs the contract name or "*"):
+    //   abi - ABI
+    //   devdoc - Developer documentation (natspec)
+    //   userdoc - User documentation (natspec)
+    //   metadata - Metadata
+    //   ir - Yul intermediate representation of the code before optimization
+    //   irOptimized - Intermediate representation after optimization
+    //   storageLayout - Slots, offsets and types of the contract's state variables.
+    //   evm.assembly - New assembly format
+    //   evm.legacyAssembly - Old-style assembly format in JSON
+    //   evm.bytecode.functionDebugData - Debugging information at function level
+    //   evm.bytecode.object - Bytecode object
+    //   evm.bytecode.opcodes - Opcodes list
+    //   evm.bytecode.sourceMap - Source mapping (useful for debugging)
+    //   evm.bytecode.linkReferences - Link references (if unlinked object)
+    //   evm.bytecode.generatedSources - Sources generated by the compiler
+    //   evm.deployedBytecode* - Deployed bytecode (has all the options that evm.bytecode has)
+    //   evm.deployedBytecode.immutableReferences - Map from AST ids to bytecode ranges that reference immutables
+    //   evm.methodIdentifiers - The list of function hashes
+    //   evm.gasEstimates - Function gas estimates
+    //   ewasm.wast - Ewasm in WebAssembly S-expressions format
+    //   ewasm.wasm - Ewasm in WebAssembly binary format
+    //
+    // Note that using a using `evm`, `evm.bytecode`, `ewasm`, etc. will select every
+    // target part of that output. Additionally, `*` can be used as a wildcard to request everything.
+    //
+    outputSelection: {
+      [fileLevel: string | '*']: {
+        [contractLevel: string | '*']: string[];
+      };
+    };
+    // The modelChecker object is experimental and subject to changes.
+    modelChecker?: {
+      // Chose which contracts should be analyzed as the deployed one.
+      contracts?: {
+        [fileName: string]: string[];
+      };
+      // Choose how division and modulo operations should be encoded.
+      // When using `false` they are replaced by multiplication with slack
+      // variables. This is the default.
+      // Using `true` here is recommended if you are using the CHC engine
+      // and not using Spacer as the Horn solver (using Eldarica, for example).
+      // See the Formal Verification section for a more detailed explanation of this option.
+      divModNoSlacks?: boolean;
+      // Choose which model checker engine to use: all (default), bmc, chc, none.
+      engine?: 'all' | 'chc' | 'bmc' | 'none';
+      // Choose which types of invariants should be reported to the user: contract, reentrancy.
+      invariants?: Array<'contract' | 'reentrancy'>;
+      // Choose whether to output all unproved targets. The default is `false`.
+      showUnproved?: false;
+      // Choose which solvers should be used, if available.
+      // See the Formal Verification section for the solvers description.
+      solvers?: Array<'cvc4' | 'smtlib2' | 'z3'>;
+      // Choose which targets should be checked: constantCondition,
+      // underflow, overflow, divByZero, balance, assert, popEmptyArray, outOfBounds.
+      // If the option is not given all targets are checked by default,
+      // except underflow/overflow for Solidity >=0.8.7.
+      // See the Formal Verification section for the targets description.
+      targets?: Array<'underflow' | 'overflow' | 'divByZero' | 'balance' | 'assert' | 'popEmptyArray' | 'outOfBounds'>;
+      // Timeout for each SMT query in milliseconds.
+      // If this option is not given, the SMTChecker will use a deterministic
+      // resource limit by default.
+      // A given timeout of 0 means no resource/time restrictions for any query.
+      timeout?: number;
+    };
+  };
+}
+
+export type ABI = {
+  [key: string]: any;
+}[];
+
+export interface ICompileError {
+  // Optional: Location within the source file.
+  sourceLocation?: {
+    file: string;
+    start: number;
+    end: number;
+  };
+  // Optional: Further locations (e.g. places of conflicting declarations)
+  secondarySourceLocations?: Array<{
+    file: string;
+    start: number;
+    end: number;
+    message: string;
+  }>;
+  // Mandatory: Error type, such as "TypeError", "InternalCompilerError", "Exception", etc.
+  // See below for complete list of types.
+  type:
+    | 'JSONError'
+    | 'IOError'
+    | 'ParserError'
+    | 'DocstringParsingError'
+    | 'SyntaxError'
+    | 'DeclarationError'
+    | 'TypeError'
+    | 'UnimplementedFeatureError'
+    | 'InternalCompilerError'
+    | 'Exception'
+    | 'CompilerError'
+    | 'FatalError'
+    | 'YulException'
+    | 'Warning'
+    | 'Info';
+  // Mandatory: Component where the error originated, such as "general", "ewasm", etc.
+  component: 'general' | 'ewasm' | string;
+  // Mandatory ("error", "warning" or "info", but please note that this may be extended in the future)
+  severity: 'error' | 'warning' | 'info' | string;
+  // Optional: unique code for the cause of the error
+  errorCode: string;
+  // Mandatory
+  message: string;
+  // Optional: the message formatted with source location
+  formattedMessage?: string;
+}
+
+export interface ICompileOutput {
+  // Optional: not present if no errors/warnings/infos were encountered
+  errors?: Array<ICompileError>;
+  // This contains the file-level outputs.
+  // It can be limited/filtered by the outputSelection settings.
+  sources: {
+    [fileName: string]: {
+      // Identifier of the source (used in source maps)
+      id: number;
+      // The AST object
+      ast: any;
+    };
+  };
+  // This contains the contract-level outputs.
+  // It can be limited/filtered by the outputSelection settings.
+  contracts: {
+    [fileName: string]: {
+      // If the language used has no contract names, this field should equal to an empty string.
+      [contractName: string]: {
+        // The Ethereum Contract ABI. If empty, it is represented as an empty array.
+        // See https://docs.soliditylang.org/en/develop/abi-spec.html
+        abi: ABI;
+        // See the Metadata Output documentation (serialised JSON string)
+        metadata: string;
+        // User documentation (natspec)
+        userdoc: any;
+        // Developer documentation (natspec)
+        devdoc: any;
+        // Intermediate representation (string)
+        ir: string;
+        // See the Storage Layout documentation.
+        storageLayout: {
+          storage: any[];
+          types: object;
+        };
+        // EVM-related outputs
+        evm: {
+          // Assembly (string)
+          assembly: string;
+          // Old-style assembly (object)
+          legacyAssembly: object;
+          // Bytecode and related details.
+          bytecode: {
+            // Debugging data at the level of functions.
+            functionDebugData?: {
+              // Now follows a set of functions including compiler-internal and
+              // user-defined function. The set does not have to be complete.
+              [k: string]: {
+                // Internal name of the function
+                entryPoint?: number; // Byte offset into the bytecode where the function starts (optional)
+                id?: number; // AST ID of the function definition or null for compiler-internal functions (optional)
+                parameterSlots?: number; // Number of EVM stack slots for the function parameters (optional)
+                returnSlots?: number; // Number of EVM stack slots for the return values (optional)
+              };
+            };
+            // The bytecode as a hex string.
+            object: string;
+            // Opcodes list (string)
+            opcodes: string;
+            // The source mapping as a string. See the source mapping definition.
+            sourceMap: string;
+            // Array of sources generated by the compiler. Currently only
+            // contains a single Yul file.
+            generatedSources: Array<{
+              // Yul AST
+              ast: any;
+              // Source file in its text form (may contain comments)
+              contents: string;
+              // Source file ID, used for source references, same "namespace" as the Solidity source files
+              id: number;
+              language: string;
+              name: string;
+            }>;
+            // If given, this is an unlinked object.
+            linkReferences?: {
+              [fileName: string]: {
+                // Byte offsets into the bytecode.
+                // Linking replaces the 20 bytes located there.
+                [libName: string]: Array<{ start: number; length: number }>;
+              };
+            };
+          };
+          deployedBytecode: {
+            [fileName: string]: {
+              // Byte offsets into the bytecode.
+              // Linking replaces the 20 bytes located there.
+              [libName: string]: Array<{ start: number; length: number }>;
+            };
+          };
+          // The list of function hashes
+          methodIdentifiers: {
+            // 'delegate(address)': '5c19a95c';
+            [methodSignature: string]: string;
+          };
+          // Function gas estimates
+          gasEstimates: {
+            creation: {
+              codeDepositCost: string;
+              executionCost: string;
+              totalCost: string;
+            };
+            external: {
+              [methodSignature: string]: string;
+            };
+            internal: {
+              [methodSignature: string]: string;
+            };
+          };
+        };
+      };
+    };
+  };
+}

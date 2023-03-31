@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
-import type { LanguageClientOptions } from 'vscode-languageclient';
-import { LanguageClient } from 'vscode-languageclient/browser';
+import { LanguageClient, LanguageClientOptions, ProgressType } from 'vscode-languageclient/browser';
 
 // This method is called when your extension is activated
 export function createClient(context: vscode.ExtensionContext) {
@@ -25,7 +24,9 @@ export function createClient(context: vscode.ExtensionContext) {
   const worker = new Worker(serverMain.toString(true));
   const client = new LanguageClient('solidity', 'Solidity Language Server', clientOptions, worker);
 
-  // client.onNotification('remax/resolve-file', () => {});
+  client.onNotification('remax/compile', (input: string) => {
+    console.log('remax/compile', input);
+  });
 
   return client;
 }

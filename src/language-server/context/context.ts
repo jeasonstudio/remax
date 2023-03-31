@@ -1,20 +1,18 @@
 import { URI } from 'vscode-uri';
 import path from 'path-browserify';
-import { Connection, TextDocuments } from 'vscode-languageserver/browser';
+import { Connection, TextDocuments, DiagnosticSeverity } from 'vscode-languageserver/browser';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { RemaxFileSystem, NodeDirent } from '../../file-system';
 import { FILE_SYSTEM_SCHEME } from '../../constants';
-import { SolidityDocument } from './document';
 import { Logger } from './logger';
-import { astTypes } from '../utils';
+import { astTypes, compile, compiler, ICompileInput, ICompileOutput } from '../utils';
+import { SolidityTextDocument } from '../text-document';
 
 export class Context {
   // Workspace name, such as `playground`
   public workspace!: string;
   // Workspace uri, such as `remaxfs:/playground`
   public workspaceUri!: string;
-  // mapping(uri => solidityDocument)
-  public documentMap: Map<string, SolidityDocument> = new Map();
   // RemaxFS
   public remaxfs!: RemaxFileSystem;
   // Promise for remaxfs
@@ -26,7 +24,7 @@ export class Context {
     // VSCode Language Server Connection
     public readonly connection: Connection,
     // VSCode Text Documents
-    public readonly documents: TextDocuments<TextDocument>,
+    public readonly documents: TextDocuments<SolidityTextDocument>,
   ) {
     this.remaxfsPromise = RemaxFileSystem.init().then((remaxfs) => {
       this.remaxfs = remaxfs;
@@ -35,48 +33,70 @@ export class Context {
     this.console = new Logger(connection);
   }
 
-  // Update/Create solidity document
-  public async updateDocument(uri: string, contentString?: string) {
-    await this.remaxfsPromise;
-    const filePath = this.uri2path(uri);
-    const content = contentString || (await this.remaxfs.readFile(filePath)).toString('utf8');
-    if (this.documentMap.has(uri)) {
-      const document = this.documentMap.get(uri);
-      document!.update(content);
-    } else {
-      const document = new SolidityDocument(uri, content);
-      this.documentMap.set(uri, document);
+  public solidityResolver(uri: string): { contents: string } {
+    if (!uri.startsWith(FILE_SYSTEM_SCHEME)) {
+      return { contents: '' };
     }
+    const document = this.documents.get(uri);
+    if (!document) return { contents: '' };
+    const contents = document.getText();
+    return contents ? { contents } : { contents: '' };
   }
 
-  // Delete solidity document
-  public async deleteDocument(uri: string) {
-    if (this.documentMap.has(uri)) {
-      this.documentMap.delete(uri);
-    }
-  }
+  public lintDocument(uri: string) {
+    const document = this.documents.get(uri);
+    if (!document) return;
+    try {
+      const settings: ICompileInput['settings'] = {
+        outputSelection: {
+          '*': { '*': [] },
+        },
+      };
 
-  // Sync solidity documnets from filesystem to ctx
-  public async syncDocuments(folderPath?: string) {
-    await this.remaxfsPromise;
-    const fp = folderPath || this.uri2path(this.workspaceUri);
-    const formatEntry = async (dir: string, entry: NodeDirent) => {
-      const entryPath = path.join(dir, entry.name);
-      if (entry.isDirectory()) {
-        // If is directory, recurse
-        const entries = await this.remaxfs.readdir(entryPath, { withFileTypes: true });
-        await Promise.all(entries.map((e) => formatEntry(entryPath, e)));
-      } else if (entry.isFile() && entry.name.endsWith('.sol')) {
-        // If is file, update/create document
-        const uri = this.path2uri(entryPath);
-        await this.updateDocument(uri);
-      }
-      // Else ignore
-    };
-    const rootEntries = await this.remaxfs.readdir(fp, { withFileTypes: true });
-    await Promise.all(rootEntries.map((e) => formatEntry(fp, e)));
+      const result = compile(
+        {
+          language: 'Solidity',
+          sources: { [uri]: { content: document.getText() } },
+          settings,
+        },
+        {
+          import: this.solidityResolver.bind(this),
+        },
+      );
 
-    console.log('sync documents:', this.documentMap);
+      const currentErrors = (result?.errors || []).filter(({ sourceLocation }) => sourceLocation?.file === uri);
+      // this.compileErrors = result.errors;
+      this.connection.sendDiagnostics({
+        uri,
+        diagnostics: currentErrors.map((error) => {
+          let severity: DiagnosticSeverity = DiagnosticSeverity.Error;
+          switch (error.severity) {
+            case 'warning':
+              severity = DiagnosticSeverity.Warning;
+              break;
+            case 'info':
+              severity = DiagnosticSeverity.Information;
+              break;
+            case 'error':
+            default:
+              severity = DiagnosticSeverity.Error;
+              break;
+          }
+          const range = error.sourceLocation
+            ? document.offsetToPositionRange(error.sourceLocation.start, error.sourceLocation.end)
+            : {
+                start: { line: 0, character: 0 },
+                end: { line: Number.MAX_SAFE_INTEGER, character: Number.MAX_SAFE_INTEGER },
+              };
+          return {
+            message: `${error.type}: ${error.message}`,
+            code: error.errorCode,
+            severity,
+            range,
+          };
+        }),
+      });
+    } catch (error) {}
   }
 
   // Convert uri to path
@@ -107,7 +127,7 @@ export class Context {
     const result: string[] = [];
 
     const doGetImports = (_uri: string) => {
-      const document = this.documentMap.get(uri);
+      const document = this.documents.get(uri);
       if (!document) {
         return;
       }
@@ -124,8 +144,11 @@ export class Context {
   }
 
   // Get the ancestor contracts
-  public getAncestorsContracts = (uri: string, name: string): astTypes.ContractDefinition[] => {
-    const document = this.documentMap.get(uri);
+  public getAncestorsContracts = (uri: string, name?: string): astTypes.ContractDefinition[] => {
+    if (!name) {
+      return [];
+    }
+    const document = this.documents.get(uri);
     const _contract = document?.contracts.find((c) => c.name === name);
     if (!uri || !document || !_contract) {
       return [];
@@ -133,7 +156,7 @@ export class Context {
     const importedSolidityFiles = this.getImportsList(document.uri);
     const importedContractMap: Record<string, astTypes.ContractDefinition> = {};
     importedSolidityFiles.forEach((fileUri) => {
-      const doc = this.documentMap.get(fileUri);
+      const doc = this.documents.get(fileUri);
       if (doc) {
         doc.contracts.forEach((contract) => {
           importedContractMap[contract.name] = contract;
