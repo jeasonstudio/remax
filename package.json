@@ -1,70 +1,82 @@
 {
-  "name": "remax",
+  "name": "remax-ide",
+  "version": "0.0.0",
   "private": true,
-  "version": "1.0.0",
-  "author": "jeason.eth",
-  "license": "MIT",
-  "scripts": {
-    "dev:serve": "zx ./scripts/serve.mjs",
-    "dev:workbench": "webpack --config ./scripts/workbench.webpack.config.js --watch",
-    "dev:extension": "webpack --config ./scripts/extension.webpack.config.js --watch",
-    "dev:language-server": "webpack --config ./scripts/extension-language-server.webpack.config.js --watch",
-    "build": "npm run build:workbench && npm run build:extension && npm run build:language-server",
-    "build:workbench": "webpack build --config ./scripts/workbench.webpack.config.js",
-    "build:extension": "webpack build --config ./scripts/extension.webpack.config.js",
-    "build:language-server": "webpack build --config ./scripts/extension-language-server.webpack.config.js",
-    "postinstall": "npm run vscodeweb",
-    "vscodeweb": "zx ./scripts/vscodeweb.mjs"
-  },
-  "vscodeweb": {
-    "version": "1.76.2",
-    "commit": "ee2b180d582a7f601fa6ecfdad8d9fd269ab1884"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/jeasonstudio/remax.git"
-  },
-  "keywords": [
-    "vscode",
-    "webide",
-    "webworker",
-    "solidity",
-    "language server",
-    "ethereum"
+  "workspaces": [
+    "packages/*"
   ],
+  "files": [],
+  "scripts": {
+    "dev": "pnpm run --parallel --if-present --recursive --filter \"@remax-ide/*\" dev",
+    "build": "pnpm run --parallel --if-present --recursive build",
+    "postinstall": "pnpm run husky:prepare",
+    "changeset": "changeset",
+    "release": "alias npm=tnpm && changeset version && changeset publish",
+    "release:alpha": "alias npm=tnpm && changeset version --snapshot alpha && changeset publish --tag alpha",
+    "release:beta": "alias npm=tnpm && changeset version --snapshot beta && changeset publish --tag beta",
+    "ci": "npm run lint:eslint && npm run lint:prettier && npm run test:ci",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch",
+    "test:ci": "jest --coverage --maxWorkers=4 --forceExit",
+    "lint": "pnpm run \"/^lint:.+/\"",
+    "lint:eslint": "eslint --quiet --fix --ext .ts,.js .",
+    "lint:prettier": "prettier --loglevel warn --write '**/*.{ts,tsx,js,jsx,json,md}'",
+    "clean": "pnpm run \"/^clean:.+/\"",
+    "clean:module": "rimraf --glob ./node_modules ./packages/*/node_modules",
+    "clean:dist": "rimraf --glob ./packages/*/dist ./packages/*/.dumi",
+    "clean:test": "rimraf --glob ./coverage ./packages/*/coverage",
+    "husky:prepare": "husky install",
+    "husky:pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "prettier --loglevel warn --write"
+    ]
+  },
+  "resolutions": {
+    "@codeblitzjs/ide-code-api": "1.0.3",
+    "@codeblitzjs/ide-code-service": "1.0.3",
+    "@codeblitzjs/ide-common": "1.0.3",
+    "@codeblitzjs/ide-core": "1.0.3",
+    "@codeblitzjs/ide-i18n": "1.0.3",
+    "@codeblitzjs/ide-sumi-core": "1.0.3",
+    "@opensumi/ide-core-browser": "2.23.0",
+    "@opensumi/ide-core-common": "2.23.0",
+    "@opensumi/ide-debug": "2.23.0",
+    "@opensumi/ide-extension": "2.23.0",
+    "@opensumi/ide-file-scheme": "2.23.0",
+    "@opensumi/ide-file-service": "2.23.0",
+    "@opensumi/ide-logs": "2.23.0",
+    "@opensumi/di": "1.8.1"
+  },
   "devDependencies": {
-    "@types/path-browserify": "^1.0.0",
-    "@types/prettier": "^2.7.2",
-    "@types/requirejs": "^2.1.34",
-    "@types/vscode": "^1.76.0",
-    "@types/webpack-env": "^1.18.0",
-    "@typescript-eslint/eslint-plugin": "^5.53.0",
-    "@typescript-eslint/parser": "^5.53.0",
-    "copy-webpack-plugin": "^11.0.0",
-    "decompress": "^4.2.1",
-    "decompress-targz": "^4.1.1",
-    "eslint": "^8.34.0",
-    "html-webpack-plugin": "^5.5.0",
-    "http-server": "^14.1.1",
-    "nodejs-file-downloader": "^4.10.6",
-    "serve": "^14.2.0",
-    "serve-handler": "^6.1.5",
-    "ts-loader": "^9.4.2",
-    "typescript": "^4.9.5",
-    "webpack": "^5.75.0",
-    "webpack-cli": "^5.0.1",
-    "webpack-dev-server": "^4.12.0",
-    "zx": "^7.2.0"
+    "@changesets/changelog-git": "^0.1.14",
+    "@changesets/cli": "^2.26.1",
+    "@codeblitzjs/ide-cli": "1.0.3",
+    "@swc/core": "^1.3.61",
+    "@swc/jest": "^0.2.26",
+    "@types/assert": "^1.5.6",
+    "@types/jest": "^29.5.1",
+    "@types/node": "^16.6.1",
+    "@umijs/fabric": "^2.14.1",
+    "eslint": "^7.32.0",
+    "father": "^4.1.9",
+    "husky": "^8.0.3",
+    "jest": "^29.5.0",
+    "jest-junit": "^16.0.0",
+    "lint-staged": "^13.2.2",
+    "prettier": "^2.8.8",
+    "rimraf": "^5.0.0",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.0.4"
+  },
+  "engines": {
+    "node": ">=16"
   },
   "dependencies": {
-    "@solidity-parser/parser": "^0.16.0",
-    "path-browserify": "^1.0.1",
-    "prettier": "^2.8.5",
-    "prettier-plugin-solidity": "^1.1.3",
-    "process": "^0.11.10",
-    "vscode-languageclient": "^8.1.0",
-    "vscode-languageserver": "^8.1.0",
-    "vscode-languageserver-textdocument": "^1.0.8",
-    "vscode-uri": "^3.0.7"
-  }
+    "assert": "^2.0.0",
+    "solc": "^0.8.22"
+  },
+  "repository": "git@github.com:jeasonstudio/remax.git"
 }

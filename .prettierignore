@@ -1,0 +1,10 @@
+node_modules
+coverage
+dist
+lib
+es
+out
+
+.umi-production
+.umi-test
+.umi
