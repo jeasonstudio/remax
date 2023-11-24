@@ -1,0 +1,119 @@
+{
+  "name": "@remax-ide/extension-debug-adaptar",
+  "displayName": "remax-ide",
+  "description": "",
+  "publisher": "remaxide",
+  "version": "0.0.0-alpha-20231026060124",
+  "engines": {
+    "vscode": "^1.36.0",
+    "opensumi": "^1.8.30"
+  },
+  "categories": [
+    "Other"
+  ],
+  "files": [
+    "dist",
+    "metadata.js",
+    "CHANGELOG.md",
+    "README.md",
+    "package.*"
+  ],
+  "activationEvents": [
+    "onLanguage:solidity",
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "HelloOpenSumi",
+        "title": "%test-extension-hello-command%",
+        "shortTitle": "%test-extension-hello-command%"
+      },
+      {
+        "command": "remax.extension-remax.switch-solidity-version",
+        "title": "%remax.extension-remax.switch-solidity-version%",
+        "shortTitle": "%remax.extension-remax.switch-solidity-version%"
+      },
+      {
+        "command": "remax.extension-remax.compile",
+        "title": "%remax.extension-remax.compile%",
+        "shortTitle": "%remax.extension-remax.compile%"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "%remax.extension-remax.title%",
+      "properties": {
+        "remax.printWidth": {
+          "type": "integer",
+          "default": 80,
+          "markdownDescription": "%remax.extension-remax.printWidth%",
+          "scope": "resource"
+        },
+        "remax.tabWidth": {
+          "type": "integer",
+          "default": 4,
+          "markdownDescription": "%remax.extension-remax.tabWidth%",
+          "scope": "resource"
+        },
+        "remax.singleQuote": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "%remax.extension-remax.singleQuote%",
+          "scope": "resource"
+        },
+        "remax.useTabs": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "%remax.extension-remax.useTabs%",
+          "scope": "resource"
+        },
+        "remax.bracketSpacing": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "%remax.extension-remax.bracketSpacing%",
+          "scope": "resource"
+        }
+      }
+    }
+  },
+  "browser": "./dist/extension.js",
+  "kaitianContributes": {},
+  "scripts": {
+    "prepublishOnly": "npm run build",
+    "dev": "webpack --config webpack.config.js --watch",
+    "build": "webpack --config webpack.config.js"
+  },
+  "devDependencies": {
+    "@codeblitzjs/ide-cli": "1.0.3",
+    "@opensumi/sumi": "latest",
+    "@types/node": "^10.12.21",
+    "@types/react": "^16.9.9",
+    "@types/vscode": "^1.39.0",
+    "cross-env": "^7.0.3",
+    "https-browserify": "^1.0.0",
+    "react": "^16.13.0",
+    "react-dom": "^16.13.0",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "ts-loader": "^9.4.2",
+    "typescript": "^5.0.4",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1"
+  },
+  "dependencies": {
+    "@remax-ide/common": "workspace:*",
+    "@opensumi/ide-components": "2.23.0",
+    "@remax-ide/solidity-parser": "^0.16.0",
+    "debug": "^4.3.4",
+    "prettier": "^2.8.8",
+    "prettier-plugin-solidity": "^1.1.3",
+    "solc": "^0.8.22",
+    "vscode-languageclient": "^8.1.0",
+    "vscode-languageserver": "^8.1.0",
+    "vscode-languageserver-protocol": "3.16.0",
+    "vscode-languageserver-textdocument": "^1.0.8",
+    "vscode-uri": "^3.0.7"
+  }
+}

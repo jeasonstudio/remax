@@ -1,0 +1,11 @@
+{
+  "test-extension-hello-command": "Test i18n for command",
+  "remax.extension-remax.bracketSpacing": "Controls the printing of spaces inside object literals.",
+  "remax.extension-remax.printWidth": "Fit code within this line limit.",
+  "remax.extension-remax.singleQuote": "Use single instead of double quotes.",
+  "remax.extension-remax.tabWidth": "Number of spaces it should use per tab.",
+  "remax.extension-remax.title": "Solidity Formatter",
+  "remax.extension-remax.useTabs": "Indent lines with tabs.",
+  "remax.extension-remax.switch-solidity-version": "Switch Solidity Compiler Version",
+  "remax.extension-remax.compile": "Compile current file"
+}

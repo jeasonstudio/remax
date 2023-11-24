@@ -1,0 +1,12 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@2.3.0/schema.json",
+  "changelog": "@changesets/changelog-git",
+  "commit": false,
+  "useCalculatedVersion": true,
+  "fixed": [["@remax-ide/*"]],
+  "baseBranch": "master",
+  "updateInternalDependencies": "patch",
+  "linked": [],
+  "access": "public",
+  "ignore": []
+}

@@ -1,0 +1,34 @@
+{
+  "name": "@remax-ide/website",
+  "private": true,
+  "version": "0.0.0-alpha.1",
+  "files": [
+    "dist",
+    "src",
+    "package.json"
+  ],
+  "scripts": {
+    "dev": "umi dev",
+    "build": "umi build",
+    "postinstall": "umi setup",
+    "setup": "umi setup"
+  },
+  "dependencies": {
+    "@remax-ide/static-resources": "latest",
+    "@remax-ide/common": "workspace:*",
+    "@remax-ide/extension-debug-adaptar": "workspace:*",
+    "@remax-ide/extension-formatter": "workspace:*",
+    "@remax-ide/extension-language-compiler": "workspace:*",
+    "@remax-ide/extension-language-server": "workspace:*",
+    "@remax-ide/core": "workspace:*",
+    "react": "17",
+    "react-dom": "17",
+    "umi": "^4.0.87"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.33",
+    "@types/react-dom": "^18.0.11",
+    "copy-webpack-plugin": "^11.0.0",
+    "typescript": "^5.0.3"
+  }
+}
