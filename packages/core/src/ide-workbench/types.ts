@@ -31,6 +31,8 @@ export interface IDEWorkbenchProps {
    */
   workspace?: RuntimeConfig['workspace'];
 
+  workspaceDir?: string;
+
   /**
    * app config
    * fallback props

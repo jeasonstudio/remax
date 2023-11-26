@@ -80,7 +80,7 @@ export const IDEWorkbench = React.forwardRef<IDEWorkbenchRef, IDEWorkbenchProps>
           await props.onLoad?.(_app);
         }}
         appConfig={{
-          workspaceDir: 'playground/project1',
+          workspaceDir: props.workspaceDir || 'playground/project',
           layoutConfig,
           defaultPreferences: {
             'general.theme': 'github-light',
@@ -113,7 +113,7 @@ export const IDEWorkbench = React.forwardRef<IDEWorkbenchRef, IDEWorkbenchProps>
         runtimeConfig={{
           WelcomePage: IDEWelcome,
           EditorEmpty: IDEEmpty,
-          workspace: dbWorkspace,
+          workspace: props.workspace || dbWorkspace,
           scmFileTree: false,
           scenario: 'remax-ide',
           startupEditor: 'welcomePage',

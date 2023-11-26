@@ -3,7 +3,7 @@
   "displayName": "remax-ide",
   "description": "",
   "publisher": "remaxide",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "engines": {
     "vscode": "^1.36.0",
     "opensumi": "^1.8.30"
