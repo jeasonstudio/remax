@@ -3,7 +3,7 @@
   "displayName": "remax-ide",
   "description": "",
   "publisher": "remaxide",
-  "version": "0.0.0-alpha-20231026060124",
+  "version": "0.0.1",
   "engines": {
     "vscode": "^1.36.0",
     "opensumi": "^1.8.30"
@@ -12,7 +12,7 @@
     "Other"
   ],
   "files": [
-    "out",
+    "dist",
     "metadata.js",
     "CHANGELOG.md",
     "README.md",
@@ -22,63 +22,12 @@
     "onLanguage:solidity",
     "onStartupFinished"
   ],
-  "main": "./out/extension.js",
+  "main": "./dist/extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "HelloOpenSumi",
-        "title": "%test-extension-hello-command%",
-        "shortTitle": "%test-extension-hello-command%"
-      },
-      {
-        "command": "remax.extension-remax.switch-solidity-version",
-        "title": "%remax.extension-remax.switch-solidity-version%",
-        "shortTitle": "%remax.extension-remax.switch-solidity-version%"
-      },
-      {
-        "command": "remax.extension-remax.compile",
-        "title": "%remax.extension-remax.compile%",
-        "shortTitle": "%remax.extension-remax.compile%"
-      }
-    ],
-    "configuration": {
-      "type": "object",
-      "title": "%remax.extension-remax.title%",
-      "properties": {
-        "remax.printWidth": {
-          "type": "integer",
-          "default": 80,
-          "markdownDescription": "%remax.extension-remax.printWidth%",
-          "scope": "resource"
-        },
-        "remax.tabWidth": {
-          "type": "integer",
-          "default": 4,
-          "markdownDescription": "%remax.extension-remax.tabWidth%",
-          "scope": "resource"
-        },
-        "remax.singleQuote": {
-          "type": "boolean",
-          "default": false,
-          "markdownDescription": "%remax.extension-remax.singleQuote%",
-          "scope": "resource"
-        },
-        "remax.useTabs": {
-          "type": "boolean",
-          "default": false,
-          "markdownDescription": "%remax.extension-remax.useTabs%",
-          "scope": "resource"
-        },
-        "remax.bracketSpacing": {
-          "type": "boolean",
-          "default": false,
-          "markdownDescription": "%remax.extension-remax.bracketSpacing%",
-          "scope": "resource"
-        }
-      }
-    }
+    "commands": [],
+    "configuration": {}
   },
-  "browser": "./out/extension.js",
+  "browser": "./dist/extension.js",
   "kaitianContributes": {},
   "scripts": {
     "prepublishOnly": "npm run build",

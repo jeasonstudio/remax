@@ -1,6 +1,7 @@
 import { IAppConfig, IAppInstance } from '@codeblitzjs/ide-core';
 import { RuntimeConfig } from '@codeblitzjs/ide-sumi-core';
 import { ModuleConstructor } from '@opensumi/ide-core-browser';
+import { ExtensionIdentity } from '@remax-ide/common';
 
 export type IDEWorkbenchRef = IAppInstance | undefined;
 
@@ -37,4 +38,5 @@ export interface IDEWorkbenchProps {
   appConfig?: Partial<IAppConfig>;
 
   modules?: ModuleConstructor[];
+  extensions?: ExtensionIdentity[];
 }

@@ -1,6 +1,6 @@
 {
   "name": "@remax-ide/core",
-  "version": "0.0.0-alpha-20231026060124",
+  "version": "0.0.1",
   "exports": {
     "import": "./dist/esm/index.js",
     "require": "./dist/lib/index.js"

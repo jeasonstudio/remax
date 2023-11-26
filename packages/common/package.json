@@ -1,10 +1,28 @@
 {
   "name": "@remax-ide/common",
-  "version": "0.0.0-alpha-20231026060124",
+  "version": "0.0.1",
   "main": "./dist/esm/index.js",
   "exports": {
-    "import": "./dist/esm/index.js",
-    "require": "./dist/lib/index.js"
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/lib/index.js",
+      "types": "./dist/types/index.d.ts"
+    },
+    "./text-documents": {
+      "import": "./dist/esm/text-documents.js",
+      "require": "./dist/lib/text-documents.js",
+      "types": "./dist/types/text-documents.d.ts"
+    },
+    "./debounce": {
+      "import": "./dist/esm/debounce.js",
+      "require": "./dist/lib/debounce.js",
+      "types": "./dist/types/debounce.d.ts"
+    },
+    "./file-watcher": {
+      "import": "./dist/esm/file-watcher/index.js",
+      "require": "./dist/lib/file-watcher/index.js",
+      "types": "./dist/types/file-watcher/index.d.ts"
+    }
   },
   "files": [
     "dist",
@@ -20,7 +38,12 @@
   "dependencies": {
     "debug": "^4.3.4",
     "@opensumi/ide-core-common": "2.23.0",
-    "@codeblitzjs/ide-sumi-core": "1.0.3"
+    "@codeblitzjs/ide-sumi-core": "1.0.3",
+    "vscode-languageclient": "^8.1.0",
+    "vscode-languageserver": "^8.1.0",
+    "vscode-languageserver-protocol": "3.16.0",
+    "vscode-languageserver-textdocument": "^1.0.8",
+    "vscode-uri": "^3.0.7"
   },
   "devDependencies": {
     "@types/debug": "^4.1.8",

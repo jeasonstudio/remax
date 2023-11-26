@@ -17,8 +17,8 @@ export class RemaxExtensionFsProviderContribution
 {
   private baseUri = Uri.from({
     scheme: Schemes.https,
-    // path: 'cdn.jsdelivr.net/npm/@remax-ide/marketplace/extensions',
-    path: 'unpkg.com/@remax-ide/marketplace@latest/extensions',
+    path: 'cdn.jsdelivr.net/npm/@remax-ide/marketplace/extensions',
+    // path: 'unpkg.com/@remax-ide/marketplace@latest/extensions',
   });
 
   public registerStaticResolver(service: StaticResourceService): void {
@@ -33,5 +33,13 @@ export class RemaxExtensionFsProviderContribution
 
   public registerProvider(registry: IFileServiceClient) {
     registry.registerProvider(REMAX_EXTENSION_SCHEME, new HttpFileSystemProvider(this.baseUri));
+    (<any>registry).fsProviders.set(
+      Schemes.http,
+      new HttpFileSystemProvider(Uri.from({ scheme: Schemes.http })),
+    );
+    (<any>registry).fsProviders.set(
+      Schemes.https,
+      new HttpFileSystemProvider(Uri.from({ scheme: Schemes.https })),
+    );
   }
 }

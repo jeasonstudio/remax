@@ -109,6 +109,21 @@ importers:
       react-dom:
         specifier: '>=16.9.0'
         version: 16.13.0(react@16.13.0)
+      vscode-languageclient:
+        specifier: ^8.1.0
+        version: 8.1.0
+      vscode-languageserver:
+        specifier: ^8.1.0
+        version: 8.1.0
+      vscode-languageserver-protocol:
+        specifier: 3.16.0
+        version: 3.16.0
+      vscode-languageserver-textdocument:
+        specifier: ^1.0.8
+        version: 1.0.8
+      vscode-uri:
+        specifier: ^3.0.7
+        version: 3.0.7
     devDependencies:
       '@types/debug':
         specifier: ^4.1.8

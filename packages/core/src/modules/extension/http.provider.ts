@@ -36,8 +36,9 @@ export class HttpFileSystemProvider implements FileSystemProvider {
   });
 
   readFile = async (uri: Uri, _encoding?: string | undefined): Promise<Uint8Array> => {
-    const requestUri = UriUtils.joinPath(this.baseUri, uri.path);
-    const response = await fetch(requestUri.toString(true), {
+    // const requestUri = UriUtils.joinPath(this.baseUri, uri.path);
+    const requestUrl = uri.toString(true);
+    const response = await fetch(requestUrl, {
       headers: { 'Accept-Encoding': 'gzip, deflate' },
     });
     return new Uint8Array(await response.arrayBuffer());

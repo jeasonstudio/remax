@@ -1,11 +1,8 @@
 {
-  "test-extension-hello-command": "测试一下命令国际化",
   "remax.extension-remax.bracketSpacing": "在对象字面量的花括号内侧使用空格作为间隔。",
   "remax.extension-remax.printWidth": "每行代码的长度限制。",
   "remax.extension-remax.singleQuote": "使用单引号而不是双引号。",
   "remax.extension-remax.tabWidth": "指定一个制表符等于的空格数。",
   "remax.extension-remax.title": "Solidity Formatter",
-  "remax.extension-remax.useTabs": "使用制表符缩进，而不是空格缩进。",
-  "remax.extension-remax.switch-solidity-version": "切换 Solidity 编译器版本",
-  "remax.extension-remax.compile": "编译当前文件"
+  "remax.extension-remax.useTabs": "使用制表符缩进，而不是空格缩进。"
 }

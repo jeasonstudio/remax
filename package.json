@@ -26,8 +26,8 @@
     "clean:module": "rimraf --glob ./node_modules ./packages/*/node_modules",
     "clean:dist": "rimraf --glob ./packages/*/dist ./packages/*/.dumi",
     "clean:test": "rimraf --glob ./coverage ./packages/*/coverage",
-    "husky:prepare": "husky install",
-    "husky:pre-commit": "lint-staged"
+    "husky:pre-commit": "lint-staged",
+    "husky:prepare": "husky install"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

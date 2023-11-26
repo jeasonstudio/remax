@@ -1,14 +1,12 @@
 import { Injectable, Autowired } from '@opensumi/di';
-import { IExtensionBasicMetadata, IExtensionIdentity } from '@codeblitzjs/ide-common';
 import {
   IExtensionNodeClientService,
-  ExtensionNodeServiceServerPath,
   ICreateProcessOptions,
   IExtensionMetaData,
   IExtraMetaData,
 } from '@opensumi/ide-extension';
 import { Uri, UriUtils } from '@opensumi/ide-core-browser';
-import { REMAX_EXTENSION_SCHEME } from '@remax-ide/common';
+import { REMAX_EXTENSION_SCHEME, RemaxConfig } from '@remax-ide/common';
 import { IFileServiceClient } from '@opensumi/ide-file-service';
 
 const baseUri = Uri.from({ scheme: REMAX_EXTENSION_SCHEME, path: '/' });
@@ -93,13 +91,19 @@ const manifest = [
     name: 'github-vscode-theme',
     version: '6.3.4',
   },
-];
+].map((identity) => ({
+  ...identity,
+  uri: UriUtils.joinPath(baseUri, identity.publisher, identity.name, identity.version, 'extension'),
+}));
 // const endpointUri = Uri.parse('https://cdn.jsdelivr.net/npm/@remax-ide/marketplace/extensions');
 
 @Injectable()
 export class RemaxExtensionClientService implements IExtensionNodeClientService {
   @Autowired(IFileServiceClient)
   protected readonly fileServiceClient: IFileServiceClient;
+
+  @Autowired(RemaxConfig)
+  protected readonly remaxConfig: RemaxConfig;
 
   private getContentByUri = async (uri: Uri) => {
     const { content } = await this.fileServiceClient.readFile(uri.toString(true));
@@ -121,32 +125,44 @@ export class RemaxExtensionClientService implements IExtensionNodeClientService 
     localization: string,
     extraMetadata: IExtraMetaData,
   ): Promise<IExtensionMetaData[]> {
+    const extensions = this.remaxConfig.extensions || [];
+
     const result = await Promise.all<IExtensionMetaData>(
-      manifest.map(async (identity) => {
-        const extensionUri = UriUtils.joinPath(
-          baseUri,
-          identity.publisher,
-          identity.name,
-          identity.version,
-          'extension',
-        );
-        const extensionId = `${identity.publisher}.${identity.name}`;
-        const [packageJSON, packageNLSJSON = {}, zhNLSJSON = packageNLSJSON] = await Promise.all([
-          this.getJsonByUri(UriUtils.joinPath(extensionUri, 'package.json')),
-          this.getJsonByUri(UriUtils.joinPath(extensionUri, 'package.nls.json')),
-          this.getJsonByUri(UriUtils.joinPath(extensionUri, `package.nls.zh-CN.json`)),
+      extensions.map(async (identity) => {
+        const extensionUri = Uri.parse(identity.uri);
+        const packageJsonUri = UriUtils.joinPath(extensionUri, 'package.json');
+        let packageNlsUri: Uri | null = null;
+
+        if (!identity.nlsFilename && !identity.zhCnNlsFilename && !identity.enUsNlsFilename) {
+          // ignore
+        } else if (localization.toLowerCase() === 'zh-cn') {
+          packageNlsUri = UriUtils.joinPath(
+            extensionUri,
+            identity.zhCnNlsFilename || identity.nlsFilename || '',
+          );
+        } else {
+          packageNlsUri = UriUtils.joinPath(
+            extensionUri,
+            identity.enUsNlsFilename || identity.nlsFilename || '',
+          );
+        }
+
+        const [packageJson, packageNls = {}] = await Promise.all([
+          this.getJsonByUri(packageJsonUri),
+          packageNlsUri ? this.getJsonByUri(packageNlsUri) : null,
         ]);
 
+        const extensionId = `${packageJson.publisher}.${packageJson.name}`;
         const metadata: IExtensionMetaData = {
           id: extensionId,
           extensionId,
-          packageJSON,
+          packageJSON: packageJson,
           uri: extensionUri,
-          defaultPkgNlsJSON: packageNLSJSON,
-          packageNlsJSON: zhNLSJSON,
+          defaultPkgNlsJSON: packageNls,
+          packageNlsJSON: packageNls,
           extraMetadata,
-          path: extensionUri.fsPath,
-          realPath: extensionUri.fsPath,
+          path: extensionUri.toString(true),
+          realPath: extensionUri.toString(true),
           extendConfig: {},
           isBuiltin: true,
           isDevelopment: false,
@@ -159,64 +175,11 @@ export class RemaxExtensionClientService implements IExtensionNodeClientService 
     return result;
   }
   async getExtension(
-    extensionPath: string,
-    localization: string,
-    extraMetaData?: IExtraMetaData | undefined,
+    _extensionPath: string,
+    _localization: string,
+    _extraMetaData?: IExtraMetaData | undefined,
   ): Promise<IExtensionMetaData | undefined> {
     throw new Error('not impl');
-    return;
-    // const extensionPath =
-    //   ext.mode === 'local' && ext.uri
-    //     ? ext.uri
-    //     : getExtensionPath(ext.extension, ext.mode, OSSPath);
-    // const extensionUri = Uri.parse(extensionPath);
-
-    // let pkgNlsJSON: { [key: string]: string } | undefined;
-    // if (localization.toLowerCase() === 'zh-cn') {
-    //   pkgNlsJSON = ext.pkgNlsJSON['zh-CN'];
-    // } else if (localization.toLowerCase() === 'en-us') {
-    //   pkgNlsJSON = ext.pkgNlsJSON['en-US'];
-    // } else {
-    //   // 其它语言动态获取，估计基本用不到
-    //   for (const { languageId, filename } of ext.nlsList) {
-    //     const reg = new RegExp(
-    //       `^${localization}|${localization.toLowerCase()}|${localization.split('-')[0]}$`,
-    //     );
-    //     if (reg.test(languageId)) {
-    //       try {
-    //         const res = await fetch(
-    //           extensionUri.with({ scheme: 'https' }).toString() + '/' + filename,
-    //         );
-    //         if (res.status >= 200 && res.status < 300) {
-    //           pkgNlsJSON = await res.json();
-    //         }
-    //       } catch (err) {}
-    //       break;
-    //     }
-    //   }
-    // }
-
-    // const extraMetadata = await getExtraMetaData(
-    //   ext.webAssets,
-    //   extensionUri,
-    //   localization,
-    //   extraMetaData,
-    // );
-
-    // return {
-    //   id: `${ext.packageJSON.publisher}.${ext.packageJSON.name}`,
-    //   extensionId: `${ext.extension.publisher}.${ext.extension.name}`,
-    //   packageJSON: ext.packageJSON,
-    //   defaultPkgNlsJSON: ext.defaultPkgNlsJSON,
-    //   packageNlsJSON: pkgNlsJSON,
-    //   extraMetadata,
-    //   path: extensionPath,
-    //   realPath: extensionPath,
-    //   extendConfig: ext.extendConfig,
-    //   isBuiltin: true,
-    //   isDevelopment: ext.mode === 'local',
-    //   uri: extensionUri,
-    // };
   }
   getElectronMainThreadListenPath(_clientId: string): Promise<string> {
     throw new Error(

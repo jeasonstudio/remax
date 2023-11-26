@@ -1,4 +1,5 @@
 import React from 'react';
+import { Injector } from '@opensumi/di';
 import { AppRenderer } from '@codeblitzjs/ide-core';
 import { LayoutConfig } from '@opensumi/ide-core-browser';
 import { IDEEmpty } from '../ide-empty';
@@ -7,6 +8,7 @@ import { IDEWelcome } from '../ide-welcome';
 import { IDEWorkbenchProps, IDEWorkbenchRef } from './types';
 import { defaultWorkspace, dbWorkspace } from './workspace';
 import './ide-workbench.less';
+import { RemaxConfig } from '@remax-ide/common';
 
 const debug = require('debug')('remax:ide-workbench');
 
@@ -43,6 +45,14 @@ const layoutConfig: LayoutConfig = {
 };
 
 export const IDEWorkbench = React.forwardRef<IDEWorkbenchRef, IDEWorkbenchProps>((props, ref) => {
+  const injectorRef = React.useRef<Injector>(
+    new Injector([
+      {
+        token: RemaxConfig,
+        useValue: { extensions: props.extensions ?? [] },
+      },
+    ]),
+  );
   const appRef = React.useRef<IDEWorkbenchRef>();
   React.useImperativeHandle(ref, () => appRef.current, []);
 
@@ -80,6 +90,7 @@ export const IDEWorkbench = React.forwardRef<IDEWorkbenchRef, IDEWorkbenchProps>
           },
           plugins: [],
           modules: [...(props.modules ?? [])],
+          injector: injectorRef.current,
           // extensionOSSPath: `${window.location.origin}/resources/extensions/`,
           // extWorkerHost: `${window.location.origin}/resources/server/worker-host.js`,
 
@@ -98,7 +109,6 @@ export const IDEWorkbench = React.forwardRef<IDEWorkbenchRef, IDEWorkbenchProps>
           extensionStorageDirName: '.remax',
 
           // extensionMetadata: [...extensions, ...(props.appConfig?.extensionMetadata ?? [])],
-          extensionCandidate: [],
         }}
         runtimeConfig={{
           WelcomePage: IDEWelcome,
