@@ -4,7 +4,7 @@
   "commit": false,
   "useCalculatedVersion": true,
   "fixed": [["@remax-ide/*"]],
-  "baseBranch": "master",
+  "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "linked": [],
   "access": "public",
