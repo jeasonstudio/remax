@@ -1,15 +1,18 @@
 import {
   // Connection,
   Position,
-  // Range,
+  Range,
   TextDocumentContentChangeEvent,
 } from 'vscode-languageserver/browser';
+import { createDebug } from '@remax-ide/common/debug';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { SolidityBaseTextDocument } from './base';
-import { parser, astTypes, parserTypes, tokenize, parse, visit } from '../utils/parser';
+import { astTypes, parserTypes, tokenize, parse, visit } from '../utils/parser';
 import { Context } from '../context';
 import * as vscodeUri from 'vscode-uri';
 import { enterVisitors } from '../utils/visitors';
+
+const debug = createDebug('extension:language-server:document');
 
 export class SolidityTextDocument extends SolidityBaseTextDocument implements TextDocument {
   public static create(
@@ -80,6 +83,8 @@ export class SolidityTextDocument extends SolidityBaseTextDocument implements Te
       });
       this.imports = imports;
       this.contracts = contracts;
+
+      debug('parseDocumentAsync', this.uri, this.tokens);
     } catch (error) {
       // ignore
       console.warn(error);
@@ -101,43 +106,47 @@ export class SolidityTextDocument extends SolidityBaseTextDocument implements Te
   }
 
   /**
+   * 根据 ast node 获取在 document 中的位置
+   * @param node ast
+   * @returns range
+   */
+  public getNodeRange(n?: astTypes.ASTNode): Range {
+    return {
+      start: this.positionAt(n?.range?.[0] ?? 0),
+      end: this.positionAt((n?.range?.[1] ?? 0) + 1),
+    };
+  }
+
+  /**
    * 从 AST Tree 中找到当前位置的所有 Node List
    * @param position vscode position
-   * @returns Node List
+   * @returns [Node, ParentNode] List
    */
   public getNodesAt(position: Position, visitors: astTypes.ASTNodeTypeString[] = enterVisitors) {
     const offset = this.offsetAt(position);
-    const nodes: astTypes.ASTNode[] = [];
-    const visitorFn = (n: astTypes.ASTNode) => {
+    const nodes: [astTypes.ASTNode, astTypes.ASTNode][] = [];
+    const visitorFn = (n: astTypes.ASTNode, pn: astTypes.ASTNode = null) => {
       const [start, end] = n.range ?? [0, 0];
       if (offset >= start && offset <= end) {
-        nodes.push(n);
+        nodes.push([n, pn]);
       }
     };
     const visitor = Object.fromEntries(visitors.map((v) => [v, visitorFn]));
     visit(this.ast, visitor);
-
     return nodes;
   }
 
   /**
    * 从 AST Tree 中找到当前位置最近的 Node
-   * @description visitors 具有优先级，越靠前的越优先被选择
+   * @description visitors 不具有优先级，返回最后一个（最深的）
    * @param position vscode position
-   * @returns Node
+   * @param visitors ASTNodeTypeString[]
+   * @returns [Node, ParentNode]
    */
   public getNodeAt(position: Position, visitors: astTypes.ASTNodeTypeString[] = enterVisitors) {
     const nodes = this.getNodesAt(position, visitors);
-    for (let x = 0; x < visitors.length; x += 1) {
-      const typeName = visitors[x];
-      for (let y = 0; y < nodes.length; y += 1) {
-        const node = nodes[y];
-        if (node.type === typeName) {
-          return node;
-        }
-      }
-    }
-    return null;
+    const [node, parent] = nodes[nodes.length - 1] ?? [null, null];
+    return [node, parent] as [astTypes.ASTNode, astTypes.ASTNode];
   }
 
   public getIdentifierReferenceNode(identifier: astTypes.Identifier) {
@@ -209,29 +218,4 @@ export class SolidityTextDocument extends SolidityBaseTextDocument implements Te
     const targetUri = vscodeUri.Utils.resolvePath(currentDirname, relativePath);
     return targetUri;
   }
-
-  // /**
-  //  * Get contract definition node by position offset
-  //  * @param offset position offset
-  //  * @returns contract definition node
-  //  */
-  // public getContractByOffset(offset: number): astTypes.ContractDefinition | undefined {
-  //   const contractNode = this.contracts.find((contract) => {
-  //     return contract.range![0] <= offset && offset <= contract.range![1];
-  //   });
-  //   return contractNode;
-  // }
-
-  // public offsetToPositionRange(start: number, end: number): Range {
-  //   return Range.create(this.positionAt(start), this.positionAt(end));
-  // }
-
-  // /**
-  //  * Visit current document's AST
-  //  * @param visitor
-  //  * @param nodeParent
-  //  */
-  // public visit(visitor: astTypes.ASTVisitor, nodeParent?: astTypes.ASTNode) {
-  //   parser.visit(this.ast, visitor, nodeParent);
-  // }
 }

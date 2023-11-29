@@ -1,8 +1,10 @@
 import React from 'react';
 import { IDEWorkbench, RemaxBuiltinExtensionModule } from '@remax-ide/core';
-import { ExtensionIdentity, Uri } from '@remax-ide/common';
+import { ExtensionIdentity } from '@remax-ide/common';
+import { workspace } from './workspace';
+import { RemaxModule } from './module';
 
-const extensionsBaseUri = 'g.alipay.com/@remax-ide/marketplace/extensions';
+// const extensionsBaseUri = 'localhost:3001/marketplace/extensions';
 // const extensionsBaseUri = 'cdn.jsdelivr.net/npm/@remax-ide/marketplace/extensions';
 
 const extensions: ExtensionIdentity[] = [
@@ -89,10 +91,7 @@ const extensions: ExtensionIdentity[] = [
     version: '6.3.4',
   },
 ].map((item) => ({
-  uri: Uri.from({
-    scheme: 'https',
-    path: `${extensionsBaseUri}/${item.publisher}/${item.name}/${item.version}/extension/`,
-  }).toString(true),
+  uri: `http://localhost:3001/marketplace/extensions/${item.publisher}/${item.name}/${item.version}/extension/`,
   nlsFilename: 'package.nls.json',
 }));
 
@@ -108,19 +107,20 @@ export default () => {
           // extensionMetadata: [],
         }
       }
-      modules={[RemaxBuiltinExtensionModule]}
+      modules={[RemaxBuiltinExtensionModule, RemaxModule]}
+      workspace={workspace}
       extensions={[
         ...extensions,
+        // {
+        //   uri: 'http://localhost:3001/extension-formatter/',
+        //   nlsFilename: 'package.nls.json',
+        // },
+        // {
+        //   uri: 'http://localhost:3001/extension-language-compiler/',
+        //   nlsFilename: 'package.nls.json',
+        // },
         {
-          uri: 'http://localhost:3000/packages/extension-language-compiler/',
-          nlsFilename: 'package.nls.json',
-        },
-        {
-          uri: 'http://localhost:3000/packages/extension-language-server/',
-          nlsFilename: 'package.nls.json',
-        },
-        {
-          uri: 'http://localhost:3000/packages/extension-formatter/',
+          uri: 'http://localhost:3001/extension-language-server/',
           nlsFilename: 'package.nls.json',
         },
       ]}

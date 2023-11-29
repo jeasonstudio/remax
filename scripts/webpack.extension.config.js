@@ -2,7 +2,7 @@
 
 const path = require('path');
 const webpack = require('webpack');
-const MetadataWebpackPlugin = require('./metadata-webpack-plugin');
+// const MetadataWebpackPlugin = require('./metadata-webpack-plugin');
 
 const projectRoot = process.cwd();
 
@@ -17,7 +17,6 @@ module.exports = {
     filename: '[name].js',
     path: path.join(projectRoot, 'dist'),
     libraryTarget: 'commonjs',
-    // devtoolModuleFilenameTemplate: '../../[resource-path]',
   },
   resolve: {
     mainFields: ['browser', 'module', 'main'], // look for `browser` entry point in imported node modules
@@ -59,7 +58,7 @@ module.exports = {
     new webpack.ProvidePlugin({
       process: 'process/browser', // provide a shim for the global `process` variable
     }),
-    new MetadataWebpackPlugin(),
+    // new MetadataWebpackPlugin(),
   ],
   externals: {
     vscode: 'commonjs vscode', // ignored because it doesn't exist

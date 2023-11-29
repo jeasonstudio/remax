@@ -1,6 +1,6 @@
 import React from 'react';
 import { Injector } from '@opensumi/di';
-import { AppRenderer } from '@codeblitzjs/ide-core';
+import { AppRenderer, getDefaultLayoutConfig } from '@codeblitzjs/ide-core';
 import { LayoutConfig } from '@opensumi/ide-core-browser';
 import { IDEEmpty } from '../ide-empty';
 import { IDEWelcome } from '../ide-welcome';

@@ -83,7 +83,7 @@
   "scripts": {
     "prepublishOnly": "npm run build",
     "dev": "webpack --config webpack.config.js --watch",
-    "build": "webpack --config webpack.config.js"
+    "build": "webpack build --config webpack.config.js"
   },
   "devDependencies": {
     "@codeblitzjs/ide-cli": "1.0.3",

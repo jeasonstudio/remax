@@ -41,7 +41,7 @@
   "scripts": {
     "prepublishOnly": "npm run build",
     "dev": "webpack --config webpack.config.js --watch",
-    "build": "webpack --config webpack.config.js"
+    "build": "webpack build --config webpack.config.js"
   },
   "devDependencies": {
     "@codeblitzjs/ide-cli": "1.0.3",
@@ -61,8 +61,8 @@
     "webpack-cli": "^5.0.1"
   },
   "dependencies": {
-    "@remax-ide/common": "workspace:*",
     "@opensumi/ide-components": "2.23.0",
+    "@remax-ide/common": "workspace:*",
     "@remax-ide/solidity-parser": "^0.16.0",
     "debug": "^4.3.4",
     "prettier": "^2.8.8",

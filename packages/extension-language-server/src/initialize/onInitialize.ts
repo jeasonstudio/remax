@@ -1,12 +1,16 @@
+import { createDebug } from '@remax-ide/common/debug';
 import { TextDocumentSyncKind, Connection } from 'vscode-languageserver/browser';
 import { Context } from '../context';
+
+const debug = createDebug('extension:language-server:onInitialize');
 
 type OnInitialize = Parameters<Connection['onInitialize']>[0];
 
 export const onInitialize =
-  (ctx: Context): OnInitialize =>
-  async (params) => {
-    console.log('onInitialize', params);
+  (_ctx: Context): OnInitialize =>
+  async ({ initializationOptions }) => {
+    debug(`initializing with options:`, initializationOptions);
+
     const result: ReturnType<OnInitialize> = {
       serverInfo: {
         name: 'Solidity Language Server',
@@ -33,21 +37,15 @@ export const onInitialize =
           resolveProvider: false,
           workDoneProgress: false,
         },
+        documentSymbolProvider: true,
         // typeDefinitionProvider: true,
         // referencesProvider: true,
         // implementationProvider: true,
         // renameProvider: true,
         // codeActionProvider: true,
-
-        // workspace capabilities
-        // workspace: {
-        //   workspaceFolders: {
-        //     supported: true,
-        //     changeNotifications: true,
-        //   },
-        // },
       },
     };
 
+    debug(`initializing result:`, result);
     return result;
   };

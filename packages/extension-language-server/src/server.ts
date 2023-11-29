@@ -9,6 +9,7 @@ import { TextDocuments } from '@remax-ide/common/text-documents';
 import { onExit, onInitialize, onInitialized } from './initialize';
 import { Context } from './context';
 import { onDefinition, onHover } from './definition';
+import { onDocumentSymbol } from './symbol';
 import { onCodeLens } from './code-lens';
 
 require('debug').enable(`remax:*`);
@@ -31,6 +32,7 @@ connection.onExit(onExit(context));
 connection.onDefinition(onDefinition(context));
 connection.onHover(onHover(context));
 connection.onCodeLens(onCodeLens(context));
+connection.onDocumentSymbol(onDocumentSymbol(context));
 // connection.onTypeDefinition(onTypeDefinition(serverState));
 // connection.onReferences(onReferences(serverState));
 // connection.onImplementation(onImplementation(serverState));

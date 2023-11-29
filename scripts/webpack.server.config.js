@@ -2,7 +2,7 @@
 
 const path = require('path');
 const webpack = require('webpack');
-const MetadataWebpackPlugin = require('./metadata-webpack-plugin');
+// const MetadataWebpackPlugin = require('./metadata-webpack-plugin');
 
 const projectRoot = process.cwd();
 
@@ -59,7 +59,7 @@ module.exports = {
     new webpack.ProvidePlugin({
       process: 'process/browser', // provide a shim for the global `process` variable
     }),
-    new MetadataWebpackPlugin(),
+    // new MetadataWebpackPlugin(),
   ],
   externals: {
     vscode: 'commonjs vscode', // ignored because it doesn't exist

@@ -58,9 +58,11 @@ connection.onInitialize(({ initializationOptions, workspaceFolders }) => {
   //   console.warn('version not supported, fallback to default version:', defaultVersion);
   // }
 
-  const solcUrl =
-    initializationOptions?.version ??
-    'https://g.alipay.com/@alipay/mychain-solidity@2.0.0/soljson-v0.8.14.685c6bdd.js';
+  if (!initializationOptions?.version) {
+    throw new Error("version not found, please check your extension's configuration.");
+  }
+
+  const solcUrl = initializationOptions?.version;
 
   // importScripts(
   //   `https://gw.alipayobjects.com/as/g/ant-baas/solcjs-cdn/1.0.6/soljson-v0.4.24.6eda33a0.js`,

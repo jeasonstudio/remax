@@ -1,9 +1,13 @@
 {
   "name": "@remax-ide/core",
   "version": "0.1.1",
+  "main": "./dist/lib/index.js",
+  "types": "./dist/lib/index.d.ts",
   "exports": {
-    "import": "./dist/esm/index.js",
-    "require": "./dist/lib/index.js"
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/lib/index.js"
+    }
   },
   "files": [
     "dist",

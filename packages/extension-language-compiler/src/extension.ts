@@ -5,7 +5,7 @@ import { SolidityFileWatcher } from '@remax-ide/common/file-watcher';
 import { CompileOutput } from './interface';
 
 // This method is called when your extension is activated
-export function createClient(context: vscode.ExtensionContext, url?: string) {
+export function createClient(context: vscode.ExtensionContext, url: string) {
   const fileWatcher = new SolidityFileWatcher();
 
   // Options to control the language client.
@@ -93,9 +93,11 @@ export function createClient(context: vscode.ExtensionContext, url?: string) {
 }
 
 let languageCompilerClient: LanguageClient | null = null;
+let currentSoljsonUrl: string =
+  'https://binaries.soliditylang.org/wasm/soljson-v0.8.23+commit.f704f362.js';
 
 export async function activate(context: vscode.ExtensionContext) {
-  languageCompilerClient = createClient(context);
+  languageCompilerClient = createClient(context, currentSoljsonUrl);
   languageCompilerClient.start();
 
   context.subscriptions.push(
@@ -114,9 +116,9 @@ export async function activate(context: vscode.ExtensionContext) {
         },
       ];
       versionSelect.onDidChangeSelection((selection) => {
-        const url = selection[0].detail!;
+        currentSoljsonUrl = selection[0].detail!;
         if (languageCompilerClient && languageCompilerClient.state === State.Running) {
-          languageCompilerClient = createClient(context, url);
+          languageCompilerClient = createClient(context, currentSoljsonUrl);
           languageCompilerClient.start();
         } else {
           vscode.window.showInformationMessage('Solidity Language Compiler is not running');

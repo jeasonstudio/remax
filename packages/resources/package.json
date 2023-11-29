@@ -1,0 +1,24 @@
+{
+  "name": "@remax-ide/resources",
+  "private": true,
+  "version": "0.1.1",
+  "files": [
+    "CHANGELOG.md",
+    "README.md"
+  ],
+  "scripts": {
+    "prepublishOnly": "npm run build",
+    "dev": "serve ./node_modules/@remax-ide/ --cors -p 3001 --no-request-logging --no-clipboard --no-compression --no-port-switching",
+    "build": ""
+  },
+  "dependencies": {
+    "@remax-ide/marketplace": "latest",
+    "@remax-ide/extension-debug-adaptar": "workspace:*",
+    "@remax-ide/extension-formatter": "workspace:*",
+    "@remax-ide/extension-language-compiler": "workspace:*",
+    "@remax-ide/extension-language-server": "workspace:*"
+  },
+  "devDependencies": {
+    "serve": "^14.2.1"
+  }
+}

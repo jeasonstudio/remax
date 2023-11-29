@@ -12,6 +12,8 @@ export const node2string = (node: astTypes.ASTNode | null): string => {
       return `import "${node.path}";`;
     case 'ElementaryTypeName':
       return node.name;
+    case 'ArrayTypeName':
+      return node2string(node.baseTypeName) + '[]';
     case 'VariableDeclaration':
       const typeName = node2string(node.typeName);
       return [
@@ -48,7 +50,7 @@ export const node2string = (node: astTypes.ASTNode | null): string => {
       }(${paramsString}) ${visibility} ${stateMutability} ${modifierString} returns (${returnString})`;
 
     case 'ContractDefinition':
-      return `${node.kind} ${node.name} {...}`;
+      return `${node.kind} ${node.name} {}`;
     case 'Mapping':
       return `mapping(${node2string(node.keyType)} => ${node2string(node.valueType)})`;
     default:
