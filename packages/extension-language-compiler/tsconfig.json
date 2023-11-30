@@ -10,7 +10,6 @@
     "sourceMap": true,
     "rootDir": "src",
     "strict": false,
-    // "moduleResolution": "Node",
     "paths": {
       "sumi": ["./node_modules/@opensumi/sumi"],
       "sumi-browser": ["./node_modules/@opensumi/sumi"]
