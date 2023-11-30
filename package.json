@@ -8,8 +8,11 @@
   "files": [],
   "scripts": {
     "dev": "pnpm run --parallel --if-present --recursive --filter \"@remax-ide/*\" dev",
-    "build": "pnpm run --parallel --if-present --recursive --filter \"@remax-ide/*\" build",
+    "build:common": "pnpm run --filter \"@remax-ide/common\" build",
+    "build:core": "pnpm run --filter \"@remax-ide/core\" build",
+    "build:extension": "pnpm run --parallel --if-present --recursive --filter \"@remax-ide/extension-*\" build",
     "build:website": "pnpm run --filter \"remax-ide-website\" build",
+    "build": "pnpm run build:common && pnpm run build:core && pnpm run build:extension && pnpm run build:website",
     "postinstall": "pnpm run husky:prepare",
     "changeset": "changeset",
     "release": "alias npm=tnpm && changeset version && changeset publish",
@@ -25,7 +28,7 @@
     "lint:prettier": "prettier --loglevel warn --write '**/*.{ts,tsx,js,jsx,json,md}'",
     "clean": "pnpm run \"/^clean:.+/\"",
     "clean:module": "rimraf --glob ./node_modules ./packages/*/node_modules",
-    "clean:dist": "rimraf --glob ./packages/*/dist ./packages/*/.dumi",
+    "clean:dist": "rimraf --glob ./packages/*/dist ./packages/*/src/.umi*",
     "clean:test": "rimraf --glob ./coverage ./packages/*/coverage",
     "husky:pre-commit": "lint-staged",
     "husky:prepare": "husky install"

@@ -4,6 +4,7 @@
     "strictPropertyInitialization": false,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "module": "nodenext",
     "moduleResolution": "nodenext"
   }
 }
