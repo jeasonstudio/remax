@@ -16,6 +16,7 @@
   "dependencies": {
     "@remax-ide/common": "workspace:*",
     "@remax-ide/core": "workspace:*",
+    "@remax-ide/marketplace": "latest",
     "@remax-ide/extension-debug-adaptar": "workspace:*",
     "@remax-ide/extension-formatter": "workspace:*",
     "@remax-ide/extension-language-compiler": "workspace:*",

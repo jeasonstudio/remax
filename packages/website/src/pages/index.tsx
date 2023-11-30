@@ -91,7 +91,7 @@ const extensions: ExtensionIdentity[] = [
     version: '6.3.4',
   },
 ].map((item) => ({
-  uri: `http://localhost:3001/marketplace/extensions/${item.publisher}/${item.name}/${item.version}/extension/`,
+  uri: `${window.location.origin}/resources/@remax-ide/marketplace/extensions/${item.publisher}/${item.name}/${item.version}/extension/`,
   nlsFilename: 'package.nls.json',
 }));
 
@@ -111,16 +111,19 @@ export default () => {
       workspace={workspace}
       extensions={[
         ...extensions,
-        // {
-        //   uri: 'http://localhost:3001/extension-formatter/',
-        //   nlsFilename: 'package.nls.json',
-        // },
-        // {
-        //   uri: 'http://localhost:3001/extension-language-compiler/',
-        //   nlsFilename: 'package.nls.json',
-        // },
         {
-          uri: 'http://localhost:3001/extension-language-server/',
+          uri: `${window.location.origin}/resources/@remax-ide/extension-formatter/`,
+          // uri: 'http://localhost:3001/extension-formatter/',
+          nlsFilename: 'package.nls.json',
+        },
+        {
+          uri: `${window.location.origin}/resources/@remax-ide/extension-language-compiler/`,
+          // uri: 'http://localhost:3001/extension-language-compiler/',
+          nlsFilename: 'package.nls.json',
+        },
+        {
+          uri: `${window.location.origin}/resources/@remax-ide/extension-language-server/`,
+          // uri: 'http://localhost:3001/extension-language-server/',
           nlsFilename: 'package.nls.json',
         },
       ]}
