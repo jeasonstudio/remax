@@ -8,7 +8,8 @@
   "files": [],
   "scripts": {
     "dev": "pnpm run --parallel --if-present --recursive --filter \"@remax-ide/*\" dev",
-    "build": "pnpm run --parallel --if-present --recursive build",
+    "build": "pnpm run --parallel --if-present --recursive --filter \"@remax-ide/*\" build",
+    "build:website": "pnpm run build && pnpm run --filter \"remax-ide-website\" build",
     "postinstall": "pnpm run husky:prepare",
     "changeset": "changeset",
     "release": "alias npm=tnpm && changeset version && changeset publish",
