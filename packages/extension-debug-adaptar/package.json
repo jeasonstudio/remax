@@ -20,63 +20,48 @@
   ],
   "activationEvents": [
     "onLanguage:solidity",
+    "onDebugResolve:solidity",
+    "onDebugDynamicConfigurations:solidity",
     "onStartupFinished"
   ],
   "main": "./dist/extension.js",
   "contributes": {
-    "commands": [
+    "breakpoints": [
       {
-        "command": "HelloOpenSumi",
-        "title": "%test-extension-hello-command%",
-        "shortTitle": "%test-extension-hello-command%"
-      },
-      {
-        "command": "remax.extension-remax.switch-solidity-version",
-        "title": "%remax.extension-remax.switch-solidity-version%",
-        "shortTitle": "%remax.extension-remax.switch-solidity-version%"
-      },
-      {
-        "command": "remax.extension-remax.compile",
-        "title": "%remax.extension-remax.compile%",
-        "shortTitle": "%remax.extension-remax.compile%"
+        "language": "solidity"
       }
     ],
-    "configuration": {
-      "type": "object",
-      "title": "%remax.extension-remax.title%",
-      "properties": {
-        "remax.printWidth": {
-          "type": "integer",
-          "default": 80,
-          "markdownDescription": "%remax.extension-remax.printWidth%",
-          "scope": "resource"
+    "debuggers": [
+      {
+        "type": "solidity",
+        "label": "Solidity Debugger",
+        "program": "./out/myDebugAdapter.js",
+        "languages": [
+          "solidity"
+        ],
+        "configurationAttributes": {
+          "launch": {
+            "required": [
+              "program"
+            ],
+            "properties": {
+              "program": {
+                "type": "string",
+                "description": "The program to debug."
+              }
+            }
+          }
         },
-        "remax.tabWidth": {
-          "type": "integer",
-          "default": 4,
-          "markdownDescription": "%remax.extension-remax.tabWidth%",
-          "scope": "resource"
-        },
-        "remax.singleQuote": {
-          "type": "boolean",
-          "default": false,
-          "markdownDescription": "%remax.extension-remax.singleQuote%",
-          "scope": "resource"
-        },
-        "remax.useTabs": {
-          "type": "boolean",
-          "default": false,
-          "markdownDescription": "%remax.extension-remax.useTabs%",
-          "scope": "resource"
-        },
-        "remax.bracketSpacing": {
-          "type": "boolean",
-          "default": false,
-          "markdownDescription": "%remax.extension-remax.bracketSpacing%",
-          "scope": "resource"
-        }
+        "initialConfigurations": [
+          {
+            "type": "solidity",
+            "request": "launch",
+            "name": "Deploy Contract",
+            "program": "${workspaceFolder}/contract.sol"
+          }
+        ]
       }
-    }
+    ]
   },
   "browser": "./dist/extension.js",
   "kaitianContributes": {},

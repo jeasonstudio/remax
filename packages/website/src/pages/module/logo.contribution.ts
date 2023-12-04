@@ -5,10 +5,12 @@ import {
   ComponentContribution,
   ComponentRegistry,
   Domain,
+  MessageType,
 } from '@opensumi/ide-core-browser';
 import { IMenuRegistry, MenuContribution } from '@opensumi/ide-core-browser/lib/menu/next';
 import { Autowired } from '@opensumi/di';
 import { IDialogService } from '@opensumi/ide-overlay';
+import { element } from './about-remax';
 
 export const MenuBarLogoId = 'menubar/logo';
 export const MenuBarLogoCommandShowInfo: Command = {
@@ -43,8 +45,7 @@ export class LogoContribution
   registerCommands(commands: CommandRegistry): void {
     commands.registerCommand(MenuBarLogoCommandShowInfo, {
       execute: () => {
-        console.log('remax-ide@1.0.0');
-        this.dialog.info('Remax IDE');
+        this.dialog.open(element, MessageType.Empty);
       },
     });
   }

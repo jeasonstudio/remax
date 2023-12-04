@@ -24,10 +24,10 @@ export const onInitialize =
           willSaveWaitUntil: false,
         },
         // Tell the client that this server supports code completion.
-        // completionProvider: {
-        //   // resolveProvider: true,
-        //   triggerCharacters: ['.', '/', '"', `'`, '*', ' '],
-        // },
+        completionProvider: {
+          triggerCharacters: ['.', '"', `'`, '*', ' '],
+          // resolveProvider: true,
+        },
         // signatureHelpProvider: {
         //   triggerCharacters: ['('],
         // },

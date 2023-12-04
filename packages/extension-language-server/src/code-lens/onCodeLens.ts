@@ -21,7 +21,7 @@ export const onCodeLens =
         },
       };
     });
-    console.log('codeLensList', codeLensList);
+    // console.log('codeLensList', codeLensList);
 
     return [];
   };

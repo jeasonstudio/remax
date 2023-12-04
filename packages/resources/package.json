@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "prepublishOnly": "npm run build",
-    "dev": "serve ./node_modules/@remax-ide/ --cors -p 3001 --no-request-logging --no-clipboard --no-compression --no-port-switching",
+    "dev": "serve ./node_modules/ --cors -p 3001 --no-request-logging --no-clipboard --no-compression --no-port-switching",
     "build": ""
   },
   "dependencies": {

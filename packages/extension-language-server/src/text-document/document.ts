@@ -11,6 +11,7 @@ import { astTypes, parserTypes, tokenize, parse, visit } from '../utils/parser';
 import { Context } from '../context';
 import * as vscodeUri from 'vscode-uri';
 import { enterVisitors } from '../utils/visitors';
+import { ASTContract } from './ast';
 
 const debug = createDebug('extension:language-server:document');
 
@@ -38,53 +39,85 @@ export class SolidityTextDocument extends SolidityBaseTextDocument implements Te
     }
   }
   public static applyEdits = TextDocument.applyEdits;
-  public static context: Context;
+
+  public ctx: Context = (<any>self).GlobalContext;
 
   // File AST parsed by `solidity-parser`
-  public ast: astTypes.ASTNode = { type: 'SourceUnit', children: [] };
+  public ast: astTypes.SourceUnit = { type: 'SourceUnit', children: [] };
   // File token list
   public tokens: parserTypes.Token[] = [];
 
-  // Import nodes
-  public imports: astTypes.ImportDirective[] = [];
-  // Contract definition nodes
-  public contracts: astTypes.ContractDefinition[] = [];
+  // See: https://docs.soliditylang.org/en/v0.8.23/grammar.html#a4.SolidityParser.sourceUnit
+  public pragmas: astTypes.PragmaDirective[] = [];
+  public imports: SolidityTextDocument[] = [];
+  public contracts: ASTContract[] = [];
+  public interfaces: ASTContract[] = [];
+  public libraries: ASTContract[] = [];
 
   public constructor(uri: string, languageId: string, version: number, content: string) {
     super(uri, languageId, version, content);
-    this.parseDocumentAsync();
+    this.init();
   }
 
   public update(changes: TextDocumentContentChangeEvent[], version: number): void {
     (this._textDocument as any).update(changes, version); // trick
-    this.parseDocumentAsync();
+    this.init();
   }
 
   /**
    * sync ast to document
    */
-  private async parseDocumentAsync() {
+  private async init() {
     try {
       const content = this.getText();
       if (!content) return;
       this.ast = parse(content, { range: true, tolerant: true, tokens: false, loc: true });
       this.tokens = tokenize(content);
 
-      const imports: astTypes.ImportDirective[] = [];
-      const contracts: astTypes.ContractDefinition[] = [];
+      this.pragmas = [];
+      this.imports = [];
+      this.contracts = [];
+      this.interfaces = [];
+      this.libraries = [];
 
-      visit(this.ast, {
-        ImportDirective: (node) => {
-          if (node?.path) imports.push(node);
-        },
-        ContractDefinition: (node) => {
-          contracts.push(node);
-        },
-      });
-      this.imports = imports;
-      this.contracts = contracts;
+      for (let index = 0; index < this.ast.children.length; index += 1) {
+        const element = this.ast.children[index];
+        if (element.type === 'PragmaDirective') {
+          this.pragmas.push(element);
+        } else if (element.type === 'ImportDirective') {
+          this.imports.push(this.resolve(element.path));
+        } else if (element.type === 'ContractDefinition') {
+          const target = new ASTContract(element);
+          switch (element.kind) {
+            case 'interface':
+              this.interfaces.push(target);
+              break;
+            case 'library':
+              this.libraries.push(target);
+              break;
+            case 'contract':
+            default:
+              this.contracts.push(target);
+              break;
+          }
+        }
+      }
 
-      debug('parseDocumentAsync', this.uri, this.tokens);
+      // const imports: astTypes.ImportDirective[] = [];
+      // const contracts: ASTContract[] = [];
+
+      // visit(this.ast, {
+      //   ImportDirective: (node) => {
+      //     if (node?.path) imports.push(node);
+      //   },
+      //   ContractDefinition: (node) => {
+      //     contracts.push(new ASTContract(node));
+      //   },
+      // });
+      // this.imports = imports;
+      // this.contracts = contracts;
+
+      // debug('init', this.uri, this.tokens);
     } catch (error) {
       // ignore
       console.warn(error);
@@ -110,7 +143,7 @@ export class SolidityTextDocument extends SolidityBaseTextDocument implements Te
    * @param node ast
    * @returns range
    */
-  public getNodeRange(n?: astTypes.ASTNode): Range {
+  public getNodeRange<T extends astTypes.BaseASTNode>(n?: T): Range {
     return {
       start: this.positionAt(n?.range?.[0] ?? 0),
       end: this.positionAt((n?.range?.[1] ?? 0) + 1),
@@ -178,44 +211,11 @@ export class SolidityTextDocument extends SolidityBaseTextDocument implements Te
   }
 
   /**
-   * 获取最近的注释
-   * @param position
-   */
-  public getCommentsBefore(node: astTypes.ASTNode) {
-    if (!node) return [];
-    const offset = node.range[0];
-    const tokenIndex = this.tokens.findIndex((t) => {
-      const [start, end] = t.range ?? [0, 0];
-      return offset >= start && offset <= end;
-    });
-
-    let comments = '';
-    for (let i = tokenIndex - 1; i >= 0; i -= 1) {
-      const token = this.tokens[i];
-      if (token.type !== 'Keyword') {
-        break;
-      } else if (token.value.startsWith('//')) {
-        comments += token.value.substring(2).trim();
-        comments += '\n';
-      } else if (token.value.startsWith('/*') && token.value.endsWith('*/')) {
-        // TODO: parse JSDoc like comments
-        comments += token.value.trim();
-        comments += '\n';
-      } else {
-        break;
-      }
-    }
-    return comments;
-  }
-
-  /**
    * 从当前文件 resolve 相对路径
    * @param relativePath string 相对当前文件的路径
    * @todo 支持 `node_modules` 等包管理
    */
-  public resolveUri(relativePath: string) {
-    const currentDirname = vscodeUri.Utils.dirname(this.parsedUri);
-    const targetUri = vscodeUri.Utils.resolvePath(currentDirname, relativePath);
-    return targetUri;
+  public resolve(...paths: string[]) {
+    return this.ctx.documents.resolve(this.uri, ...paths);
   }
 }

@@ -7,7 +7,7 @@
   ],
   "files": [],
   "scripts": {
-    "dev": "pnpm run --parallel --if-present --recursive --filter \"@remax-ide/*\" dev",
+    "dev": "pnpm run --parallel --if-present --recursive dev",
     "build:common": "pnpm run --filter \"@remax-ide/common\" build",
     "build:core": "pnpm run --filter \"@remax-ide/core\" build",
     "build:extension": "pnpm run --parallel --if-present --recursive --filter \"@remax-ide/extension-*\" build",

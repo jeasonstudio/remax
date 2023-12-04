@@ -1,7 +1,7 @@
 import { createDebug } from '@remax-ide/common/debug';
 import { Connection, Hover, MarkupContent, MarkupKind } from 'vscode-languageserver/browser';
 import { Context } from '../context';
-import { ASTNodeFilter, astTypes, matches } from '../utils/parser';
+import { ASTNodeFilter, astTypes, matches, parserTypes } from '../utils/parser';
 import { node2string } from '../utils/node';
 import { globallyList } from '../globally';
 
@@ -19,11 +19,11 @@ export const onHover =
     // 2. 根据 position 获取 target node 和 parent node
     const [target, parent] = document.getNodeAt(position);
     const range = document.getNodeRange(target);
-    debug(
-      `target@L${range.start.line}:${range.start.character}-L${range.end.line}:${range.end.character}`,
-      target,
-      parent,
-    );
+    // debug(
+    //   `target@L${range.start.line}:${range.start.character}-L${range.end.line}:${range.end.character}`,
+    //   target,
+    //   parent,
+    // );
 
     // 3. 判断是否为全局变量或方法
     const globallyItem = globallyList.find((item) =>
@@ -47,6 +47,24 @@ export const onHover =
       kind: MarkupKind.Markdown,
       value: ['```solidity', ...c, '```'].join('\n'),
     });
+
+    // TODO: onhover 添加注释
+    const getRelativeCommentTokens = (n?: astTypes.ASTNode): parserTypes.Token[] => {
+      const line = n?.loc?.start?.line ?? 0;
+      const commentTokens: parserTypes.Token[] = [];
+      if (!line) return commentTokens;
+      const lineIndex = document.tokens.findIndex((t) => t.loc?.start?.line === line);
+
+      for (let index = lineIndex; index >= 0; index -= 1) {
+        const item = document.tokens[index];
+        if (item.type !== 'Keyword' || item.value.startsWith('//') || item.value.startsWith('/*')) {
+          break;
+        }
+        commentTokens.unshift(item);
+      }
+
+      return commentTokens;
+    };
 
     const getHover = (n: astTypes.ASTNode, c: string[]): Hover => ({
       range: document.getNodeRange(n),
@@ -77,11 +95,8 @@ export const onHover =
       [{ type: 'ContractDefinition' }, getDefaultHover()],
       [{ type: 'FunctionDefinition' }, getDefaultHover()],
       [{ type: 'PragmaDirective' }, getDefaultHover()],
-      // contract xxx is Foo {}
-      [
-        { type: 'UserDefinedTypeName', parentFilter: { type: 'InheritanceSpecifier' } },
-        getHover(target, [`interface ${(target as any).namePath} {}`]),
-      ],
+      [{ type: 'EventDefinition' }, getDefaultHover()],
+      [{ type: 'EmitStatement', eventCall: { type: 'FunctionCall' } }, getDefaultHover()],
     ];
 
     const universalItem = universal.find(([f]) => matches(f)(target, parent))?.[1];

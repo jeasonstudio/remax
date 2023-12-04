@@ -3,6 +3,7 @@ import {
   BrowserMessageWriter,
   createConnection,
   DiagnosticSeverity,
+  Range,
   TextDocumentSyncKind,
   WorkspaceFolder,
 } from 'vscode-languageserver/browser';
@@ -10,12 +11,12 @@ import * as vscodeUri from 'vscode-uri';
 import wrapper from 'solc/wrapper';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { TextDocuments } from '@remax-ide/common/text-documents';
-import { debounce } from '@remax-ide/common/debounce';
+import { debounce } from '@remax-ide/common/lodash';
+import { enableDebug, createDebug } from '@remax-ide/common/debug';
 import { CompileCommandParams, CompileInput, CompileOutput } from './interface';
 
-require('debug').enable(`remax:*`);
-
-const debug = require('debug')('remax:extension:compiler');
+const debug = createDebug('extension:compiler');
+enableDebug(`*`);
 
 const messageReader = new BrowserMessageReader(self);
 const messageWriter = new BrowserMessageWriter(self);
@@ -26,27 +27,18 @@ const workspaces: WorkspaceFolder[] = [];
 // let version: string = defaultVersion;
 let compiler: any = null;
 
-const resolver = (uri: string) => {
-  if (uri.startsWith('file://')) {
-    if (documents.has(uri)) {
-      const document = documents.get(uri);
-      return { contents: document.getText() };
-    } else {
-      return { error: 'file not found' };
-    }
-  } else if (uri.startsWith('http://') || uri.startsWith('https://')) {
-    return { error: 'online dependencies are not safe, please download to workspace' };
-  } else {
-    const rootUri = vscodeUri.URI.parse(workspaces?.[0]?.uri);
-    const targetPath = vscodeUri.Utils.joinPath(rootUri, 'node_modules', uri).toString(true);
+const resolver = (entryUri: string) => (uri: string) => {
+  const toUri = vscodeUri.URI.parse(uri);
 
-    if (documents.has(targetPath)) {
-      const document = documents.get(targetPath);
-      return { contents: document.getText() };
-    } else {
-      return { error: 'unkown error' };
-    }
+  if (['https', 'http'].includes(toUri.scheme)) {
+    return { error: 'online dependencies are not safe, please download to workspace' };
   }
+
+  const document = documents.resolve(entryUri, toUri.path);
+  if (document?.uri) {
+    return { contents: document.getText() };
+  }
+  return { error: 'not found' };
 };
 
 connection.onInitialize(({ initializationOptions, workspaceFolders }) => {
@@ -100,7 +92,7 @@ const compile = (uri: string, settings: CompileInput['settings']): CompileOutput
       },
       settings,
     }),
-    { import: resolver },
+    { import: resolver(uri) },
   );
   const result = JSON.parse(resultString);
   return result;
@@ -109,8 +101,13 @@ const compile = (uri: string, settings: CompileInput['settings']): CompileOutput
 const validate = (document: TextDocument) => {
   try {
     const uri = document.uri;
-    const settings = {
-      outputSelection: { '*': { '*': [] } },
+    const settings: CompileInput['settings'] = {
+      outputSelection: {
+        '*': {
+          '*': ['*'],
+          '': ['ast'],
+        },
+      },
       optimizer: {
         enabled: false,
         runs: 200,
@@ -140,15 +137,10 @@ const validate = (document: TextDocument) => {
             break;
         }
 
-        const range = error.sourceLocation
-          ? {
-              start: document.positionAt(error.sourceLocation.start),
-              end: document.positionAt(error.sourceLocation.end),
-            }
-          : {
-              start: { line: 0, character: 0 },
-              end: { line: document.lineCount, character: Number.MAX_SAFE_INTEGER },
-            };
+        const range = Range.create(
+          document.positionAt(error?.sourceLocation?.start ?? 0),
+          document.positionAt(error?.sourceLocation?.end ?? Number.MAX_SAFE_INTEGER),
+        );
 
         return {
           message: error.message,
@@ -178,7 +170,21 @@ documents.onSync(({ documents: documentList }) => {
 
 connection.onRequest('remax.compiler.compile', (params: CompileCommandParams) => {
   const { uri, settings } = params;
-  return compile(uri, settings || { outputSelection: { '*': { '*': ['*'] } } });
+  return compile(
+    uri,
+    settings || {
+      outputSelection: {
+        '*': {
+          '*': ['*'],
+          '': ['ast'],
+        },
+      },
+      optimizer: {
+        enabled: false,
+        runs: 200,
+      },
+    },
+  );
 });
 
 connection.listen();

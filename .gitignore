@@ -6,6 +6,7 @@ out
 .umi
 .umi-test
 .umi-production
+.vscode-test-web
 **/.dumi/tmp*
 .env.local
 .idea

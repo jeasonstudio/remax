@@ -23,37 +23,39 @@
     "onStartupFinished"
   ],
   "main": "./dist/extension.js",
+  "browser": "./dist/extension.js",
+  "browserMain": "./dist/extension.js",
   "contributes": {
     "commands": [],
     "configuration": {
       "type": "object",
       "title": "%remax.extension-remax.title%",
       "properties": {
-        "remax.printWidth": {
+        "solidity.formatter.printWidth": {
           "type": "integer",
           "default": 80,
           "markdownDescription": "%remax.extension-remax.printWidth%",
           "scope": "resource"
         },
-        "remax.tabWidth": {
+        "solidity.formatter.tabWidth": {
           "type": "integer",
           "default": 4,
           "markdownDescription": "%remax.extension-remax.tabWidth%",
           "scope": "resource"
         },
-        "remax.singleQuote": {
+        "solidity.formatter.singleQuote": {
           "type": "boolean",
           "default": false,
           "markdownDescription": "%remax.extension-remax.singleQuote%",
           "scope": "resource"
         },
-        "remax.useTabs": {
+        "solidity.formatter.useTabs": {
           "type": "boolean",
           "default": false,
           "markdownDescription": "%remax.extension-remax.useTabs%",
           "scope": "resource"
         },
-        "remax.bracketSpacing": {
+        "solidity.formatter.bracketSpacing": {
           "type": "boolean",
           "default": false,
           "markdownDescription": "%remax.extension-remax.bracketSpacing%",
@@ -62,7 +64,6 @@
       }
     }
   },
-  "browser": "./dist/extension.js",
   "kaitianContributes": {},
   "scripts": {
     "prepublishOnly": "npm run build",

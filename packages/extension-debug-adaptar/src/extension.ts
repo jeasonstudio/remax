@@ -1,9 +1,13 @@
 import * as vscode from 'vscode';
+import { SolidityDebugAdapterDescriptorFactory } from './descriptor-factory';
 
 export async function activate(context: vscode.ExtensionContext) {
-  console.log('activate');
+  // context.subscriptions.push(
+  //   vscode.debug.registerDebugAdapterDescriptorFactory(
+  //     'solidity',
+  //     new SolidityDebugAdapterDescriptorFactory(),
+  //   ),
+  // );
 }
 
-export async function deactivate() {
-  console.log('deactivate');
-}
+export async function deactivate() {}

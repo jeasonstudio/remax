@@ -35,7 +35,18 @@
         "title": "%remax.extension-remax.compile%",
         "shortTitle": "%remax.extension-remax.compile%"
       }
-    ]
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Solidity Compiler",
+      "properties": {
+        "solidity.compiler.url": {
+          "type": "string",
+          "default": "https://binaries.soliditylang.org/wasm/soljson-v0.8.23+commit.f704f362.js",
+          "scope": "resource"
+        }
+      }
+    }
   },
   "kaitianContributes": {},
   "scripts": {

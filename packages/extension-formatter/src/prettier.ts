@@ -7,7 +7,7 @@ export async function format(
   document: vscode.TextDocument,
   _context: vscode.ExtensionContext,
 ): Promise<vscode.TextEdit[]> {
-  const config = vscode.workspace.getConfiguration('solidity-formatter') as Partial<Options>;
+  const config = vscode.workspace.getConfiguration('solidity.formatter') as Partial<Options>;
 
   const source = document.getText();
   const range = new vscode.Range(

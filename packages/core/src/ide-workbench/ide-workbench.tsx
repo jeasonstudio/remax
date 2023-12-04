@@ -1,7 +1,7 @@
 import React from 'react';
 import { Injector } from '@opensumi/di';
 import { AppRenderer, getDefaultLayoutConfig } from '@codeblitzjs/ide-core';
-import { LayoutConfig } from '@opensumi/ide-core-browser';
+import { LayoutConfig, getPreferenceThemeId } from '@opensumi/ide-core-browser';
 import { IDEEmpty } from '../ide-empty';
 import { IDEWelcome } from '../ide-welcome';
 // import { defaultWorkspace } from '../workspaces';
@@ -11,6 +11,8 @@ import './ide-workbench.less';
 import { RemaxConfig } from '@remax-ide/common';
 
 const debug = require('debug')('remax:ide-workbench');
+
+console.log(getPreferenceThemeId());
 
 const layoutConfig: LayoutConfig = {
   top: {
@@ -25,7 +27,7 @@ const layoutConfig: LayoutConfig = {
     modules: [
       '@opensumi/ide-explorer',
       '@opensumi/ide-search',
-      // '@opensumi/ide-debug',
+      '@opensumi/ide-debug',
       // '@opensumi/ide-scm',
       // '@opensumi/ide-extension-manager',
     ],
@@ -34,7 +36,7 @@ const layoutConfig: LayoutConfig = {
     modules: ['@opensumi/ide-editor'],
   },
   bottom: {
-    modules: ['@opensumi/ide-output', '@opensumi/ide-markers' /*, 'debug-console'*/],
+    modules: ['@opensumi/ide-output', '@opensumi/ide-markers', 'debug-console'],
   },
   statusBar: {
     modules: ['@opensumi/ide-status-bar'],
@@ -118,6 +120,7 @@ export const IDEWorkbench = React.forwardRef<IDEWorkbenchRef, IDEWorkbenchProps>
           scenario: 'remax-ide',
           startupEditor: 'welcomePage',
         }}
+        // Landing={() => <div>loading...</div>}
       />
     </div>
   );

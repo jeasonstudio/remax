@@ -27,7 +27,7 @@ Closing a channel when Alice and Bob do not agree on the final balances
 3. Alice and Bob can withdraw funds once the channel is expired
 */
 
-import "github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.5/contracts/utils/cryptography/ECDSA.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.5/contracts/utils/cryptography/ECDSA.sol";
 
 contract BiDirectionalPaymentChannel {
     using ECDSA for bytes32;

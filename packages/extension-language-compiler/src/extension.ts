@@ -97,6 +97,8 @@ let currentSoljsonUrl: string =
   'https://binaries.soliditylang.org/wasm/soljson-v0.8.23+commit.f704f362.js';
 
 export async function activate(context: vscode.ExtensionContext) {
+  const config = vscode.workspace.getConfiguration('solidity.compiler');
+
   languageCompilerClient = createClient(context, currentSoljsonUrl);
   languageCompilerClient.start();
 

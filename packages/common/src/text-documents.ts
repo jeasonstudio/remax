@@ -19,6 +19,7 @@ import {
   TextDocumentItem,
 } from 'vscode-languageserver-protocol';
 import { TextDocument } from 'vscode-languageserver-textdocument';
+import * as vscodeUri from 'vscode-uri';
 
 const debug = require('debug')('remax:extension:text-documents');
 
@@ -352,4 +353,14 @@ export class TextDocuments<T extends TextDocument> {
       disposables.forEach((disposable) => disposable.dispose());
     });
   }
+
+  public resolve = (from: string, ...to: string[]): T | null => {
+    const fromUri = vscodeUri.URI.parse(from);
+    const targetUri = vscodeUri.Utils.resolvePath(vscodeUri.Utils.dirname(fromUri), ...to);
+
+    if (this.has(targetUri.toString(true))) {
+      return this.get(targetUri.toString(true)) ?? null;
+    }
+    return null;
+  };
 }
