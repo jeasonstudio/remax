@@ -19,9 +19,7 @@ const layoutConfig: LayoutConfig = {
     modules: ['@opensumi/ide-menu-bar' /*, 'toolbar'*/],
   },
   action: {
-    modules: [
-      /*'@opensumi/ide-toolbar-action'*/
-    ],
+    modules: ['@opensumi/ide-toolbar-action'],
   },
   left: {
     modules: [
@@ -82,10 +80,10 @@ export const IDEWorkbench = React.forwardRef<IDEWorkbenchRef, IDEWorkbenchProps>
           await props.onLoad?.(_app);
         }}
         appConfig={{
-          workspaceDir: props.workspaceDir || 'playground/project',
+          workspaceDir: props.workspaceDir || '/',
           layoutConfig,
           defaultPreferences: {
-            'general.theme': 'github-light',
+            'general.theme': 'github-dark',
             'general.icon': 'material-icon-theme',
             'general.language': 'zh-CN',
             ...props.defaultPreferences,
@@ -119,6 +117,7 @@ export const IDEWorkbench = React.forwardRef<IDEWorkbenchRef, IDEWorkbenchProps>
           scmFileTree: false,
           scenario: 'remax-ide',
           startupEditor: 'welcomePage',
+          defaultOpenFile: props.defaultOpenFiles,
         }}
         // Landing={() => <div>loading...</div>}
       />

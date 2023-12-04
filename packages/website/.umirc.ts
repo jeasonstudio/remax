@@ -10,7 +10,10 @@ const extensionsInPkg = Object.keys(
 const isProd = process.env.NODE_ENV === 'production';
 
 export default defineConfig({
-  routes: [{ path: '/', component: 'index' }],
+  routes: [
+    { path: '/w/*', component: 'index' },
+    { path: '*', redirect: '/w/playground' },
+  ],
   mfsu: false,
   writeToDisk: true,
   define: {

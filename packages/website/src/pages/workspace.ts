@@ -19,20 +19,24 @@ const contracts = loadContracts(manifest);
 
 export const workspace = createWorkspace({
   filesystem: {
-    fs: 'OverlayFS',
+    fs: 'IndexedDB',
     options: {
-      writable: {
-        fs: 'IndexedDB',
-        options: {
-          storeName: 'remax_ide',
-        },
-      },
-      readable: {
-        fs: 'FileIndexSystem',
-        options: {
-          requestFileIndex: async () => contracts,
-        },
-      },
+      storeName: 'remax_ide',
     },
+    // fs: 'OverlayFS',
+    // options: {
+    //   writable: {
+    //     fs: 'IndexedDB',
+    //     options: {
+    //       storeName: 'remax_ide',
+    //     },
+    //   },
+    //   readable: {
+    //     fs: 'FileIndexSystem',
+    //     options: {
+    //       requestFileIndex: async () => contracts,
+    //     },
+    //   },
+    // },
   },
 });

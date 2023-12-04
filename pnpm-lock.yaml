@@ -746,6 +746,9 @@ importers:
       '@codeblitzjs/ide-toolkit':
         specifier: 1.0.3
         version: 1.0.3
+      '@opensumi/antd-theme':
+        specifier: ^1.0.3
+        version: 1.0.3
       '@opensumi/di':
         specifier: 1.8.1
         version: 1.8.1
@@ -3958,6 +3961,16 @@ packages:
     dependencies:
       mkdirp: 1.0.4
       rimraf: 3.0.2
+
+  /@opensumi/antd-theme@1.0.3:
+    resolution: {integrity: sha512-IWNXEt/uL9p8szfV5H7RQj5f05+KMhfQsqGPEpEhJnuMqZ8PP5/cpfSzHC49The5JiGNEJsyzo1KVTdtEDXwaw==}
+    dependencies:
+      classnames: 2.3.2
+      lodash: 4.17.21
+      moment: 2.29.4
+      raf: 3.4.1
+      scroll-into-view-if-needed: 2.2.31
+    dev: false
 
   /@opensumi/di@1.8.1:
     resolution: {integrity: sha512-25pbG6TvRDdAM47ISyWy0j1iMTMD4FTEn5OUg9c/c3ifNM5YkfrYKgqFF29ktR7qzFdmgnsVEzZGvkY2mAGhaA==}

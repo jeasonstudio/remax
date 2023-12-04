@@ -41,4 +41,6 @@ export interface IDEWorkbenchProps {
 
   modules?: ModuleConstructor[];
   extensions?: ExtensionIdentity[];
+
+  defaultOpenFiles?: string[];
 }
