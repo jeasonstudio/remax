@@ -4,5 +4,6 @@ dist
 lib
 es
 out
+grammar
 
 **/*.js

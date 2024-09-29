@@ -11,3 +11,9 @@ export const REMAX_PROJECT_OPEN_COMMAND: Command = {
   label: `Remax: %remax.workspace.open-project%`,
   shortLabel: `%remax.workspace.open-project%`,
 };
+
+export const REMAX_PROJECT_OPEN_PLAYGROUND: Command = {
+  id: 'filetree.open.folder',
+  label: `Remax: %remax.workspace.open-project%`,
+  shortLabel: `%remax.workspace.open-project%`,
+};

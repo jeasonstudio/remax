@@ -18,7 +18,11 @@ import { IFileServiceClient } from '@opensumi/ide-file-service';
 import { IWorkspaceService } from '@opensumi/ide-workspace';
 import { createDebug } from '@remax-ide/common/debug';
 import { IMessageService } from '@opensumi/ide-overlay';
-import { REMAX_PROJECT_CREATE_COMMAND, REMAX_PROJECT_OPEN_COMMAND } from './commands';
+import {
+  REMAX_PROJECT_CREATE_COMMAND,
+  REMAX_PROJECT_OPEN_COMMAND,
+  REMAX_PROJECT_OPEN_PLAYGROUND,
+} from './commands';
 
 const debug = createDebug('website:workspace');
 
@@ -129,6 +133,17 @@ export class WorkspaceContribution
           if (!newProjectName) return;
           await this.createProject(newProjectName!);
           await this.openProject(newProjectName!);
+        } catch (error) {
+          this.messageService.error((error as Error).message);
+        }
+      },
+    });
+
+    commands.registerCommand(REMAX_PROJECT_OPEN_PLAYGROUND, {
+      execute: async () => {
+        try {
+          // await this.createProject('playground');
+          await this.openProject('playground');
         } catch (error) {
           this.messageService.error((error as Error).message);
         }
