@@ -17,8 +17,8 @@
     "vscodeweb": "zx ./scripts/vscodeweb.mjs"
   },
   "vscodeweb": {
-    "version": "1.76.2",
-    "commit": "ee2b180d582a7f601fa6ecfdad8d9fd269ab1884"
+    "version": "1.93.1",
+    "commit": "38c31bc77e0dd6ae88a4e9cc93428cc27a56ba40"
   },
   "repository": {
     "type": "git",

@@ -1,18 +1,10 @@
+<!-- Copyright (C) Microsoft Corporation. All rights reserved. -->
 <!DOCTYPE html>
 <html>
   <head>
-    <style id="theme-background-fallback"></style>
     <script>
       performance.mark('code/didStartRenderer');
-      try {
-        // preset for the background color of the workbench
-        var cachedTheme = localStorage.getItem('theme') || '{}';
-        var theme = JSON.parse(cachedTheme);
-        var style = 'body{background:' + theme.editorBackground || theme.panelBackground + '}';
-        document.getElementById('theme-background-fallback').innerText = style;
-      } catch (err) {}
     </script>
-
     <meta charset="utf-8" />
 
     <!-- Mobile tweaks -->
@@ -27,76 +19,53 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"
     />
 
-    <!-- Configurations (not in use) -->
+    <!-- Workbench Configuration -->
     <meta id="vscode-workbench-web-configuration" data-settings="{}" />
 
     <!-- Builtin Extensions (running out of sources) -->
     <meta id="vscode-workbench-builtin-extensions" data-settings="[]" />
 
-    <!-- Remax IDE Version -->
-    <meta id="remax-ide-version" data-settings="<%= htmlWebpackPlugin.options.package.version %>" />
-
-    <!-- VSCode Web Version -->
-    <meta id="vscode-web-version" data-settings="<%= htmlWebpackPlugin.options.vscodeweb.version %>" />
-
-    <!-- VSCode Web Commit -->
-    <meta id="vscode-web-commit" data-settings="<%= htmlWebpackPlugin.options.vscodeweb.commit %>" />
-
     <!-- Workbench Icon/Manifest/CSS -->
     <link rel="icon" href="/<%= htmlWebpackPlugin.options.static %>/favicon.ico" type="image/x-icon" />
     <link rel="manifest" href="/<%= htmlWebpackPlugin.options.static %>/manifest.json" />
+
     <link
       data-name="vs/workbench/workbench.web.main"
       rel="stylesheet"
       href="/<%= htmlWebpackPlugin.options.static %>/out/vs/workbench/workbench.web.main.css"
     />
-    <style>
-      #workbench {
-        height: 100%;
-        width: 100%;
-      }
-    </style>
+    <style id="vscode-css-modules" type="text/css" media="screen"></style>
   </head>
 
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <main id="workbench"></main>
-  </body>
+  <body aria-label=""></body>
 
   <!-- Startup (do not modify order of script tags!) -->
   <script src="/<%= htmlWebpackPlugin.options.static %>/out/vs/loader.js"></script>
   <script src="/<%= htmlWebpackPlugin.options.static %>/out/vs/webPackagePaths.js"></script>
   <script>
-    var baseUrl = window.location.origin + '/<%= htmlWebpackPlugin.options.static %>';
-    var paths = Object.fromEntries(
-      Object.entries(self.webPackagePaths).map(function ([key, value]) {
-        return [key, baseUrl + '/node_modules/' + key + '/' + value];
-      }),
-    );
-    var locale = window.localStorage.getItem('vscode.nls.locale') || navigator.language;
-    var trustedTypesPolicy = undefined;
-    if (window.trustedTypes) {
-      trustedTypesPolicy = window.trustedTypes.createPolicy('amdLoader', {
-        createScriptURL(scriptUrl) {
-          return scriptUrl;
-        },
-      });
-    }
-    window.require.config({
-      baseUrl: baseUrl + '/out',
-      recordStats: true,
-      trustedTypesPolicy,
-      paths,
-      // 'vs/nls': {
-      //   availableLanguages: {
-      //     '*': 'zh-cn',
-      //   },
-      //   translationServiceUrl: window.location.origin,
-      // },
+    let baseUrl = '/<%= htmlWebpackPlugin.options.static %>';
+    let webPackagePaths = self.webPackagePaths || {};
+
+    Object.keys(webPackagePaths).forEach(function (key, index) {
+      webPackagePaths[key] = `${baseUrl}/node_modules/${key}/${webPackagePaths[key]}`;
     });
+
+    require.config({
+      baseUrl: `${window.location.origin}${baseUrl}/out`,
+      recordStats: true,
+      paths: webPackagePaths,
+      trustedTypesPolicy: window.trustedTypes?.createPolicy('amdLoader', {
+        createScriptURL(value) {
+          return value;
+        },
+      }),
+    });
+  </script>
+  <script>
     performance.mark('code/willLoadWorkbenchMain');
   </script>
-  <script src="/<%= htmlWebpackPlugin.options.static %>/out/vs/workbench/workbench.web.main.nls.js"></script>
-  <!-- <script src="<%= htmlWebpackPlugin.options.static %>/out/vs/workbench/workbench.web.main.js"></script> -->
-  <!-- <script src="<%= htmlWebpackPlugin.options.static %>/out/vs/code/browser/workbench/workbench.js"></script> -->
+
+  <script src="/<%= htmlWebpackPlugin.options.static %>/out/nls.messages.js"></script>
+  <!-- <script src="/<%= htmlWebpackPlugin.options.static %>/out/vs/workbench/workbench.web.main.nls.js"></script> -->
+  <script src="/<%= htmlWebpackPlugin.options.static %>/out/vs/workbench/workbench.web.main.js"></script>
 </html>

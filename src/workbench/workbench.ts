@@ -1,5 +1,6 @@
 import { URI } from 'vscode-uri';
 import { RemaxWorkspaceProvider } from './workspace';
+// import { WorkspaceProvider, LocalStorageURLCallbackProvider } from './ws';
 
 const builtinExtensions = [
   // 'bat',
@@ -92,26 +93,25 @@ window.require(['vs/workbench/workbench.web.main'], async (workbench: any) => {
   const remaxExtensions: URI[] = [URI.parse(`${window.location.origin}/extensions/remax`)];
   const additionalBuiltinExtensions: URI[] = [/*...vscodewebBuiltinExtensions,*/ ...remaxExtensions];
 
-  if (!window.localStorage.getItem('monaco-parts-splash')) {
-    setTimeout(() => {
-      workbench.commands.executeCommand('remax.reset-playground');
-    }, 3e3);
-  }
+  // if (!window.localStorage.getItem('monaco-parts-splash')) {
+  //   setTimeout(() => {
+  //     workbench.commands.executeCommand('remax.reset-playground');
+  //   }, 3e3);
+  // }
 
-  // see: src/vs/workbench/browser/web.main.ts
-  workbench.create(document.getElementById('workbench'), {
+  const config = {
     settingsSyncOptions: {
       enabled: false, // TODO: disable settings sync for now
     },
     workspaceProvider,
     additionalBuiltinExtensions,
-    welcomeBanner: {
-      message: 'Welcome to Remax IDE!',
-    },
+    // welcomeBanner: {
+    //   message: 'Welcome to Remax IDE!',
+    // },
     productConfiguration: {
       nameShort: 'Remax IDE',
       nameLong: 'Remax IDE',
-      version: '1.76.2',
+      version: '1.93.1',
       date: '2023-03-19',
       portable: true,
       applicationName: 'remaxide',
@@ -123,14 +123,21 @@ window.require(['vs/workbench/workbench.web.main'], async (workbench: any) => {
       urlProtocol: 'remaxide',
       // webviewContentExternalBaseUrlTemplate:
       //   'https://{{uuid}}.vscode-cdn.net/insider/ef65ac1ba57f57f2a3961bfe94aa20481caca4c6/out/vs/workbench/contrib/webview/browser/pre/',
-      builtInExtensions: [],
+      // builtInExtensions: [],
       webEndpointUrlTemplate: `${window.location.origin}/${process.env.VSCODE_WEB_COMMIT}`,
       // Set commit to falsy means environment is development
       // src/vs/workbench/services/environment/browser/environmentService.ts#45
       // commit: null,
     },
     configurationDefaults: {
-      'workbench.colorTheme': 'Default Dark+ Experimental',
+      // 'workbench.colorTheme': 'Default Dark+ Experimental',
     },
+  };
+
+  // see: src/vs/workbench/browser/web.main.ts
+  workbench.create(document.body, {
+    ...config,
+    // workspaceProvider: WorkspaceProvider.create(config),
+    // urlCallbackProvider: new LocalStorageURLCallbackProvider('/'),
   });
 });

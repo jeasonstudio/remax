@@ -36,14 +36,14 @@ export class RemaxWorkspaceProvider {
   public static async create(workbench: any): Promise<RemaxWorkspaceProvider> {
     const pathname = window.location.pathname;
     const [_blank, tag, project, ...paths] = pathname.split('/');
-    if (tag !== 'p' || !project) {
-      // redirect to /p/playground
-      window.location.href = `${window.location.origin}/p/${WORKBENCH_DEFAULT_PLAYGROUND_NAME}`;
-    }
+    // if (tag !== 'p' || !project) {
+    //   // redirect to /p/playground
+    //   window.location.href = `${window.location.origin}/p/${WORKBENCH_DEFAULT_PLAYGROUND_NAME}`;
+    // }
 
     const folderUri = workbench.URI.from({
       scheme: FILE_SYSTEM_SCHEME,
-      path: `/${project}`,
+      path: `/${project ?? ''}`,
       query: window.location.search,
       fragment: window.location.hash,
     });

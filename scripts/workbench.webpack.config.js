@@ -51,7 +51,7 @@ module.exports = {
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
       'process.env.VSCODE_WEB_VERSION': JSON.stringify(pkg.vscodeweb.version),
       'process.env.VSCODE_WEB_COMMIT': JSON.stringify(pkg.vscodeweb.commit),
-      BUILTIN_EXTENSIONS_METADATA: JSON.stringify('["javascript"]'),
+      // BUILTIN_EXTENSIONS_METADATA: JSON.stringify('["javascript"]'),
       'process.env.BUILTIN_EXTENSIONS_BASE_URL': JSON.stringify(`/${pkg.vscodeweb.commit}/extensions`),
     }),
     new CopyWebpackPlugin({
