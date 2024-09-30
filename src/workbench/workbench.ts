@@ -90,8 +90,8 @@ window.require(['vs/workbench/workbench.web.main'], async (workbench: any) => {
   const vscodewebBuiltinExtensions: URI[] = builtinExtensions.map((extensionName) => {
     return URI.parse(`${window.location.origin}${process.env.BUILTIN_EXTENSIONS_BASE_URL}/${extensionName}`);
   });
-  const remaxExtensions: URI[] = [URI.parse(`${window.location.origin}/extensions/remax`)];
-  const additionalBuiltinExtensions: URI[] = [/*...vscodewebBuiltinExtensions,*/ ...remaxExtensions];
+  const remaxExtensions: URI[] = [URI.parse(`${window.location.origin}/extension`)];
+  const additionalBuiltinExtensions: URI[] = [...vscodewebBuiltinExtensions, ...remaxExtensions];
 
   // if (!window.localStorage.getItem('monaco-parts-splash')) {
   //   setTimeout(() => {

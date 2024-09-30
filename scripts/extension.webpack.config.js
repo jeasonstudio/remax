@@ -16,13 +16,13 @@ module.exports = {
   },
   output: {
     filename: '[name].js',
-    path: path.join(projectRoot, 'dist/extensions/remax'),
+    path: path.join(projectRoot, 'dist/extension'),
     libraryTarget: 'commonjs',
     devtoolModuleFilenameTemplate: '../../[resource-path]',
   },
   resolve: {
     mainFields: ['browser', 'module', 'main'], // look for `browser` entry point in imported node modules
-    extensions: ['.ts', '.js'], // support ts-files and js-files
+    extensions: ['.ts', '.tsx', '.js', '.jsx'], // support ts-files and js-files
     alias: {
       // provides alternate implementation for node module and source files
     },
@@ -35,7 +35,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.ts$/,
+        test: /\.(ts|tsx)$/,
         exclude: /node_modules/,
         use: [
           {
@@ -56,7 +56,7 @@ module.exports = {
       patterns: [
         {
           from: path.join(projectRoot, 'src/extension/static'),
-          to: path.join(projectRoot, 'dist/extensions/remax'),
+          to: path.join(projectRoot, 'dist/extension'),
         },
       ],
     }),

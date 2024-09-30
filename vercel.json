@@ -1,7 +1,7 @@
 {
   "installCommand": "pnpm install --no-frozen-lockfile",
   "devCommand": "pnpm run /^dev:.*/",
-  "buildCommand": "pnpm run /^build:.*/",
+  "buildCommand": "pnpm run build",
   "framework": null,
   "outputDirectory": "dist",
   "rewrites": [{ "source": "/p/(.*)", "destination": "/index.html" }]
