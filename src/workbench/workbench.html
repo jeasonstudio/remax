@@ -11,7 +11,10 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Code" />
-    <link rel="apple-touch-icon" href="/<%= htmlWebpackPlugin.options.static %>/code-192.png" />
+    <link
+      rel="apple-touch-icon"
+      href="/<%= htmlWebpackPlugin.options.static %>/code-192.png"
+    />
 
     <!-- Disable pinch zooming -->
     <meta
@@ -26,8 +29,15 @@
     <meta id="vscode-workbench-builtin-extensions" data-settings="[]" />
 
     <!-- Workbench Icon/Manifest/CSS -->
-    <link rel="icon" href="/<%= htmlWebpackPlugin.options.static %>/favicon.ico" type="image/x-icon" />
-    <link rel="manifest" href="/<%= htmlWebpackPlugin.options.static %>/manifest.json" />
+    <link
+      rel="icon"
+      href="/<%= htmlWebpackPlugin.options.static %>/favicon.ico"
+      type="image/x-icon"
+    />
+    <link
+      rel="manifest"
+      href="/<%= htmlWebpackPlugin.options.static %>/manifest.json"
+    />
 
     <link
       data-name="vs/workbench/workbench.web.main"
@@ -47,7 +57,9 @@
     let webPackagePaths = self.webPackagePaths || {};
 
     Object.keys(webPackagePaths).forEach(function (key, index) {
-      webPackagePaths[key] = `${baseUrl}/node_modules/${key}/${webPackagePaths[key]}`;
+      webPackagePaths[
+        key
+      ] = `${baseUrl}/node_modules/${key}/${webPackagePaths[key]}`;
     });
 
     require.config({

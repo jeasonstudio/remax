@@ -1,14 +1,25 @@
-import * as vscode from 'vscode';
-import { FILE_SYSTEM_DB_NAME, FILE_SYSTEM_OBJECTSTORE_NAME } from '../../constants';
-import { Entry } from './entry';
+import * as vscode from "vscode";
+import {
+  FILE_SYSTEM_DB_NAME,
+  FILE_SYSTEM_OBJECTSTORE_NAME,
+} from "../../constants";
+import { Entry } from "./entry";
 
 export class Transaction {
   public transaction!: IDBTransaction;
   public objectStore!: IDBObjectStore;
 
-  public constructor(public readonly db: WrapperedIndexedDB, mode?: IDBTransactionMode) {
-    this.transaction = db.indexeddb.transaction([FILE_SYSTEM_OBJECTSTORE_NAME], mode ?? 'readwrite');
-    this.objectStore = this.transaction.objectStore(FILE_SYSTEM_OBJECTSTORE_NAME);
+  public constructor(
+    public readonly db: WrapperedIndexedDB,
+    mode?: IDBTransactionMode,
+  ) {
+    this.transaction = db.indexeddb.transaction(
+      [FILE_SYSTEM_OBJECTSTORE_NAME],
+      mode ?? "readwrite",
+    );
+    this.objectStore = this.transaction.objectStore(
+      FILE_SYSTEM_OBJECTSTORE_NAME,
+    );
   }
 
   /**
@@ -17,8 +28,14 @@ export class Transaction {
    * @param silent {boolean} should throw error
    */
   public async get<E extends Entry>(uri: vscode.Uri, silent: false): Promise<E>;
-  public async get<E extends Entry>(uri: vscode.Uri, silent: boolean): Promise<E | undefined>;
-  public async get<E extends Entry>(uri: vscode.Uri, silent: boolean): Promise<E | undefined> {
+  public async get<E extends Entry>(
+    uri: vscode.Uri,
+    silent: boolean,
+  ): Promise<E | undefined>;
+  public async get<E extends Entry>(
+    uri: vscode.Uri,
+    silent: boolean,
+  ): Promise<E | undefined> {
     const entryPathname = uri.path;
     const request = this.objectStore.get(entryPathname);
     return new Promise<E | undefined>((resolve, reject) => {
@@ -88,7 +105,10 @@ export class WrapperedIndexedDB {
     // In Chrome, it "just works", and clears the database when you leave the page.
     // Untested: Opera, IE.
     try {
-      return typeof self.indexedDB !== 'undefined' && null !== self.indexedDB.open('__browserfs_test__');
+      return (
+        typeof self.indexedDB !== "undefined" &&
+        null !== self.indexedDB.open("__browserfs_test__")
+      );
     } catch (e) {
       return false;
     }
@@ -106,7 +126,9 @@ export class WrapperedIndexedDB {
     const request = self.indexedDB.open(this.name, 1);
     return new Promise<void>((resolve, reject) => {
       request.onerror = () => {
-        reject(vscode.FileSystemError.Unavailable('IndexedDB is not available'));
+        reject(
+          vscode.FileSystemError.Unavailable("IndexedDB is not available"),
+        );
       };
       request.onsuccess = (event) => {
         const db: IDBDatabase = (<any>event.target).result;

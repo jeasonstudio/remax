@@ -1,8 +1,8 @@
-import * as vscode from 'vscode';
-import path from 'path-browserify';
-import { FileEntry, DirectoryEntry } from './entry';
-import { FILE_SYSTEM_SCHEME } from '../../constants';
-import { WrapperedIndexedDB } from './indexed-db';
+import path from "path-browserify";
+import * as vscode from "vscode";
+import { FILE_SYSTEM_SCHEME } from "../../constants";
+import { DirectoryEntry, FileEntry } from "./entry";
+import { WrapperedIndexedDB } from "./indexed-db";
 
 // A good sample of indexeddb-fs
 // https://github.dev/playerony/indexeddb-fs/blob/main/lib/database/index.ts
@@ -28,11 +28,14 @@ export class RemaxFileSystemProvider implements vscode.FileSystemProvider {
   public constructor(private readonly widb: WrapperedIndexedDB) {}
 
   public async prepare() {
-    const rootUri = vscode.Uri.from({ scheme: RemaxFileSystemProvider.scheme, path: '/' });
-    const tx = await this.widb.transaction('readwrite');
+    const rootUri = vscode.Uri.from({
+      scheme: RemaxFileSystemProvider.scheme,
+      path: "/",
+    });
+    const tx = await this.widb.transaction("readwrite");
     const rootEntry = await tx.get(rootUri, true);
     if (!rootEntry) {
-      const rootDirectory = new DirectoryEntry('<root>');
+      const rootDirectory = new DirectoryEntry("<root>");
       await tx.put(rootUri, rootDirectory);
     }
     tx.commit();
@@ -53,7 +56,7 @@ export class RemaxFileSystemProvider implements vscode.FileSystemProvider {
    * @returns entry stat
    */
   public async stat(uri: vscode.Uri): Promise<vscode.FileStat> {
-    const tx = await this.widb.transaction('readonly');
+    const tx = await this.widb.transaction("readonly");
     const stat = await tx.get(uri, false);
     tx.commit();
     return stat;
@@ -64,8 +67,10 @@ export class RemaxFileSystemProvider implements vscode.FileSystemProvider {
    * @param uri {vscode.Uri} uri
    * @returns directory entries
    */
-  public async readDirectory(uri: vscode.Uri): Promise<[string, vscode.FileType][]> {
-    const tx = await this.widb.transaction('readonly');
+  public async readDirectory(
+    uri: vscode.Uri,
+  ): Promise<[string, vscode.FileType][]> {
+    const tx = await this.widb.transaction("readonly");
     const directory = await tx.get<DirectoryEntry>(uri, false);
     const result: [string, vscode.FileType][] = [];
     for (const [name, child] of directory.entries) {
@@ -81,7 +86,7 @@ export class RemaxFileSystemProvider implements vscode.FileSystemProvider {
    * @param uri {vscode.Uri} uri do not ends with '/'
    */
   public async createDirectory(uri: vscode.Uri): Promise<void> {
-    const tx = await this.widb.transaction('readwrite');
+    const tx = await this.widb.transaction("readwrite");
     const basename = path.basename(uri.path);
     const parentDirname = this._getParentUri(uri);
     const parent = await tx.get<DirectoryEntry>(parentDirname, false);
@@ -104,7 +109,7 @@ export class RemaxFileSystemProvider implements vscode.FileSystemProvider {
    * @returns {Promise<Uint8Array>}
    */
   public async readFile(uri: vscode.Uri): Promise<Uint8Array> {
-    const tx = await this.widb.transaction('readonly');
+    const tx = await this.widb.transaction("readonly");
     const file = await tx.get<FileEntry>(uri, false);
     tx.commit();
     if (!file.data) {
@@ -118,13 +123,15 @@ export class RemaxFileSystemProvider implements vscode.FileSystemProvider {
     content: Uint8Array,
     options: { create: boolean; overwrite: boolean },
   ): Promise<void> {
-    const tx = await this.widb.transaction('readwrite');
+    const tx = await this.widb.transaction("readwrite");
     const basename = path.basename(uri.path);
     const parentDirname = this._getParentUri(uri);
     const parent = await tx.get<DirectoryEntry>(parentDirname, false);
 
     const entryPath = parent.entries.get(basename);
-    let entry = entryPath ? await tx.get<FileEntry>(uri.with({ path: entryPath }), true) : undefined;
+    let entry = entryPath
+      ? await tx.get<FileEntry>(uri.with({ path: entryPath }), true)
+      : undefined;
     if (entry?.type === vscode.FileType.Directory) {
       throw vscode.FileSystemError.FileIsADirectory(uri);
     }
@@ -154,8 +161,11 @@ export class RemaxFileSystemProvider implements vscode.FileSystemProvider {
    * @param uri {vscode.Uri}
    * @param options
    */
-  public async delete(uri: vscode.Uri, options: { recursive: boolean }): Promise<void> {
-    const tx = await this.widb.transaction('readwrite');
+  public async delete(
+    uri: vscode.Uri,
+    options: { recursive: boolean },
+  ): Promise<void> {
+    const tx = await this.widb.transaction("readwrite");
     const dirname = this._getParentUri(uri);
     const parent = await tx.get<DirectoryEntry>(dirname, false);
 
@@ -184,8 +194,12 @@ export class RemaxFileSystemProvider implements vscode.FileSystemProvider {
    * @param newUri {vscode.Uri}
    * @param options
    */
-  public async rename(oldUri: vscode.Uri, newUri: vscode.Uri, options: { overwrite: boolean }): Promise<void> {
-    const tx = await this.widb.transaction('readwrite');
+  public async rename(
+    oldUri: vscode.Uri,
+    newUri: vscode.Uri,
+    options: { overwrite: boolean },
+  ): Promise<void> {
+    const tx = await this.widb.transaction("readwrite");
     const targetFile = await tx.get<FileEntry>(newUri, true);
     if (!options.overwrite && targetFile) {
       throw vscode.FileSystemError.FileExists(newUri);
@@ -222,7 +236,8 @@ export class RemaxFileSystemProvider implements vscode.FileSystemProvider {
   // --- manage file events
 
   private _emitter = new vscode.EventEmitter<vscode.FileChangeEvent[]>();
-  public readonly onDidChangeFile: vscode.Event<vscode.FileChangeEvent[]> = this._emitter.event;
+  public readonly onDidChangeFile: vscode.Event<vscode.FileChangeEvent[]> =
+    this._emitter.event;
 
   public watch(_resource: vscode.Uri): vscode.Disposable {
     // ignore, fires for all changes...

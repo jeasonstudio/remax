@@ -1,50 +1,50 @@
-import { URI } from 'vscode-uri';
-import { RemaxWorkspaceProvider } from './workspace';
+import { URI } from "vscode-uri";
+import { RemaxWorkspaceProvider } from "./workspace";
 // import { WorkspaceProvider, LocalStorageURLCallbackProvider } from './ws';
 
 const builtinExtensions = [
   // 'bat',
   // 'clojure',
   // 'coffeescript',
-  'configuration-editing',
+  "configuration-editing",
   // 'cpp',
   // 'csharp',
   // 'css',
   // 'css-language-features',
   // 'dart',
-  'diff',
+  "diff",
   // 'docker',
-  'emmet',
-  'extension-editing',
+  "emmet",
+  "extension-editing",
   // 'fsharp',
-  'git-base',
+  "git-base",
   // 'github-authentication',
   // 'go',
   // 'groovy',
   // 'handlebars',
   // 'hlsl',
-  'html',
-  'html-language-features',
+  "html",
+  "html-language-features",
   // 'ini',
   // 'ipynb',
   // 'java',
-  'javascript',
-  'json',
-  'json-language-features',
+  "javascript",
+  "json",
+  "json-language-features",
   // 'julia',
   // 'latex',
   // 'less',
-  'log',
+  "log",
   // 'lua',
   // 'make',
-  'markdown-basics',
-  'markdown-language-features',
-  'markdown-math',
-  'media-preview',
-  'merge-conflict',
+  "markdown-basics",
+  "markdown-language-features",
+  "markdown-math",
+  "media-preview",
+  "merge-conflict",
   // 'microsoft-authentication',
   // 'ms-vscode-remote.remote-wsl-recommender',
-  'notebook-renderers',
+  "notebook-renderers",
   // 'npm',
   // 'objective-c',
   // 'perl',
@@ -54,44 +54,53 @@ const builtinExtensions = [
   // 'python',
   // 'r',
   // 'razor',
-  'references-view',
+  "references-view",
   // 'restructuredtext',
   // 'ruby',
   // 'rust',
   // 'scss',
-  'search-result',
+  "search-result",
   // 'shaderlab',
-  'shellscript',
-  'simple-browser',
+  "shellscript",
+  "simple-browser",
   // 'sql',
   // 'swift',
-  'theme-abyss',
-  'theme-defaults',
-  'theme-kimbie-dark',
-  'theme-monokai',
-  'theme-monokai-dimmed',
-  'theme-quietlight',
-  'theme-red',
-  'theme-seti',
-  'theme-solarized-dark',
-  'theme-solarized-light',
-  'theme-tomorrow-night-blue',
-  'typescript-basics',
-  'typescript-language-features',
+  "theme-abyss",
+  "theme-defaults",
+  "theme-kimbie-dark",
+  "theme-monokai",
+  "theme-monokai-dimmed",
+  "theme-quietlight",
+  "theme-red",
+  "theme-seti",
+  "theme-solarized-dark",
+  "theme-solarized-light",
+  "theme-tomorrow-night-blue",
+  "typescript-basics",
+  "typescript-language-features",
   // 'vb',
-  'xml',
-  'yaml',
+  "xml",
+  "yaml",
 ];
 
-window.require(['vs/workbench/workbench.web.main'], async (workbench: any) => {
+window.require(["vs/workbench/workbench.web.main"], async (workbench: any) => {
   (window as any).workbench = workbench;
 
   const workspaceProvider = await RemaxWorkspaceProvider.create(workbench);
-  const vscodewebBuiltinExtensions: URI[] = builtinExtensions.map((extensionName) => {
-    return URI.parse(`${window.location.origin}${process.env.BUILTIN_EXTENSIONS_BASE_URL}/${extensionName}`);
-  });
-  const remaxExtensions: URI[] = [URI.parse(`${window.location.origin}/extension`)];
-  const additionalBuiltinExtensions: URI[] = [...vscodewebBuiltinExtensions, ...remaxExtensions];
+  const vscodewebBuiltinExtensions: URI[] = builtinExtensions.map(
+    (extensionName) => {
+      return URI.parse(
+        `${window.location.origin}${process.env.BUILTIN_EXTENSIONS_BASE_URL}/${extensionName}`,
+      );
+    },
+  );
+  const remaxExtensions: URI[] = [
+    URI.parse(`${window.location.origin}/extension`),
+  ];
+  const additionalBuiltinExtensions: URI[] = [
+    ...vscodewebBuiltinExtensions,
+    ...remaxExtensions,
+  ];
 
   // if (!window.localStorage.getItem('monaco-parts-splash')) {
   //   setTimeout(() => {
@@ -109,18 +118,18 @@ window.require(['vs/workbench/workbench.web.main'], async (workbench: any) => {
     //   message: 'Welcome to Remax IDE!',
     // },
     productConfiguration: {
-      nameShort: 'Remax IDE',
-      nameLong: 'Remax IDE',
-      version: '1.93.1',
-      date: '2023-03-19',
+      nameShort: "Remax IDE",
+      nameLong: "Remax IDE",
+      version: "1.93.1",
+      date: "2023-03-19",
       portable: true,
-      applicationName: 'remaxide',
-      dataFolderName: '.remax-extensions',
-      licenseName: 'MIT',
-      licenseUrl: 'https://github.com/jeasonstudio/remax/blob/main/LICENSE',
-      licenseFileName: 'LICENSE',
-      reportIssueUrl: 'https://github.com/jeasonstudio/remax/issues/new',
-      urlProtocol: 'remaxide',
+      applicationName: "remaxide",
+      dataFolderName: ".remax-extensions",
+      licenseName: "MIT",
+      licenseUrl: "https://github.com/jeasonstudio/remax/blob/main/LICENSE",
+      licenseFileName: "LICENSE",
+      reportIssueUrl: "https://github.com/jeasonstudio/remax/issues/new",
+      urlProtocol: "remaxide",
       // webviewContentExternalBaseUrlTemplate:
       //   'https://{{uuid}}.vscode-cdn.net/insider/ef65ac1ba57f57f2a3961bfe94aa20481caca4c6/out/vs/workbench/contrib/webview/browser/pre/',
       // builtInExtensions: [],

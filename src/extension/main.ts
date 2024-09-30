@@ -1,6 +1,6 @@
-import * as vscode from 'vscode';
-import * as fileSystem from './file-system';
-import * as welcome from './welcome';
+import type * as vscode from "vscode";
+import * as fileSystem from "./file-system";
+import * as welcome from "./welcome";
 
 export async function activate(context: vscode.ExtensionContext) {
   try {

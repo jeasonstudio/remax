@@ -1,11 +1,11 @@
 #!/usr/bin/env zx
 
-import 'zx/globals';
+import "zx/globals";
 
-import handler from 'serve-handler';
-import http from 'http';
+import http from "http";
+import handler from "serve-handler";
 
-const config = require('../vercel.json');
+const config = require("../vercel.json");
 
 const server = http.createServer((request, response) => {
   // You pass two more arguments for config and middleware
@@ -15,9 +15,9 @@ const server = http.createServer((request, response) => {
     etag: true,
     // `cleanUrls` is false when production,
     // here we override it to make serve support historyApiFallback
-    cleanUrls: ['!**/extensions/**/*', '!**/out/**/*'],
+    cleanUrls: ["!**/extensions/**/*", "!**/out/**/*"],
     // different with vercel.json rewrites config
-    rewrites: [{ source: '/p/*', destination: '/index.html' }],
+    rewrites: [{ source: "/p/*", destination: "/index.html" }],
   });
 });
 

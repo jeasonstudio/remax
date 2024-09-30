@@ -1,7 +1,10 @@
-import * as vscode from 'vscode';
-import { FILE_SYSTEM_DB_NAME, WORKBENCH_DEFAULT_PLAYGROUND_NAME } from '../../constants';
-import { WrapperedIndexedDB } from './indexed-db';
-import { RemaxFileSystemProvider } from './provider';
+import * as vscode from "vscode";
+import {
+  FILE_SYSTEM_DB_NAME,
+  WORKBENCH_DEFAULT_PLAYGROUND_NAME,
+} from "../../constants";
+import { WrapperedIndexedDB } from "./indexed-db";
+import { RemaxFileSystemProvider } from "./provider";
 
 const readme = `# Welcome to Remax IDE Playground
 
@@ -84,43 +87,57 @@ export async function activate(context: vscode.ExtensionContext) {
   const remaxFileSystemProvider = new RemaxFileSystemProvider(widb);
   await remaxFileSystemProvider.prepare();
 
-  console.log('Remax file system provider is ready.');
+  console.log("Remax file system provider is ready.");
 
   // Register remax file system provider
   context.subscriptions.push(
-    vscode.workspace.registerFileSystemProvider(RemaxFileSystemProvider.scheme, remaxFileSystemProvider, {
-      isCaseSensitive: true,
-      isReadonly: false,
-    }),
+    vscode.workspace.registerFileSystemProvider(
+      RemaxFileSystemProvider.scheme,
+      remaxFileSystemProvider,
+      {
+        isCaseSensitive: true,
+        isReadonly: false,
+      },
+    ),
   );
 
   const playgroundUri = vscode.Uri.from({
     scheme: RemaxFileSystemProvider.scheme,
-    path: '/' + WORKBENCH_DEFAULT_PLAYGROUND_NAME,
+    path: "/" + WORKBENCH_DEFAULT_PLAYGROUND_NAME,
   });
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('remax.reset-playground', async () => {
+    vscode.commands.registerCommand("remax.reset-playground", async () => {
       try {
-        await remaxFileSystemProvider.delete(playgroundUri, { recursive: true });
+        await remaxFileSystemProvider.delete(playgroundUri, {
+          recursive: true,
+        });
       } catch (error) {
         console.warn(error);
       }
       await remaxFileSystemProvider.createDirectory(playgroundUri);
-      await remaxFileSystemProvider.writeFile(vscode.Uri.joinPath(playgroundUri, 'erc20.sol'), encoder.encode(erc20), {
-        create: true,
-        overwrite: true,
-      });
-      await remaxFileSystemProvider.writeFile(vscode.Uri.joinPath(playgroundUri, 'README.md'), encoder.encode(readme), {
-        create: true,
-        overwrite: true,
-      });
+      await remaxFileSystemProvider.writeFile(
+        vscode.Uri.joinPath(playgroundUri, "erc20.sol"),
+        encoder.encode(erc20),
+        {
+          create: true,
+          overwrite: true,
+        },
+      );
+      await remaxFileSystemProvider.writeFile(
+        vscode.Uri.joinPath(playgroundUri, "README.md"),
+        encoder.encode(readme),
+        {
+          create: true,
+          overwrite: true,
+        },
+      );
     }),
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('remax.open-playground', () =>
-      vscode.commands.executeCommand('vscode.openFolder', playgroundUri),
+    vscode.commands.registerCommand("remax.open-playground", () =>
+      vscode.commands.executeCommand("vscode.openFolder", playgroundUri),
     ),
   );
 }

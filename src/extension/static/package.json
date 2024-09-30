@@ -11,9 +11,7 @@
   "engines": {
     "vscode": "^1.76.1"
   },
-  "activationEvents": [
-    "onStartupFinished"
-  ],
+  "activationEvents": ["onStartupFinished"],
   "contributes": {
     "viewsWelcome": [
       {
