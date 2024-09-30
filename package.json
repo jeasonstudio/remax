@@ -9,7 +9,7 @@
     "dev:workbench": "webpack --config ./scripts/workbench.webpack.config.js --watch",
     "dev:extension": "webpack --config ./scripts/extension.webpack.config.js --watch",
     "dev:language-server": "webpack --config ./scripts/extension-language-server.webpack.config.js --watch",
-    "build": "npm run build:workbench && npm run build:extension && npm run build:language-server",
+    "build": "npm run build:workbench && npm run build:extension",
     "build:workbench": "webpack build --config ./scripts/workbench.webpack.config.js",
     "build:extension": "webpack build --config ./scripts/extension.webpack.config.js",
     "build:language-server": "webpack build --config ./scripts/extension-language-server.webpack.config.js",
