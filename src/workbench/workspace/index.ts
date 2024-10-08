@@ -50,8 +50,8 @@ export class RemaxWorkspaceProvider {
     // }
 
     const folderUri = workbench.URI.from({
-      scheme: FILE_SYSTEM_SCHEME,
-      path: `/${project ?? ""}`,
+      scheme: "zenfs",
+      path: `/`,
       query: window.location.search,
       fragment: window.location.hash,
     });

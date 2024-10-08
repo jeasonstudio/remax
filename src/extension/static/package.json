@@ -11,7 +11,7 @@
   "engines": {
     "vscode": "^1.76.1"
   },
-  "activationEvents": ["onStartupFinished"],
+  "activationEvents": ["onStartupFinished", "onFileSystem:zenfs"],
   "contributes": {
     "viewsWelcome": [
       {
@@ -22,10 +22,10 @@
     "commands": [],
     "resourceLabelFormatters": [
       {
-        "scheme": "remaxfs",
+        "scheme": "zenfs",
         "formatting": {
           "label": "${path}",
-          "workspaceSuffix": "REMAXFS"
+          "workspaceSuffix": "ZENFS"
         }
       }
     ],

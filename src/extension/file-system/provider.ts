@@ -1,246 +1,154 @@
+import { configure, configureSingle, InMemory } from "@zenfs/core";
 import path from "path-browserify";
 import * as vscode from "vscode";
-import { FILE_SYSTEM_SCHEME } from "../../constants";
-import { DirectoryEntry, FileEntry } from "./entry";
-import { WrapperedIndexedDB } from "./indexed-db";
+import { WebStorage, IndexedDB } from "@zenfs/dom";
+import * as fs from "@zenfs/core/promises";
 
-// A good sample of indexeddb-fs
-// https://github.dev/playerony/indexeddb-fs/blob/main/lib/database/index.ts
-
-export class RemaxFileSystemProvider implements vscode.FileSystemProvider {
-  // FileSystem Scheme
-  public static scheme = FILE_SYSTEM_SCHEME;
-
-  // public static async create() {
-  //   const rootUri = vscode.Uri.from({ scheme: RemaxFileSystemProvider.scheme, path: '/' });
-  //   const widb = new WrapperedIndexedDB();
-
-  //   const tx = await widb.transaction('readwrite');
-  //   const rootEntry = await tx.get(rootUri, true);
-  //   if (!rootEntry) {
-  //     const rootDirectory = new DirectoryEntry('<root>');
-  //     await tx.put(rootUri, rootDirectory);
-  //   }
-  //   tx.commit();
-  //   return new RemaxFileSystemProvider(widb);
-  // }
-
-  public constructor(private readonly widb: WrapperedIndexedDB) {}
-
-  public async prepare() {
-    const rootUri = vscode.Uri.from({
-      scheme: RemaxFileSystemProvider.scheme,
-      path: "/",
-    });
-    const tx = await this.widb.transaction("readwrite");
-    const rootEntry = await tx.get(rootUri, true);
-    if (!rootEntry) {
-      const rootDirectory = new DirectoryEntry("<root>");
-      await tx.put(rootUri, rootDirectory);
-    }
-    tx.commit();
-  }
-
-  /**
-   * Get parent directory uri
-   * @param uri {vscode.Uri} uri
-   */
-  private _getParentUri(uri: vscode.Uri): vscode.Uri {
-    const parentUri = uri.with({ path: path.dirname(uri.path) });
-    return parentUri;
-  }
-
-  /**
-   * Get file stat
-   * @param uri {vscode.Uri} uri
-   * @returns entry stat
-   */
-  public async stat(uri: vscode.Uri): Promise<vscode.FileStat> {
-    const tx = await this.widb.transaction("readonly");
-    const stat = await tx.get(uri, false);
-    tx.commit();
-    return stat;
-  }
-
-  /**
-   * Read directory
-   * @param uri {vscode.Uri} uri
-   * @returns directory entries
-   */
-  public async readDirectory(
-    uri: vscode.Uri,
-  ): Promise<[string, vscode.FileType][]> {
-    const tx = await this.widb.transaction("readonly");
-    const directory = await tx.get<DirectoryEntry>(uri, false);
-    const result: [string, vscode.FileType][] = [];
-    for (const [name, child] of directory.entries) {
-      const childEntry = await tx.get(uri.with({ path: child }), false);
-      result.push([name, childEntry.type]);
-    }
-    tx.commit();
-    return result;
-  }
-
-  /**
-   * Create directory
-   * @param uri {vscode.Uri} uri do not ends with '/'
-   */
-  public async createDirectory(uri: vscode.Uri): Promise<void> {
-    const tx = await this.widb.transaction("readwrite");
-    const basename = path.basename(uri.path);
-    const parentDirname = this._getParentUri(uri);
-    const parent = await tx.get<DirectoryEntry>(parentDirname, false);
-    const entry = new DirectoryEntry(basename);
-    parent.entries.set(entry.name, uri.path);
-    parent.mtime = Date.now();
-    parent.size += 1;
-    await tx.put(parentDirname, parent);
-    await tx.put(uri, entry);
-    tx.commit();
-    this._emitter.fire([
-      { type: vscode.FileChangeType.Changed, uri: parentDirname },
-      { type: vscode.FileChangeType.Created, uri },
-    ]);
-  }
-
-  /**
-   * Read file
-   * @param uri {vscode.Uri} uri
-   * @returns {Promise<Uint8Array>}
-   */
-  public async readFile(uri: vscode.Uri): Promise<Uint8Array> {
-    const tx = await this.widb.transaction("readonly");
-    const file = await tx.get<FileEntry>(uri, false);
-    tx.commit();
-    if (!file.data) {
-      throw vscode.FileSystemError.FileNotFound(uri);
-    }
-    return file.data;
-  }
-
-  public async writeFile(
-    uri: vscode.Uri,
-    content: Uint8Array,
-    options: { create: boolean; overwrite: boolean },
-  ): Promise<void> {
-    const tx = await this.widb.transaction("readwrite");
-    const basename = path.basename(uri.path);
-    const parentDirname = this._getParentUri(uri);
-    const parent = await tx.get<DirectoryEntry>(parentDirname, false);
-
-    const entryPath = parent.entries.get(basename);
-    let entry = entryPath
-      ? await tx.get<FileEntry>(uri.with({ path: entryPath }), true)
-      : undefined;
-    if (entry?.type === vscode.FileType.Directory) {
-      throw vscode.FileSystemError.FileIsADirectory(uri);
-    }
-    if (!entry && !options.create) {
-      throw vscode.FileSystemError.FileNotFound(uri);
-    }
-    if (entry && options.create && !options.overwrite) {
-      throw vscode.FileSystemError.FileExists(uri);
-    }
-    if (!entry) {
-      entry = new FileEntry(basename);
-      parent.entries.set(basename, uri.path);
-      await tx.put(parentDirname, parent);
-      this._emitter.fire([{ type: vscode.FileChangeType.Created, uri }]);
-    }
-    entry.mtime = Date.now();
-    entry.size = content.byteLength;
-    entry.data = content;
-
-    await tx.put(uri, entry);
-    tx.commit();
-    this._emitter.fire([{ type: vscode.FileChangeType.Changed, uri }]);
-  }
-
-  /**
-   * Delete file or directory
-   * @param uri {vscode.Uri}
-   * @param options
-   */
-  public async delete(
-    uri: vscode.Uri,
-    options: { recursive: boolean },
-  ): Promise<void> {
-    const tx = await this.widb.transaction("readwrite");
-    const dirname = this._getParentUri(uri);
-    const parent = await tx.get<DirectoryEntry>(dirname, false);
-
-    const basename = path.basename(uri.path);
-    if (!parent.entries.has(basename)) {
-      throw vscode.FileSystemError.FileNotFound(uri);
-    }
-    parent.entries.delete(basename);
-    parent.mtime = Date.now();
-    parent.size -= 1;
-
-    // TODO: what if recursive=true?
-    await tx.delete(uri);
-    await tx.put(dirname, parent);
-    tx.commit();
-
-    this._emitter.fire([
-      { type: vscode.FileChangeType.Changed, uri: dirname },
-      { uri, type: vscode.FileChangeType.Deleted },
-    ]);
-  }
-
-  /**
-   * Rename file or directory
-   * @param oldUri {vscode.Uri}
-   * @param newUri {vscode.Uri}
-   * @param options
-   */
-  public async rename(
-    oldUri: vscode.Uri,
-    newUri: vscode.Uri,
-    options: { overwrite: boolean },
-  ): Promise<void> {
-    const tx = await this.widb.transaction("readwrite");
-    const targetFile = await tx.get<FileEntry>(newUri, true);
-    if (!options.overwrite && targetFile) {
-      throw vscode.FileSystemError.FileExists(newUri);
-    }
-
-    const entry = await tx.get(oldUri, false);
-    const oldName = entry.name;
-    const newName = path.basename(newUri.path);
-    entry.name = newName;
-    await tx.put(newUri, entry);
-
-    // rm from old dir
-    const oldParentDirname = this._getParentUri(oldUri);
-    const oldParent = await tx.get<DirectoryEntry>(oldParentDirname, false);
-    oldParent.entries.delete(oldName);
-    await tx.put(oldParentDirname, oldParent);
-    await tx.delete(oldUri);
-
-    // add to new dir
-    const newParentDirname = this._getParentUri(newUri);
-    const newParent = await tx.get<DirectoryEntry>(newParentDirname, false);
-    newParent.entries.set(newName, newUri.path);
-    await tx.put(newParentDirname, newParent);
-
-    tx.commit();
-    this._emitter.fire([
-      { type: vscode.FileChangeType.Deleted, uri: oldUri },
-      { type: vscode.FileChangeType.Created, uri: newUri },
-    ]);
-  }
-
-  // copy do not need to implement
-
-  // --- manage file events
-
+export class FileSystemProvider implements vscode.FileSystemProvider {
+  public _configure: Promise<void>;
   private _emitter = new vscode.EventEmitter<vscode.FileChangeEvent[]>();
-  public readonly onDidChangeFile: vscode.Event<vscode.FileChangeEvent[]> =
+  private _bufferedEvents: vscode.FileChangeEvent[] = [];
+  private _fireSoonHandle?: NodeJS.Timeout;
+
+  readonly onDidChangeFile: vscode.Event<vscode.FileChangeEvent[]> =
     this._emitter.event;
 
-  public watch(_resource: vscode.Uri): vscode.Disposable {
-    // ignore, fires for all changes...
+  constructor() {
+    this._configure = configureSingle({
+      backend: IndexedDB,
+    });
+  }
+
+  private async _lookup(p: string, silent: false): Promise<vscode.FileStat>;
+  private async _lookup(p: string, silent: boolean): Promise<vscode.FileStat>;
+  private async _lookup(
+    p: string,
+    silent: boolean,
+  ): Promise<vscode.FileStat | null> {
+    await this._configure;
+    const exists = await fs.exists(p);
+    if (!exists) {
+      if (!silent)
+        throw vscode.FileSystemError.FileNotFound(vscode.Uri.file(p));
+      return null;
+    }
+    const stat = await fs.stat(p);
+    let type: vscode.FileType = vscode.FileType.Unknown;
+    if (stat.isFile()) {
+      type = vscode.FileType.File;
+    } else if (stat.isDirectory()) {
+      type = vscode.FileType.Directory;
+    } else if (stat.isSymbolicLink()) {
+      type = vscode.FileType.SymbolicLink;
+    }
+    return {
+      type,
+      ctime: stat.ctimeMs,
+      mtime: stat.mtimeMs,
+      size: stat.size,
+    };
+  }
+
+  private _fireSoon(...events: vscode.FileChangeEvent[]): void {
+    this._bufferedEvents.push(...events);
+    if (this._fireSoonHandle) {
+      clearTimeout(this._fireSoonHandle);
+    }
+    this._fireSoonHandle = setTimeout(() => {
+      this._emitter.fire(this._bufferedEvents);
+      this._bufferedEvents.length = 0;
+    }, 5);
+  }
+
+  watch(
+    uri: vscode.Uri,
+    options: {
+      readonly recursive: boolean;
+      readonly excludes: readonly string[];
+    },
+  ): vscode.Disposable {
+    // TODO@jeason: implement watch
     return new vscode.Disposable(() => {});
+  }
+  async stat(uri: vscode.Uri): Promise<vscode.FileStat> {
+    await this._configure;
+    return this._lookup(uri.path, false);
+  }
+  async readDirectory(uri: vscode.Uri): Promise<[string, vscode.FileType][]> {
+    await this._configure;
+    const dirInfo = await fs.readdir(uri.path, {
+      withFileTypes: true,
+      recursive: false,
+    });
+    return dirInfo.map((info) => {
+      let type: vscode.FileType = vscode.FileType.Unknown;
+      if (info.isFile()) {
+        type = vscode.FileType.File;
+      } else if (info.isDirectory()) {
+        type = vscode.FileType.Directory;
+      } else if (info.isSymbolicLink()) {
+        type = vscode.FileType.SymbolicLink;
+      }
+      return [info.path, type];
+    });
+  }
+  async createDirectory(uri: vscode.Uri): Promise<void> {
+    await this._configure;
+    await fs.mkdir(uri.path, { recursive: true });
+    this._fireSoon(
+      {
+        type: vscode.FileChangeType.Changed,
+        uri: uri.with({ path: path.posix.dirname(uri.path) }),
+      },
+      { type: vscode.FileChangeType.Created, uri },
+    );
+  }
+  async readFile(uri: vscode.Uri): Promise<Uint8Array> {
+    await this._configure;
+    await this._lookup(uri.path, false);
+    const content = await fs.readFile(uri.path);
+    return new Uint8Array(content.buffer);
+  }
+  async writeFile(
+    uri: vscode.Uri,
+    content: Uint8Array,
+    options: { readonly create: boolean; readonly overwrite: boolean },
+  ): Promise<void> {
+    await this._configure;
+    const entry = await this._lookup(uri.path, true);
+    if (!entry && !options.create) {
+      throw vscode.FileSystemError.FileNotFound(uri);
+    } else if (entry && options.create && !options.overwrite) {
+      throw vscode.FileSystemError.FileExists(uri);
+    }
+    await fs.writeFile(uri.path, content, { mode: "0644", flag: "w" });
+    if (!entry) this._fireSoon({ type: vscode.FileChangeType.Created, uri });
+    this._fireSoon({ type: vscode.FileChangeType.Created, uri });
+  }
+  async delete(
+    uri: vscode.Uri,
+    options: { readonly recursive: boolean },
+  ): Promise<void> {
+    await this._configure;
+    await fs.rm(uri.path, { recursive: options.recursive });
+    this._fireSoon(
+      {
+        type: vscode.FileChangeType.Changed,
+        uri: uri.with({ path: path.posix.dirname(uri.path) }),
+      },
+      { uri, type: vscode.FileChangeType.Deleted },
+    );
+  }
+  async rename(
+    oldUri: vscode.Uri,
+    newUri: vscode.Uri,
+    options: { readonly overwrite: boolean },
+  ): Promise<void> {
+    await this._configure;
+    await fs.rename(oldUri.path, newUri.path);
+    this._fireSoon(
+      { type: vscode.FileChangeType.Deleted, uri: oldUri },
+      { type: vscode.FileChangeType.Created, uri: newUri },
+    );
   }
 }

@@ -13,7 +13,7 @@ const builtinExtensions = [
   // 'css-language-features',
   // 'dart',
   "diff",
-  // 'docker',
+  'docker',
   "emmet",
   "extension-editing",
   // 'fsharp',
@@ -45,7 +45,7 @@ const builtinExtensions = [
   // 'microsoft-authentication',
   // 'ms-vscode-remote.remote-wsl-recommender',
   "notebook-renderers",
-  // 'npm',
+  'npm',
   // 'objective-c',
   // 'perl',
   // 'php',
@@ -63,7 +63,7 @@ const builtinExtensions = [
   // 'shaderlab',
   "shellscript",
   "simple-browser",
-  // 'sql',
+  'sql',
   // 'swift',
   "theme-abyss",
   "theme-defaults",
@@ -94,19 +94,10 @@ window.require(["vs/workbench/workbench.web.main"], async (workbench: any) => {
       );
     },
   );
-  const remaxExtensions: URI[] = [
-    URI.parse(`${window.location.origin}/extension`),
-  ];
   const additionalBuiltinExtensions: URI[] = [
+    URI.parse(`${window.location.origin}/extension`),
     ...vscodewebBuiltinExtensions,
-    ...remaxExtensions,
   ];
-
-  // if (!window.localStorage.getItem('monaco-parts-splash')) {
-  //   setTimeout(() => {
-  //     workbench.commands.executeCommand('remax.reset-playground');
-  //   }, 3e3);
-  // }
 
   const config = {
     settingsSyncOptions: {
@@ -139,7 +130,8 @@ window.require(["vs/workbench/workbench.web.main"], async (workbench: any) => {
       // commit: null,
     },
     configurationDefaults: {
-      // 'workbench.colorTheme': 'Default Dark+ Experimental',
+      "workbench.colorTheme": "Default Dark Modern",
+      "workbench.welcomePage.walkthroughs.openOnInstall": true,
     },
   };
 

@@ -8,6 +8,15 @@ importers:
 
   .:
     dependencies:
+      '@zenfs/core':
+        specifier: ^1.0.3
+        version: 1.0.3
+      '@zenfs/dom':
+        specifier: ^0.2.16
+        version: 0.2.16(@zenfs/core@1.0.3)
+      '@zenfs/zip':
+        specifier: ^0.5.0
+        version: 0.5.0(@zenfs/core@1.0.3)
       path-browserify:
         specifier: ^1.0.1
         version: 1.0.1
@@ -59,10 +68,10 @@ importers:
         version: 6.1.5
       ts-loader:
         specifier: ^9.5.1
-        version: 9.5.1(typescript@4.9.5)(webpack@5.95.0(webpack-cli@5.1.4))
+        version: 9.5.1(typescript@5.6.2)(webpack@5.95.0(webpack-cli@5.1.4))
       typescript:
-        specifier: ^4.9.5
-        version: 4.9.5
+        specifier: ^5.6.2
+        version: 5.6.2
       webpack:
         specifier: ^5.95.0
         version: 5.95.0(webpack-cli@5.1.4)
@@ -423,6 +432,9 @@ packages:
   '@types/node@18.15.2':
     resolution: {integrity: sha512-sDPHm2wfx2QhrMDK0pOt2J4KLJMAcerqWNvnED0itPRJWvI+bK+uNHzcH1dFsBlf7G3u8tqXmRF3wkvL9yUwMw==}
 
+  '@types/node@20.16.11':
+    resolution: {integrity: sha512-y+cTCACu92FyA5fgQSAI8A1H429g7aSK2HsO7K4XYUWc4dY5IUz55JSDIYT6/VsOLfGy8vmvQYC2hfb0iF16Uw==}
+
   '@types/node@22.7.4':
     resolution: {integrity: sha512-y+NPi1rFzDs1NdQHHToqeiX2TIS79SWEAw9GYhkkx8bD0ChpfqC+n2j5OXOCpzfojBEBt6DnEnnG9MY0zk1XLg==}
 
@@ -437,6 +449,9 @@ packages:
 
   '@types/ps-tree@1.1.2':
     resolution: {integrity: sha512-ZREFYlpUmPQJ0esjxoG1fMvB2HNaD3z+mjqdSosZvd3RalncI9NEur73P8ZJz4YQdL64CmV1w0RuqoRUlhQRBw==}
+
+  '@types/readable-stream@4.0.15':
+    resolution: {integrity: sha512-oAZ3kw+kJFkEqyh7xORZOku1YAKvsFTogRY8kVl4vHpEKiDkfnSA/My8haRE7fvmix5Zyy+1pwzOi7yycGLBJw==}
 
   '@types/requirejs@2.1.34':
     resolution: {integrity: sha512-iQLGNE1DyIRYih60B47l/hI5X7J0wAnnRBL6Yn85GUYQg8Fm3wl8kvT6NRwncKroUOSx7/lbAagIFNV7y02DiQ==}
@@ -537,6 +552,27 @@ packages:
 
   '@zeit/schemas@2.36.0':
     resolution: {integrity: sha512-7kjMwcChYEzMKjeex9ZFXkt1AyNov9R5HZtjBKVsmVpw7pa7ZtlCGvCBC2vnnXctaYN+aRI61HjIqeetZW5ROg==}
+
+  '@zenfs/core@1.0.3':
+    resolution: {integrity: sha512-XpHEKMuE52V0EbH5WpKROgDkG4js1IZCE1F0H/V54PeoDQlBFjyhLwzx3y2B2+s4NlZ6zDlcEvrqf45hD1Lj/g==}
+    engines: {node: '>= 16'}
+    hasBin: true
+
+  '@zenfs/dom@0.2.16':
+    resolution: {integrity: sha512-6Ev+ol9hZIgQECNZR+xxjQ/a99EhhrWeiQttm/+U7YJK3HdTjiKfU39DsfGeH64vSqhpa5Vj+LWRx75SHkjw0Q==}
+    engines: {node: '>= 18'}
+    peerDependencies:
+      '@zenfs/core': ^1.0.0
+
+  '@zenfs/zip@0.5.0':
+    resolution: {integrity: sha512-VTdU72vOhAFru9ByL2RqsD76pt3ERCJmH1wFqvZAL9Qd5X75EglLdWjsIEPkY7ej62yp0TeDd0E8PPG3IcRuCw==}
+    engines: {node: '>= 18'}
+    peerDependencies:
+      '@zenfs/core': ^1.0.0
+
+  abort-controller@3.0.0:
+    resolution: {integrity: sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==}
+    engines: {node: '>=6.5'}
 
   accepts@1.3.8:
     resolution: {integrity: sha512-PYAthTa2m2VKxuvSD3DPC/Gy+U+sOA1LAuT8mkmRuvw+NACSaeXEQ+NHcVF7rONl6qcaxV3Uuemwawk+7+SJLw==}
@@ -663,6 +699,9 @@ packages:
 
   buffer@5.7.1:
     resolution: {integrity: sha512-EHcyIPBQ4BSGlvjB16k5KgAJ27CIsHY/2JBmCRReo48y9rQ3MaUzWX3KVlBa4U7MyX02HdVj0K7C3WaB3ju7FQ==}
+
+  buffer@6.0.3:
+    resolution: {integrity: sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA==}
 
   bytes@3.0.0:
     resolution: {integrity: sha512-pMhOfFDPiv9t5jjIXkHosWmkSyQbvsgEVNkz0ERHbuLh2T/7j4Mqqpz523Fe8MVY89KC6Sh/QfS2sM+SjgFDcw==}
@@ -913,8 +952,15 @@ packages:
   event-stream@3.3.4:
     resolution: {integrity: sha512-QHpkERcGsR0T7Qm3HNJSyXKEEj8AHNxkY3PK8TS2KJvQ7NiSHe3DDpwVKKtoYprL/AreyzFBeIkBIWChAqn60g==}
 
+  event-target-shim@5.0.1:
+    resolution: {integrity: sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==}
+    engines: {node: '>=6'}
+
   eventemitter3@4.0.7:
     resolution: {integrity: sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==}
+
+  eventemitter3@5.0.1:
+    resolution: {integrity: sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA==}
 
   events@3.3.0:
     resolution: {integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==}
@@ -950,6 +996,9 @@ packages:
   fetch-blob@3.2.0:
     resolution: {integrity: sha512-7yAQpD2UMJzLi1Dqv7qFYnPbaPx7ZfFK6PiIxQ4PfkGPyNyl2Ugx+a/umUonmKqjhM4DnfbMvdX6otXq83soQQ==}
     engines: {node: ^12.20 || >= 14.13}
+
+  fflate@0.8.2:
+    resolution: {integrity: sha512-cPJU47OaAoCbg0pBvzsgpTPhmhqI5eJjh/JIu8tPj5q+T7iLvW/JAYUqmE7KOB4R1ZyEhzBaIQpQpardBF5z8A==}
 
   file-type@3.9.0:
     resolution: {integrity: sha512-RLoqTXE8/vPmMuTI88DAzhMYC99I8BWv7zYP4A1puo5HIjEJ5EX48ighy4ZyKMG9EDXxBgW6e++cn7d1xuFghA==}
@@ -1266,6 +1315,10 @@ packages:
     resolution: {integrity: sha512-lKwV/1brpG6mBUFHtb7NUmtABCb2WZZmm2wNiOA5hAb8VdCS4B3dtMWyvcoViccwAW/COERjXLt0zP1zXUN26g==}
     engines: {node: '>=10'}
 
+  minimatch@9.0.5:
+    resolution: {integrity: sha512-G6T0ZX48xgozx7587koeX9Ys2NYy6Gmv//P89sEte9V9whIapMNF4idKxnW2QtCcLiTWlb/wfCabAtAFWhhBow==}
+    engines: {node: '>=16 || 14 >=14.17'}
+
   minimist@1.2.8:
     resolution: {integrity: sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==}
 
@@ -1464,6 +1517,10 @@ packages:
   readable-stream@2.3.8:
     resolution: {integrity: sha512-8p0AUk4XODgIewSi0l8Epjs+EVnWiK7NoDIEGU0HhE7+ZyY8D1IMY7odu5lRrFXGg71L15KG8QrPmum45RTtdA==}
 
+  readable-stream@4.5.2:
+    resolution: {integrity: sha512-yjavECdqeZ3GLXNgRXgeQEdz9fvDDkNKyHnbHRFtOr7/LcfgBcmct7t/ET+HaCTqfh06OzoAxrkN/IfjJBVe+g==}
+    engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+
   rechoir@0.8.0:
     resolution: {integrity: sha512-/vxpCXddiX8NGfGO/mTafwjq4aFa/71pvamip0++IQk3zG8cbCj0fifNPrjjF1XMXUne91jL9OoxmdykoEtifQ==}
     engines: {node: '>= 10.13.0'}
@@ -1601,6 +1658,9 @@ packages:
   string_decoder@1.1.1:
     resolution: {integrity: sha512-n/ShnvDi6FHbbVfviro+WojiFzv+s8MPMHBczVePfUpDJLwoLT0ht1l4YwBCbi8pJAveEEdnkHyPyTP/mzRfwg==}
 
+  string_decoder@1.3.0:
+    resolution: {integrity: sha512-hkRX8U1WjJFd8LsDJ2yQ/wWWxaopEsABU1XfkM8A+j0+85JAGppt16cr1Whg6KIbb4okU6Mql6BOj+uup/wKeA==}
+
   strip-ansi@6.0.1:
     resolution: {integrity: sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==}
     engines: {node: '>=8'}
@@ -1698,6 +1758,11 @@ packages:
     engines: {node: '>=4.2.0'}
     hasBin: true
 
+  typescript@5.6.2:
+    resolution: {integrity: sha512-NW8ByodCSNCwZeghjN3o+JX5OFH0Ojg6sadjEKY4huZ52TqbJTJnDo5+Tw98lSy63NZvi4n+ez5m2u5d4PkZyw==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
   unbzip2-stream@1.4.3:
     resolution: {integrity: sha512-mlExGW4w71ebDJviH16lQLtZS32VKqsSfk80GCfUlwT/4/hNRFsoscrF/c++9xinkMzECL1uL9DDwXqFWkruPg==}
 
@@ -1735,6 +1800,9 @@ packages:
 
   utila@0.4.0:
     resolution: {integrity: sha512-Z0DbgELS9/L/75wZbro8xAnT50pBVFQZ+hUEueGDU5FN51YSCYM+jdxsfCiHjwNP/4LCDD0i/graKpeBnOXKRA==}
+
+  utilium@0.7.7:
+    resolution: {integrity: sha512-NIRaFZgHuFDwJ090Iu+Fp605yigQmHxVAUd1aLSWaOZ+aDexvZzGq6tXZWdZBlLpIjSEoErfXjd6O+6JLeJE1A==}
 
   vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
@@ -1980,6 +2048,10 @@ snapshots:
 
   '@types/node@18.15.2': {}
 
+  '@types/node@20.16.11':
+    dependencies:
+      undici-types: 6.19.8
+
   '@types/node@22.7.4':
     dependencies:
       undici-types: 6.19.8
@@ -1991,6 +2063,11 @@ snapshots:
   '@types/prettier@2.7.2': {}
 
   '@types/ps-tree@1.1.2': {}
+
+  '@types/readable-stream@4.0.15':
+    dependencies:
+      '@types/node': 22.7.4
+      safe-buffer: 5.1.2
 
   '@types/requirejs@2.1.34': {}
 
@@ -2102,6 +2179,30 @@ snapshots:
   '@xtuc/long@4.2.2': {}
 
   '@zeit/schemas@2.36.0': {}
+
+  '@zenfs/core@1.0.3':
+    dependencies:
+      '@types/node': 20.16.11
+      '@types/readable-stream': 4.0.15
+      buffer: 6.0.3
+      eventemitter3: 5.0.1
+      minimatch: 9.0.5
+      readable-stream: 4.5.2
+      utilium: 0.7.7
+
+  '@zenfs/dom@0.2.16(@zenfs/core@1.0.3)':
+    dependencies:
+      '@zenfs/core': 1.0.3
+
+  '@zenfs/zip@0.5.0(@zenfs/core@1.0.3)':
+    dependencies:
+      '@zenfs/core': 1.0.3
+      fflate: 0.8.2
+      utilium: 0.7.7
+
+  abort-controller@3.0.0:
+    dependencies:
+      event-target-shim: 5.0.1
 
   accepts@1.3.8:
     dependencies:
@@ -2231,6 +2332,11 @@ snapshots:
   buffer-from@1.1.2: {}
 
   buffer@5.7.1:
+    dependencies:
+      base64-js: 1.5.1
+      ieee754: 1.2.1
+
+  buffer@6.0.3:
     dependencies:
       base64-js: 1.5.1
       ieee754: 1.2.1
@@ -2488,7 +2594,11 @@ snapshots:
       stream-combiner: 0.0.4
       through: 2.3.8
 
+  event-target-shim@5.0.1: {}
+
   eventemitter3@4.0.7: {}
+
+  eventemitter3@5.0.1: {}
 
   events@3.3.0: {}
 
@@ -2534,6 +2644,8 @@ snapshots:
     dependencies:
       node-domexception: 1.0.0
       web-streams-polyfill: 3.2.1
+
+  fflate@0.8.2: {}
 
   file-type@3.9.0: {}
 
@@ -2814,6 +2926,10 @@ snapshots:
     dependencies:
       brace-expansion: 2.0.1
 
+  minimatch@9.0.5:
+    dependencies:
+      brace-expansion: 2.0.1
+
   minimist@1.2.8: {}
 
   mkdirp@0.5.6:
@@ -3003,6 +3119,14 @@ snapshots:
       string_decoder: 1.1.1
       util-deprecate: 1.0.2
 
+  readable-stream@4.5.2:
+    dependencies:
+      abort-controller: 3.0.0
+      buffer: 6.0.3
+      events: 3.3.0
+      process: 0.11.10
+      string_decoder: 1.3.0
+
   rechoir@0.8.0:
     dependencies:
       resolve: 1.22.1
@@ -3165,6 +3289,10 @@ snapshots:
     dependencies:
       safe-buffer: 5.1.2
 
+  string_decoder@1.3.0:
+    dependencies:
+      safe-buffer: 5.2.1
+
   strip-ansi@6.0.1:
     dependencies:
       ansi-regex: 5.0.1
@@ -3238,14 +3366,14 @@ snapshots:
     dependencies:
       utf8-byte-length: 1.0.4
 
-  ts-loader@9.5.1(typescript@4.9.5)(webpack@5.95.0(webpack-cli@5.1.4)):
+  ts-loader@9.5.1(typescript@5.6.2)(webpack@5.95.0(webpack-cli@5.1.4)):
     dependencies:
       chalk: 4.1.2
       enhanced-resolve: 5.12.0
       micromatch: 4.0.5
       semver: 7.3.8
       source-map: 0.7.4
-      typescript: 4.9.5
+      typescript: 5.6.2
       webpack: 5.95.0(webpack-cli@5.1.4)
 
   tslib@2.5.0: {}
@@ -3253,6 +3381,8 @@ snapshots:
   type-fest@2.19.0: {}
 
   typescript@4.9.5: {}
+
+  typescript@5.6.2: {}
 
   unbzip2-stream@1.4.3:
     dependencies:
@@ -3289,6 +3419,10 @@ snapshots:
   util-deprecate@1.0.2: {}
 
   utila@0.4.0: {}
+
+  utilium@0.7.7:
+    dependencies:
+      eventemitter3: 5.0.1
 
   vary@1.1.2: {}
 
