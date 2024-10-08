@@ -1,102 +1,20 @@
 import { URI } from "vscode-uri";
 import { RemaxWorkspaceProvider } from "./workspace";
-// import { WorkspaceProvider, LocalStorageURLCallbackProvider } from './ws';
-
-const builtinExtensions = [
-  // 'bat',
-  // 'clojure',
-  // 'coffeescript',
-  "configuration-editing",
-  // 'cpp',
-  // 'csharp',
-  // 'css',
-  // 'css-language-features',
-  // 'dart',
-  "diff",
-  'docker',
-  "emmet",
-  "extension-editing",
-  // 'fsharp',
-  "git-base",
-  // 'github-authentication',
-  // 'go',
-  // 'groovy',
-  // 'handlebars',
-  // 'hlsl',
-  "html",
-  "html-language-features",
-  // 'ini',
-  // 'ipynb',
-  // 'java',
-  "javascript",
-  "json",
-  "json-language-features",
-  // 'julia',
-  // 'latex',
-  // 'less',
-  "log",
-  // 'lua',
-  // 'make',
-  "markdown-basics",
-  "markdown-language-features",
-  "markdown-math",
-  "media-preview",
-  "merge-conflict",
-  // 'microsoft-authentication',
-  // 'ms-vscode-remote.remote-wsl-recommender',
-  "notebook-renderers",
-  'npm',
-  // 'objective-c',
-  // 'perl',
-  // 'php',
-  // 'powershell',
-  // 'pug',
-  // 'python',
-  // 'r',
-  // 'razor',
-  "references-view",
-  // 'restructuredtext',
-  // 'ruby',
-  // 'rust',
-  // 'scss',
-  "search-result",
-  // 'shaderlab',
-  "shellscript",
-  "simple-browser",
-  'sql',
-  // 'swift',
-  "theme-abyss",
-  "theme-defaults",
-  "theme-kimbie-dark",
-  "theme-monokai",
-  "theme-monokai-dimmed",
-  "theme-quietlight",
-  "theme-red",
-  "theme-seti",
-  "theme-solarized-dark",
-  "theme-solarized-light",
-  "theme-tomorrow-night-blue",
-  "typescript-basics",
-  "typescript-language-features",
-  // 'vb',
-  "xml",
-  "yaml",
-];
+import configurationDefaults from "./configuration";
 
 window.require(["vs/workbench/workbench.web.main"], async (workbench: any) => {
   (window as any).workbench = workbench;
 
   const workspaceProvider = await RemaxWorkspaceProvider.create(workbench);
-  const vscodewebBuiltinExtensions: URI[] = builtinExtensions.map(
-    (extensionName) => {
-      return URI.parse(
-        `${window.location.origin}${process.env.BUILTIN_EXTENSIONS_BASE_URL}/${extensionName}`,
-      );
-    },
-  );
+  // const vscodewebBuiltinExtensions: URI[] = builtinExtensions.map(
+  //   (extensionName) => {
+  //     return URI.parse(
+  //       `${window.location.origin}${process.env.BUILTIN_EXTENSIONS_BASE_URL}/${extensionName}`,
+  //     );
+  //   },
+  // );
   const additionalBuiltinExtensions: URI[] = [
     URI.parse(`${window.location.origin}/extension`),
-    ...vscodewebBuiltinExtensions,
   ];
 
   const config = {
@@ -129,10 +47,7 @@ window.require(["vs/workbench/workbench.web.main"], async (workbench: any) => {
       // src/vs/workbench/services/environment/browser/environmentService.ts#45
       // commit: null,
     },
-    configurationDefaults: {
-      "workbench.colorTheme": "Default Dark Modern",
-      "workbench.welcomePage.walkthroughs.openOnInstall": true,
-    },
+    configurationDefaults,
   };
 
   // see: src/vs/workbench/browser/web.main.ts

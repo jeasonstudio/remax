@@ -10,6 +10,9 @@ export async function activate(context: vscode.ExtensionContext) {
       isReadonly: false,
     }),
   );
+  // context.subscriptions.push(
+  //   vscode.workspace.registerFileSearchProvider("zenfs", provider),
+  // );
 }
 
 export async function deactivate() {}
