@@ -1,6 +1,5 @@
-/* eslint-disable curly */
-import type { URI } from "vscode-uri";
-import { IWorkspaceProvider, IWorkspace, UriComponents } from "./types";
+import { IWorkspaceProvider, IWorkspace } from "./vs/web.api";
+import { URI } from "./vs/workbench.main";
 
 export class RemaxWorkspaceProvider implements IWorkspaceProvider {
   public readonly trusted = true;
@@ -37,17 +36,13 @@ export class RemaxWorkspaceProvider implements IWorkspaceProvider {
     return false;
   }
 
-  public static async create(workbench: any): Promise<RemaxWorkspaceProvider> {
+  public static async create(): Promise<RemaxWorkspaceProvider> {
     const pathname = window.location.pathname;
     const [_blank, tag, project, ...paths] = pathname.split("/");
-    // if (tag !== 'p' || !project) {
-    //   // redirect to /p/playground
-    //   window.location.href = `${window.location.origin}/p/${WORKBENCH_DEFAULT_PLAYGROUND_NAME}`;
-    // }
 
-    const folderUri = workbench.URI.from({
+    const folderUri = URI.from({
       scheme: "zenfs",
-      path: `/workspace`,
+      path: `/`,
       query: window.location.search,
       fragment: window.location.hash,
     });

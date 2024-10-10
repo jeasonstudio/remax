@@ -53,7 +53,7 @@
   <script src="/<%= htmlWebpackPlugin.options.static %>/out/vs/loader.js"></script>
   <script src="/<%= htmlWebpackPlugin.options.static %>/out/vs/webPackagePaths.js"></script>
   <script>
-    let baseUrl = '/<%= htmlWebpackPlugin.options.static %>';
+    let baseUrl = `${window.location.origin}/<%= htmlWebpackPlugin.options.static %>`;
     let webPackagePaths = self.webPackagePaths || {};
 
     Object.keys(webPackagePaths).forEach(function (key, index) {
@@ -63,7 +63,7 @@
     });
 
     require.config({
-      baseUrl: `${window.location.origin}${baseUrl}/out`,
+      baseUrl: `${baseUrl}/out`,
       recordStats: true,
       paths: webPackagePaths,
       trustedTypesPolicy: window.trustedTypes?.createPolicy('amdLoader', {
