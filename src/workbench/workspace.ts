@@ -1,34 +1,30 @@
 /* eslint-disable curly */
 import type { URI } from "vscode-uri";
-import {
-  FILE_SYSTEM_SCHEME,
-  WORKBENCH_DEFAULT_PLAYGROUND_NAME,
-} from "../../constants";
+import { IWorkspaceProvider, IWorkspace, UriComponents } from "./types";
 
-export type UriComponents = typeof URI;
-
-export type Workspace = any;
-export class RemaxWorkspaceProvider {
+export class RemaxWorkspaceProvider implements IWorkspaceProvider {
   public readonly trusted = true;
   public constructor(
-    public readonly workspace: Workspace,
+    public readonly workspace: IWorkspace,
     public readonly payload?: object,
   ) {}
 
+  private isFolderUri(workspace: IWorkspace): workspace is { folderUri: URI } {
+    return (workspace as { folderUri: URI }).folderUri !== undefined;
+  }
+
   /**
    * Implements of vscode default command: openuri
-   * @param workspace Workspace
+   * @param workspace IWorkspace
    * @param options options
    * @returns success
    */
-  public open(
-    workspace: Workspace,
-    options?:
-      | { reuse?: boolean | undefined; payload?: object | undefined }
-      | undefined,
-  ): boolean {
+  public async open(
+    workspace: IWorkspace,
+    options?: { reuse?: boolean; payload?: object },
+  ): Promise<boolean> {
     console.log("trigger open", workspace, options);
-    if (workspace?.folderUri) {
+    if (this.isFolderUri(workspace)) {
       const { path, fragment, query } = workspace.folderUri;
       const targetHref = `${window.location.origin}/p${path}?${query}#${fragment}`;
       if (options?.reuse) {
@@ -51,7 +47,7 @@ export class RemaxWorkspaceProvider {
 
     const folderUri = workbench.URI.from({
       scheme: "zenfs",
-      path: `/`,
+      path: `/workspace`,
       query: window.location.search,
       fragment: window.location.hash,
     });
