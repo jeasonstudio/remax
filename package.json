@@ -25,7 +25,7 @@
   "keywords": [
     "vscode",
     "webide",
-    "ai-native"
+    "ai"
   ],
   "devDependencies": {
     "@biomejs/biome": "1.9.2",
@@ -33,6 +33,7 @@
     "@types/requirejs": "^2.1.37",
     "@types/vscode": "^1.93.0",
     "@types/webpack-env": "^1.18.5",
+    "@types/wicg-file-system-access": "^2023.10.5",
     "copy-webpack-plugin": "^11.0.0",
     "decompress": "^4.2.1",
     "decompress-targz": "^4.1.1",

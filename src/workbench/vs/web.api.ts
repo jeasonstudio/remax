@@ -1,3 +1,5 @@
+import { IProductConfiguration } from "./product";
+
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -1247,7 +1249,7 @@ interface IWorkbenchConstructionOptions {
   /**
    * Optional override for the product configuration properties.
    */
-  readonly productConfiguration?: any;
+  readonly productConfiguration?: Partial<IProductConfiguration>;
 
   /**
    * Optional override for properties of the window indicator in the status bar.

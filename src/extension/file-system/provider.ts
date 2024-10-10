@@ -1,11 +1,10 @@
-import { configure, configureSingle, InMemory } from "@zenfs/core";
+import { configureSingle } from "@zenfs/core";
 import path from "path-browserify";
 import * as vscode from "vscode";
-import { WebStorage, IndexedDB } from "@zenfs/dom";
+import { IndexedDB } from "@zenfs/dom";
 import * as fs from "@zenfs/core/promises";
 
 export class FileSystemProvider implements vscode.FileSystemProvider {
-  public _configure: Promise<void>;
   private _emitter = new vscode.EventEmitter<vscode.FileChangeEvent[]>();
   private _bufferedEvents: vscode.FileChangeEvent[] = [];
   private _fireSoonHandle?: NodeJS.Timeout;
@@ -13,11 +12,11 @@ export class FileSystemProvider implements vscode.FileSystemProvider {
   readonly onDidChangeFile: vscode.Event<vscode.FileChangeEvent[]> =
     this._emitter.event;
 
-  constructor() {
-    this._configure = configureSingle({
+  constructor(
+    private readonly _configure: Promise<void> = configureSingle({
       backend: IndexedDB,
-    });
-  }
+    }),
+  ) {}
 
   private async _lookup(p: string, silent: false): Promise<vscode.FileStat>;
   private async _lookup(p: string, silent: boolean): Promise<vscode.FileStat>;

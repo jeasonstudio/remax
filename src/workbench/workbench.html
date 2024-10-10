@@ -13,7 +13,7 @@
     <meta name="apple-mobile-web-app-title" content="Code" />
     <link
       rel="apple-touch-icon"
-      href="/<%= htmlWebpackPlugin.options.static %>/code-192.png"
+      href="https://mdn.alipayobjects.com/huamei_1hrimu/afts/img/A*A0TcQrafGKAAAAAAAAAAAAAADp95AQ/original"
     />
 
     <!-- Disable pinch zooming -->
@@ -31,7 +31,7 @@
     <!-- Workbench Icon/Manifest/CSS -->
     <link
       rel="icon"
-      href="/<%= htmlWebpackPlugin.options.static %>/favicon.ico"
+      href="https://mdn.alipayobjects.com/huamei_1hrimu/afts/img/A*QgO6Rp6MjwIAAAAAAAAAAAAADp95AQ/original"
       type="image/x-icon"
     />
     <link
@@ -45,6 +45,64 @@
       href="/<%= htmlWebpackPlugin.options.static %>/out/vs/workbench/workbench.web.main.css"
     />
     <style id="vscode-css-modules" type="text/css" media="screen"></style>
+
+    <style>
+      /* code-icon */
+      .monaco-workbench .part.banner .icon-container.custom-icon,
+      .monaco-workbench
+        .part.titlebar
+        > .titlebar-container
+        > .titlebar-left
+        > .window-appicon:not(.codicon),
+      .monaco-workbench
+        .part.titlebar
+        > .titlebar-container
+        .window-appicon
+        > .home-bar-icon-badge,
+      .file-icons-enabled
+        .show-file-icons
+        .webview-vs_code_release_notes-name-file-icon.file-icon::before,
+      .file-icons-enabled
+        .show-file-icons
+        .vscode_getting_started_page-name-file-icon.file-icon::before,
+      .file-icons-enabled
+        .show-file-icons
+        .vs_code_editor_walkthrough\.md-name-file-icon.md-ext-file-icon.ext-file-icon.markdown-lang-file-icon.file-icon::before {
+        background-image: url(https://mdn.alipayobjects.com/huamei_1hrimu/afts/img/A*7PNBSI6JrGAAAAAAAAAAAAAADp95AQ/original) !important;
+      }
+
+      /* letterpress-light */
+      .monaco-workbench
+        .part.editor
+        > .content
+        .editor-group-container
+        > .editor-group-watermark
+        > .letterpress,
+      .monaco-workbench.hc-light
+        .part.editor
+        > .content
+        .editor-group-container
+        .editor-group-watermark
+        > .letterpress {
+        background-image: url(https://mdn.alipayobjects.com/huamei_1hrimu/afts/img/A*dsfNSojRHvAAAAAAAAAAAAAADp95AQ/original) !important;
+      }
+
+      /* letterpress-dark */
+      .monaco-workbench.vs-dark
+        .part.editor
+        > .content
+        .editor-group-container
+        .editor-group-watermark
+        > .letterpress,
+      .monaco-workbench.hc-black
+        .part.editor
+        > .content
+        .editor-group-container
+        .editor-group-watermark
+        > .letterpress {
+        background-image: url(https://mdn.alipayobjects.com/huamei_1hrimu/afts/img/A*1_yZT4AD_MMAAAAAAAAAAAAADp95AQ/original) !important;
+      }
+    </style>
   </head>
 
   <body aria-label=""></body>

@@ -22,14 +22,13 @@ export class RemaxWorkspaceProvider implements IWorkspaceProvider {
     workspace: IWorkspace,
     options?: { reuse?: boolean; payload?: object },
   ): Promise<boolean> {
-    console.log("trigger open", workspace, options);
     if (this.isFolderUri(workspace)) {
-      const { path, fragment, query } = workspace.folderUri;
-      const targetHref = `${window.location.origin}/p${path}?${query}#${fragment}`;
+      const { path, query, fragment } = workspace.folderUri;
+      const targetPath = `/p${path}${query ? `?${query}` : ""}${fragment ? `#${fragment}` : ""}`;
       if (options?.reuse) {
-        window.location.href = targetHref;
+        window.location.pathname = targetPath;
       } else {
-        window.open(targetHref, "_blank");
+        window.open(targetPath, "_blank");
       }
       return true;
     }
@@ -38,11 +37,11 @@ export class RemaxWorkspaceProvider implements IWorkspaceProvider {
 
   public static async create(): Promise<RemaxWorkspaceProvider> {
     const pathname = window.location.pathname;
-    const [_blank, tag, project, ...paths] = pathname.split("/");
+    const [_blank, scheme, project, ...paths] = pathname.split("/");
 
     const folderUri = URI.from({
       scheme: "zenfs",
-      path: `/`,
+      path: `/${project ?? ""}`,
       query: window.location.search,
       fragment: window.location.hash,
     });

@@ -42,6 +42,9 @@ importers:
       '@types/webpack-env':
         specifier: ^1.18.5
         version: 1.18.5
+      '@types/wicg-file-system-access':
+        specifier: ^2023.10.5
+        version: 2023.10.5
       copy-webpack-plugin:
         specifier: ^11.0.0
         version: 11.0.0(webpack@5.95.0(webpack-cli@5.1.4))
@@ -473,6 +476,9 @@ packages:
 
   '@types/which@2.0.2':
     resolution: {integrity: sha512-113D3mDkZDjo+EeUEHCFy0qniNc1ZpecGiAU7WSo7YDoSzolZIQKpYFHrPpjkB2nuyahcKfrmLXeQlh7gqJYdw==}
+
+  '@types/wicg-file-system-access@2023.10.5':
+    resolution: {integrity: sha512-e9kZO9kCdLqT2h9Tw38oGv9UNzBBWaR1MzuAavxPcsV/7FJ3tWbU6RI3uB+yKIDPGLkGVbplS52ub0AcRLvrhA==}
 
   '@webassemblyjs/ast@1.12.1':
     resolution: {integrity: sha512-EKfMUOPRRUTy5UII4qJDGPpqfwjOmZ5jeGFwid9mnoqIFK+e0vqoi1qH56JpmZSzEL53jKnNzScdmftJyG5xWg==}
@@ -2082,6 +2088,8 @@ snapshots:
   '@types/webpack-env@1.18.5': {}
 
   '@types/which@2.0.2': {}
+
+  '@types/wicg-file-system-access@2023.10.5': {}
 
   '@webassemblyjs/ast@1.12.1':
     dependencies:

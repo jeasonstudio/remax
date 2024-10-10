@@ -15,7 +15,8 @@ export const RemoteAuthorityResolverError: api.RemoteAuthorityResolverError =
   workbench.RemoteAuthorityResolverError;
 export const RemoteAuthorityResolverErrorCode: api.RemoteAuthorityResolverErrorCode =
   workbench.RemoteAuthorityResolverErrorCode;
-export { URI } from "vscode-uri";
+export const URI: typeof api.URI = workbench.URI;
+export type URI = api.URI;
 export const commands: typeof api.commands = workbench.commands;
 export const create: typeof api.create = workbench.create;
 export const env: typeof api.env = workbench.env;

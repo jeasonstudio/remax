@@ -17,7 +17,7 @@ const server = http.createServer((request, response) => {
     // here we override it to make serve support historyApiFallback
     cleanUrls: ["!**/extensions/**/*", "!**/out/**/*"],
     // different with vercel.json rewrites config
-    rewrites: [{ source: "/p/*", destination: "/index.html" }],
+    rewrites: [{ source: "/*", destination: "/index.html" }],
   });
 });
 
